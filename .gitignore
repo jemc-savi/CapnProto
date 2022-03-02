@@ -1,0 +1,28 @@
+##
+# NOTE: The first section of this file comes from the upstream base named
+# `savi-lang/base-standard-library`, and is kept in sync with that base.
+#
+# Avoid unnecessary downstream changes in the first section of this file if you
+# want to avoid merge conflicts when the rules may change over time.
+#
+# If you want to remove one of the standard rules, the best way to do it is
+# to comment out the line with the rule, as this should avoid merge conflicts
+# with other rules better than an approach of deleting the lines.
+
+# Ignore binary executables built by the Savi compiler.
+#
+# In general, binary files should not be checked into git.
+/bin
+
+# Ignore dependencies fetched by the Savi compiler.
+#
+# Comment out this ignore rule if you want to check dependencies into git,
+# to enable development workflows with version locking/reproducible builds.
+# This is not commonly needed for libraries - it is more common in applications.
+/deps
+
+##
+# NOTE: The following rules do not come from `savi-lang/base-standard-library`.
+#
+# Add any custom rules you need below this comment.
+# The area above this comment is reserved for future standard rules.
