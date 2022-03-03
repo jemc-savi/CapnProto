@@ -1,0 +1,29 @@
+# NOTE: This file comes from `savi-lang/base-standard-library`
+#
+# This workflow is responsible for helping other repositories continuously
+# stay up-to-date with changes from the `savi-lang/base-standard-library` repo.
+#
+# If there are new commits on the main branch of that repo which aren't yet
+# on the main branch of this repo, a pull request will be opened.
+#
+# The workflow is triggered daily, and can also be manually triggered.
+
+name: base-standard-library-pull
+
+on:
+  workflow_dispatch: {}  # allow manual trigger
+  schedule:
+    - cron: "0 10 * * *" # daily at 10:00 UTC
+
+jobs:
+  pull-from-base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: savi-lang/action-pull-from-base@v0.1.10
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          source-repo: savi-lang/base-standard-library
+          source-branch: main
+          target-repo: ${{github.repository}}
+          target-branch: main
