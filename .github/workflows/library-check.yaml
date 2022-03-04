@@ -2,12 +2,16 @@
 #
 # This workflow is responsible for running checks on pushed commits.
 #
-# The workflow is triggered on each push to a branch.
+# The workflow is triggered on pull requests and pushes to the main branch.
+# Pull requests are checked on a merge branch, not on the pull request branch.
 
 name: library-check
 
 on:
-  push: {}
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   # Run the `spec` binary for this library.
