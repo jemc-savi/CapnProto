@@ -5,7 +5,7 @@
 #
 # The workflow is triggered on each published release in GitHub Releases.
 
-name: base-standard-library-release-notify
+name: library-release-notify
 
 on:
   release:
