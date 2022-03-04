@@ -1,0 +1,29 @@
+# NOTE: This file comes from `savi-lang/base-standard-library`
+#
+# This workflow is responsible for running checks on pushed commits.
+#
+# The workflow is triggered on each push to a branch.
+
+name: library-check
+
+on:
+  push: {}
+
+jobs:
+  # Run the `spec` binary for this library.
+  spec:
+    if: github.repository != 'savi-lang/base-standard-library' # skip base repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: savi-lang/action-install@v1.0.0
+      - run: savi run spec
+
+  # Check formatting of all files in the repository.
+  format:
+    if: github.repository != 'savi-lang/base-standard-library' # skip base repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: savi-lang/action-install@v1.0.0
+      - run: savi format --check
