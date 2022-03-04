@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: savi-lang/action-install@v1.0.0
+      - run: savi deps update
       - run: savi run spec
 
   # Check formatting of all files in the repository.
