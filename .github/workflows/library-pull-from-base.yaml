@@ -8,7 +8,7 @@
 #
 # The workflow is triggered daily, and can also be manually triggered.
 
-name: base-standard-library-pull
+name: library-pull-from-base
 
 on:
   workflow_dispatch: {}  # allow manual trigger
@@ -16,7 +16,7 @@ on:
     - cron: "0 10 * * *" # daily at 10:00 UTC
 
 jobs:
-  base-standard-library-pull:
+  library-pull-from-base:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
