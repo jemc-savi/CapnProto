@@ -36,3 +36,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: savi-lang/action-install@v1.0.0
       - run: savi format --check
+
+  ##
+  # NOTE: The following jobs do not come from `savi-lang/base-standard-library`.
+  #
+  # Add any custom jobs you need below this comment.
+  # The area above this comment is reserved for future standard jobs.
