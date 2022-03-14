@@ -1,4 +1,4 @@
-Copyright 2018 Joe Eli McIlvain
+Copyright DATE COPYRIGHT_HOLDER
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
