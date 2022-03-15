@@ -21,7 +21,11 @@ jobs:
   # Run the `spec` binary for this library.
   spec:
     if: github.repository != 'savi-lang/base-standard-library' # skip base repo
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v2
       - uses: savi-lang/action-install@v1.0.0
