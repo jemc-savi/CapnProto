@@ -30,4 +30,4 @@ jobs:
             of
             [${{ github.event.repository.full_name }}](${{ github.event.repository.html_url }})
             has been released!\n\n
-            {{ github.event.release.body }}"
+            ${{ github.event.release.body }}"
