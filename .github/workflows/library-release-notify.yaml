@@ -25,8 +25,9 @@ jobs:
           to: notifications
           type: stream
           topic: ${{ github.event.repository.full_name }} releases
-          content: >
+          content: "
             [${{ github.event.release.name }}](${{ github.event.release.html_url }})
             of
             [${{ github.event.repository.full_name }}](${{ github.event.repository.html_url }})
-            has been released!
+            has been released!\n\n
+            {{ github.event.release.body }}"
