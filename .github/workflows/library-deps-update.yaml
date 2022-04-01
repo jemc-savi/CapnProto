@@ -30,3 +30,5 @@ jobs:
           commit-message: Update Savi dependencies.
           title: Update Savi dependencies.
           body: Automated PR to update Savi dependencies.
+          add-paths: |
+            *.savi
