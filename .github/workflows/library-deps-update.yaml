@@ -1,0 +1,32 @@
+# NOTE: This file comes from `savi-lang/base-standard-library`
+#
+# This workflow is responsible for helping a library repository keep
+# its manifest(s) continuously up to date with the latest Savi dependencies.
+#
+# If the manifest(s) are found to be changed by the update, a pull request
+# will be opened with the changes, allowing the maintainer to pull them in.
+#
+# The workflow is triggered daily, and can also be manually triggered.
+
+name: library-deps-update
+
+on:
+  workflow_dispatch: {}  # allow manual trigger
+  schedule:
+    - cron: "0 10 * * *" # daily at 10:00 UTC
+
+jobs:
+  library-deps-update:
+    if: github.repository != 'savi-lang/base-standard-library' # skip base repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: savi-lang/action-install@v1.0.0
+      - run: savi deps update --for spec
+      - uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{secrets.BOT_GITHUB_TOKEN}}
+          branch: update/savi-deps
+          commit-message: Update Savi dependencies.
+          title: Update Savi dependencies.
+          body: Automated PR to update Savi dependencies.
