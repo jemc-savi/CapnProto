@@ -11,7 +11,7 @@
     )
     pointer
 
-  :it "reads numeric values from the data section"
+  :it "reads numeric values from the data region"
     p = @from_segment(b"\
       \x00\x00\x00\x00\x02\x00\x00\x00\
       \x00\x11\x22\x33\x44\x55\x66\x77\
@@ -51,7 +51,7 @@
     assert no_error: p.assert_union!(0x2, 0x3322)
     assert    error: p.assert_union!(0x2, 0x3300)
 
-  :it "can point to a prior numeric section"
+  :it "can point to a prior data region"
     p = @from_segment(b"\
       \x00\x11\x22\x33\x44\x55\x66\x77\
       \x88\x99\xaa\xbb\xcc\xdd\xee\xff\
@@ -82,7 +82,7 @@
     p0 = p.struct(0)
     p1 = p.struct(1)
     p2 = p.struct(2)
-    p3 = p.struct(3) // outside the pointer bounds - empty/invalid pointer
+    p3 = p.struct(3) // outside the pointer region - empty/invalid pointer
 
     assert: p0.u64(0x0) == 0x1111111111111111
     assert: p0.u64(0x8) == 0x2222222222222222
@@ -95,3 +95,21 @@
     assert: p2.u64(0x10) == 0 // outside the data bounds
     assert: p3.u64(0x0) == 0 // an empty/invalid pointer has no data
     assert: p3.u64(0x8) == 0 // an empty/invalid pointer has no data
+
+  :it "can follow byte list pointers to text regions"
+    p = @from_segment(b"\
+      \x00\x00\x00\x00\x00\x00\x03\x00\
+      \x09\x00\x00\x00\x42\x00\x00\x00\
+      \x09\x00\x00\x00\x82\x00\x00\x00\
+      \x0d\x00\x00\x00\x02\x01\x00\x00\
+      Hi, Text\
+      Here's some text\
+      Here's some text with length 32!\
+      Excellent Example of a Text Set!\
+      This text has no pointer, so it won't be seen.\
+    ")
+
+    assert: "\(p.text(0))" == "Hi, Text"
+    assert: "\(p.text(1))" == "Here's some text"
+    assert: "\(p.text(2))" == "Here's some text with length 32!"
+    assert: "\(p.text(3))" == "" // outside the pointer region

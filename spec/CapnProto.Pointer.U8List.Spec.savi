@@ -1,0 +1,32 @@
+:class CapnProto.Pointer.U8List.Spec
+  :is Spec
+  :const describes: "CapnProto.Pointer.U8List"
+
+  :fun from_segment(bytes Bytes, byte_offset USize = 0)
+    segment = CapnProto.Segment.new(bytes.clone)
+    segments = CapnProto.Segments.new([segment])
+    pointer = CapnProto.Pointer.U8List.empty(segments, segment)
+    assert no_error: (
+      pointer = CapnProto.Pointer.U8List.from_segments!(segments, byte_offset)
+    )
+    pointer
+
+  :it "reads text from a byte region"
+    p = @from_segment(b"\
+      \x01\x00\x00\x00\x02\x01\x00\x00\
+      Here's some text with length 32!\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ")
+
+    assert: "\(CapnProto.Text.new(p))" == "Here's some text with length 32!"
+
+  :it "can point to a prior byte region"
+    p = @from_segment(b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      Here's some text\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xf1\xff\xff\xff\x82\x00\x00\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ", 0x20)
+
+    assert: "\(CapnProto.Text.new(p))" == "Here's some text"

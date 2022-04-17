@@ -1,0 +1,17 @@
+:struct CapnProto.Text
+  :let _p CapnProto.Pointer.U8List
+  :new (@_p)
+
+  :fun non _parse!(segments, segment, current_offset, value)
+    @new(
+      CapnProto.Pointer.U8List._parse!(segments, segment, current_offset, value)
+    )
+
+  :fun size: @_p._byte_count.usize
+
+  :is IntoString
+  :fun into_string_space: @size
+  :fun into_string(out String'iso) String'iso
+    // TODO: Do a more efficient copy here.
+    @_p.each_byte -> (byte | out.push_byte(byte))
+    --out

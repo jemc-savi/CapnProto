@@ -103,6 +103,16 @@
   :fun check_union(n, value): @u16(n) == value
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref text(n): try (@_text!(n) | @_empty_text)
+  :fun ref _empty_text
+    CapnProto.Text.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+  :fun ref _text!(n)
+    byte_offset = @_ptr_byte_offset!(n)
+    CapnProto.Text._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
   :fun ref _empty_struct
     CapnProto.Pointer.Struct.empty(@_segments, @_segment)
