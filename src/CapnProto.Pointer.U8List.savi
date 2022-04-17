@@ -48,9 +48,12 @@
     lower_32 = value.u32.bit_xor(1)
 
     // The 3 least significant bits of the upper half (C) encode the size class.
-    // Raise an error if this is not coded as a byte pointer (class two).
+    // Raise an error if this is not coded as a byte pointer.
     upper_32 = value.bit_shr(32).u32
-    error! unless (upper_32.bit_and(0b111) == 2)
+    error! unless (
+      upper_32.u8.bit_and(0b111)
+      == CapnProto.Meta.ElementSize.Byte.u8
+    )
 
     // The bottom 32 bits of the value (excluding the 2 least significant bits
     // (which we have already cleared to zero using the xor operation above),

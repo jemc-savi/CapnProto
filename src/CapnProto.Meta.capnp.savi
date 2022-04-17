@@ -1,0 +1,406 @@
+:struct CapnProto.Meta.Node
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun id: @_p.u64(0x0)
+
+  :fun ref displayName: @_p.text(0)
+
+  :fun displayNamePrefixLength: @_p.u32(0x8)
+
+  :fun scopeId: @_p.u64(0x10)
+
+  :fun ref nestedNodes: CapnProto.List(CapnProto.Meta.Node.NestedNode).new(@_p.list(1))
+
+  :fun ref annotations: CapnProto.List(CapnProto.Meta.Annotation).new(@_p.list(2))
+
+  :fun is_file: @_p.check_union(0xC, 0)
+  :fun ref file!: @_p.assert_union!(0xC, 0), None
+
+  :fun is_struct: @_p.check_union(0xC, 1)
+  :fun ref struct!: @_p.assert_union!(0xC, 1), CapnProto.Meta.Node.AS_struct.from_pointer(@_p)
+
+  :fun is_enum: @_p.check_union(0xC, 2)
+  :fun ref enum!: @_p.assert_union!(0xC, 2), CapnProto.Meta.Node.AS_enum.from_pointer(@_p)
+
+  :fun is_interface: @_p.check_union(0xC, 3)
+  :fun ref interface!: @_p.assert_union!(0xC, 3), CapnProto.Meta.Node.AS_interface.from_pointer(@_p)
+
+  :fun is_const: @_p.check_union(0xC, 4)
+  :fun ref const!: @_p.assert_union!(0xC, 4), CapnProto.Meta.Node.AS_const.from_pointer(@_p)
+
+  :fun is_annotation: @_p.check_union(0xC, 5)
+  :fun ref annotation!: @_p.assert_union!(0xC, 5), CapnProto.Meta.Node.AS_annotation.from_pointer(@_p)
+
+  :fun ref parameters: CapnProto.List(CapnProto.Meta.Node.Parameter).new(@_p.list(5))
+
+  :fun isGeneric: @_p.bool(0x24, 0b00000001)
+
+:struct CapnProto.Meta.Node.AS_struct
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun dataWordCount: @_p.u16(0xE)
+
+  :fun pointerCount: @_p.u16(0x18)
+
+  :fun preferredListEncoding: CapnProto.Meta.ElementSize._new(@_p.u16(0x1A))
+
+  :fun isGroup: @_p.bool(0x1C, 0b00000001)
+
+  :fun discriminantCount: @_p.u16(0x1E)
+
+  :fun discriminantOffset: @_p.u32(0x20)
+
+  :fun ref fields: CapnProto.List(CapnProto.Meta.Field).new(@_p.list(3))
+
+:struct CapnProto.Meta.Node.AS_enum
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref enumerants: CapnProto.List(CapnProto.Meta.Enumerant).new(@_p.list(3))
+
+:struct CapnProto.Meta.Node.AS_interface
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref methods: CapnProto.List(CapnProto.Meta.Method).new(@_p.list(3))
+
+  :fun ref superclasses: CapnProto.List(CapnProto.Meta.Superclass).new(@_p.list(4))
+
+:struct CapnProto.Meta.Node.AS_const
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref type: CapnProto.Meta.Type.from_pointer(@_p.struct(3))
+
+  :fun ref value: CapnProto.Meta.Value.from_pointer(@_p.struct(4))
+
+:struct CapnProto.Meta.Node.AS_annotation
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref type: CapnProto.Meta.Type.from_pointer(@_p.struct(3))
+
+  :fun targetsFile: @_p.bool(0xE, 0b00000001)
+
+  :fun targetsConst: @_p.bool(0xE, 0b00000010)
+
+  :fun targetsEnum: @_p.bool(0xE, 0b00000100)
+
+  :fun targetsEnumerant: @_p.bool(0xE, 0b00001000)
+
+  :fun targetsStruct: @_p.bool(0xE, 0b00010000)
+
+  :fun targetsField: @_p.bool(0xE, 0b00100000)
+
+  :fun targetsUnion: @_p.bool(0xE, 0b01000000)
+
+  :fun targetsGroup: @_p.bool(0xE, 0b10000000)
+
+  :fun targetsInterface: @_p.bool(0xF, 0b00000001)
+
+  :fun targetsMethod: @_p.bool(0xF, 0b00000010)
+
+  :fun targetsParam: @_p.bool(0xF, 0b00000100)
+
+  :fun targetsAnnotation: @_p.bool(0xF, 0b00001000)
+
+:struct CapnProto.Meta.Node.Parameter
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: methods
+
+:struct CapnProto.Meta.Node.NestedNode
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref name: @_p.text(0)
+
+  :fun id: @_p.u64(0x0)
+
+:struct CapnProto.Meta.Field
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref name: @_p.text(0)
+
+  :fun codeOrder: @_p.u16(0x0)
+
+  :fun ref annotations: CapnProto.List(CapnProto.Meta.Annotation).new(@_p.list(1))
+
+  :fun discriminantValue: @_p.u16(0x2).bit_xor(65535)
+
+  :fun is_slot: @_p.check_union(0x8, 0)
+  :fun ref slot!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.from_pointer(@_p)
+
+  :fun is_group: @_p.check_union(0x8, 1)
+  :fun ref group!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Field.AS_group.from_pointer(@_p)
+
+  :fun ref ordinal: CapnProto.Meta.Field.AS_ordinal.from_pointer(@_p)
+
+:struct CapnProto.Meta.Field.AS_slot
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun offset: @_p.u32(0x4)
+
+  :fun ref type: CapnProto.Meta.Type.from_pointer(@_p.struct(2))
+
+  :fun ref defaultValue: CapnProto.Meta.Value.from_pointer(@_p.struct(3))
+
+  :fun hadExplicitDefault: @_p.bool(0x10, 0b00000001)
+
+:struct CapnProto.Meta.Field.AS_group
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun typeId: @_p.u64(0x10)
+
+:struct CapnProto.Meta.Field.AS_ordinal
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun is_implicit: @_p.check_union(0xA, 0)
+  :fun ref implicit!: @_p.assert_union!(0xA, 0), None
+
+  :fun is_explicit: @_p.check_union(0xA, 1)
+  :fun ref explicit!: @_p.assert_union!(0xA, 1), @_p.u16(0xC)
+
+:struct CapnProto.Meta.Enumerant
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref name: @_p.text(0)
+
+  :fun codeOrder: @_p.u16(0x0)
+
+  :fun ref annotations: CapnProto.List(CapnProto.Meta.Annotation).new(@_p.list(1))
+
+:struct CapnProto.Meta.Superclass
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: methods
+
+:struct CapnProto.Meta.Method
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: methods
+
+:struct CapnProto.Meta.Type
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun is_void: @_p.check_union(0x0, 0)
+  :fun ref void!: @_p.assert_union!(0x0, 0), None
+
+  :fun is_bool: @_p.check_union(0x0, 1)
+  :fun ref bool!: @_p.assert_union!(0x0, 1), None
+
+  :fun is_int8: @_p.check_union(0x0, 2)
+  :fun ref int8!: @_p.assert_union!(0x0, 2), None
+
+  :fun is_int16: @_p.check_union(0x0, 3)
+  :fun ref int16!: @_p.assert_union!(0x0, 3), None
+
+  :fun is_int32: @_p.check_union(0x0, 4)
+  :fun ref int32!: @_p.assert_union!(0x0, 4), None
+
+  :fun is_int64: @_p.check_union(0x0, 5)
+  :fun ref int64!: @_p.assert_union!(0x0, 5), None
+
+  :fun is_uint8: @_p.check_union(0x0, 6)
+  :fun ref uint8!: @_p.assert_union!(0x0, 6), None
+
+  :fun is_uint16: @_p.check_union(0x0, 7)
+  :fun ref uint16!: @_p.assert_union!(0x0, 7), None
+
+  :fun is_uint32: @_p.check_union(0x0, 8)
+  :fun ref uint32!: @_p.assert_union!(0x0, 8), None
+
+  :fun is_uint64: @_p.check_union(0x0, 9)
+  :fun ref uint64!: @_p.assert_union!(0x0, 9), None
+
+  :fun is_float32: @_p.check_union(0x0, 10)
+  :fun ref float32!: @_p.assert_union!(0x0, 10), None
+
+  :fun is_float64: @_p.check_union(0x0, 11)
+  :fun ref float64!: @_p.assert_union!(0x0, 11), None
+
+  :fun is_text: @_p.check_union(0x0, 12)
+  :fun ref text!: @_p.assert_union!(0x0, 12), None
+
+  :fun is_data: @_p.check_union(0x0, 13)
+  :fun ref data!: @_p.assert_union!(0x0, 13), None
+
+  :fun is_list: @_p.check_union(0x0, 14)
+  :fun ref list!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.from_pointer(@_p)
+
+  :fun is_enum: @_p.check_union(0x0, 15)
+  :fun ref enum!: @_p.assert_union!(0x0, 15), CapnProto.Meta.Type.AS_enum.from_pointer(@_p)
+
+  :fun is_struct: @_p.check_union(0x0, 16)
+  :fun ref struct!: @_p.assert_union!(0x0, 16), CapnProto.Meta.Type.AS_struct.from_pointer(@_p)
+
+  :fun is_interface: @_p.check_union(0x0, 17)
+  :fun ref interface!: @_p.assert_union!(0x0, 17), CapnProto.Meta.Type.AS_interface.from_pointer(@_p)
+
+  :fun is_anyPointer: @_p.check_union(0x0, 18)
+  :fun ref anyPointer!: @_p.assert_union!(0x0, 18), CapnProto.Meta.Type.AS_anyPointer.from_pointer(@_p)
+
+:struct CapnProto.Meta.Type.AS_list
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun ref elementType: CapnProto.Meta.Type.from_pointer(@_p.struct(0))
+
+:struct CapnProto.Meta.Type.AS_enum
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun typeId: @_p.u64(0x8)
+
+  :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
+
+:struct CapnProto.Meta.Type.AS_struct
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun typeId: @_p.u64(0x8)
+
+  :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
+
+:struct CapnProto.Meta.Type.AS_interface
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun typeId: @_p.u64(0x8)
+
+  :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
+
+:struct CapnProto.Meta.Type.AS_anyPointer
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: methods
+
+:struct CapnProto.Meta.Brand
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: methods
+
+  :fun ref scopes: CapnProto.List(CapnProto.Meta.Brand.Scope).new(@_p.list(0))
+
+:struct CapnProto.Meta.Brand.Scope
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun scopeId: @_p.u64(0x0)
+
+  :fun is_bind: @_p.check_union(0x8, 0)
+  :fun ref bind!: @_p.assert_union!(0x8, 0), CapnProto.List(CapnProto.Meta.Brand.Binding).new(@_p.list(0))
+
+  :fun is_inherit: @_p.check_union(0x8, 1)
+  :fun ref inherit!: @_p.assert_union!(0x8, 1), None
+
+:struct CapnProto.Meta.Brand.Binding
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun scopeId: @_p.u64(0x0)
+
+  :fun is_unbound: @_p.check_union(0x0, 0)
+  :fun ref unbound!: @_p.assert_union!(0x0, 0), None
+
+  :fun is_type: @_p.check_union(0x0, 1)
+  :fun ref type!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.from_pointer(@_p.struct(0))
+
+:struct CapnProto.Meta.Value
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: other methods
+
+  :fun is_void: @_p.check_union(0x0, 0)
+  :fun ref void!: @_p.assert_union!(0x0, 0), None
+
+  :fun is_bool: @_p.check_union(0x0, 1)
+  :fun ref bool!: @_p.assert_union!(0x0, 1), @_p.bool(0x2, 0b00000001)
+
+  :fun is_int8: @_p.check_union(0x0, 2)
+  :fun ref int8!: @_p.assert_union!(0x0, 2), @_p.i8(0x2)
+
+  :fun is_int16: @_p.check_union(0x0, 3)
+  :fun ref int16!: @_p.assert_union!(0x0, 3), @_p.i16(0x2)
+
+  :fun is_int32: @_p.check_union(0x0, 4)
+  :fun ref int32!: @_p.assert_union!(0x0, 4), @_p.i32(0x4)
+
+  :fun is_int64: @_p.check_union(0x0, 5)
+  :fun ref int64!: @_p.assert_union!(0x0, 5), @_p.i64(0x8)
+
+  :fun is_uint8: @_p.check_union(0x0, 6)
+  :fun ref uint8!: @_p.assert_union!(0x0, 6), @_p.u8(0x2)
+
+  :fun is_uint16: @_p.check_union(0x0, 7)
+  :fun ref uint16!: @_p.assert_union!(0x0, 7), @_p.u16(0x2)
+
+  :fun is_uint32: @_p.check_union(0x0, 8)
+  :fun ref uint32!: @_p.assert_union!(0x0, 8), @_p.u32(0x4)
+
+  :fun is_uint64: @_p.check_union(0x0, 9)
+  :fun ref uint64!: @_p.assert_union!(0x0, 9), @_p.u64(0x8)
+
+  :fun is_float32: @_p.check_union(0x0, 10)
+  :fun ref float32!: @_p.assert_union!(0x0, 10), @_p.f32(0x4)
+
+  :fun is_float64: @_p.check_union(0x0, 11)
+  :fun ref float64!: @_p.assert_union!(0x0, 11), @_p.f64(0x8)
+
+  :fun is_text: @_p.check_union(0x0, 12)
+  :fun ref text!: @_p.assert_union!(0x0, 12), @_p.text(0)
+
+:struct CapnProto.Meta.Annotation
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun id: @_p.u64(0x0)
+
+  :fun ref value: CapnProto.Meta.Value.from_pointer(@_p.struct(0))
+
+  :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(1))
+
+:enum CapnProto.Meta.ElementSize
+  :bit_width 16
+
+  :member Empty 0
+  :member Bit 1
+  :member Byte 2
+  :member TwoBytes 3
+  :member FourBytes 4
+  :member EightBytes 5
+  :member Pointer 6
+  :member InlineComposite 7
+
+  :fun non _new(u16 U16)
+    try (
+      @from_u64!(u16.u64)
+    |
+      CapnProto.Meta.ElementSize.Empty
+    )
+
+:struct CapnProto.Meta.CodeGeneratorRequest
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p) // TODO: methods
+
+  :fun ref nodes: CapnProto.List(CapnProto.Meta.Node).new(@_p.list(0))
+
+:struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun id: @_p.u64(0x0)
+
+  :fun ref filename: @_p.text(0)
+
+  :fun ref imports: CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import).new(@_p.list(1))
+
+:struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import
+  :let _p CapnProto.Pointer.Struct
+  :new from_pointer(@_p)
+
+  :fun id: @_p.u64(0x0)
+
+  :fun ref name: @_p.text(0)

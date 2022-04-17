@@ -121,3 +121,13 @@
     CapnProto.Pointer.Struct._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref list(n): try (@_list!(n) | @_empty_list)
+  :fun ref _empty_list
+    CapnProto.Pointer.StructList.empty(@_segments, @_segment)
+  :fun ref _list!(n):
+    byte_offset = @_ptr_byte_offset!(n)
+    CapnProto.Pointer.StructList._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
