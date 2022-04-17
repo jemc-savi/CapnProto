@@ -1,0 +1,12 @@
+:struct CapnProto.Segment
+  :let _bytes Bytes'ref
+  :new (@_bytes)
+
+  :fun _u8!(offset U32): @_bytes[offset.usize]!
+  :fun _u16!(offset U32): @_bytes.read_native_u16!(offset.usize).le_to_native
+  :fun _u32!(offset U32): @_bytes.read_native_u32!(offset.usize).le_to_native
+  :fun _u64!(offset U32): @_bytes.read_native_u64!(offset.usize).le_to_native
+
+:struct CapnProto.Segments
+  :let _list Array(CapnProto.Segment)'ref
+  :new (@_list)

@@ -1,0 +1,97 @@
+:class CapnProto.Pointer.Struct.Spec
+  :is Spec
+  :const describes: "CapnProto.Pointer.Struct"
+
+  :fun from_segment(bytes Bytes, byte_offset USize = 0)
+    segment = CapnProto.Segment.new(bytes.clone)
+    segments = CapnProto.Segments.new([segment])
+    pointer = CapnProto.Pointer.Struct.empty(segments, segment)
+    assert no_error: (
+      pointer = CapnProto.Pointer.Struct.from_segments!(segments, byte_offset)
+    )
+    pointer
+
+  :it "reads numeric values from the data section"
+    p = @from_segment(b"\
+      \x00\x00\x00\x00\x02\x00\x00\x00\
+      \x00\x11\x22\x33\x44\x55\x66\x77\
+      \x88\x99\xaa\xbb\xcc\xdd\xee\xff\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ")
+
+    assert: p.u64(0x0) == 0x7766554433221100
+    assert: p.u64(0x8) == 0xffeeddccbbaa9988
+    assert: p.u64(0x10) == 0 // outside the data bounds
+    assert: p.u32(0x0) == 0x33221100
+    assert: p.u32(0x4) == 0x77665544
+    assert: p.u32(0x8) == 0xbbaa9988
+    assert: p.u32(0xc) == 0xffeeddcc
+    assert: p.u32(0x10) == 0 // outside the data bounds
+    assert: p.u16(0x0) == 0x1100
+    assert: p.u16(0x2) == 0x3322
+    assert: p.u16(0xc) == 0xddcc
+    assert: p.u16(0xe) == 0xffee
+    assert: p.u16(0x10) == 0 // outside the data bounds
+    assert: p.u8(0x0) == 0x00
+    assert: p.u8(0x1) == 0x11
+    assert: p.u8(0xe) == 0xee
+    assert: p.u8(0xf) == 0xff
+    assert: p.u8(0x10) == 0 // outside the data bounds
+    assert: p.bool(0x0, 0b1).is_false
+    assert: p.bool(0x1, 0b1).is_true
+    assert: p.bool(0xe, 0b1).is_false
+    assert: p.bool(0xf, 0b1).is_true
+    assert: p.bool(0x0, 0b10).is_false
+    assert: p.bool(0x1, 0b10).is_false
+    assert: p.bool(0xe, 0b10).is_true
+    assert: p.bool(0xf, 0b10).is_true
+    assert: p.bool(0x10, 0b1).is_false // outside the data bounds
+    assert: p.check_union(0x2, 0x3322).is_true
+    assert: p.check_union(0x2, 0x3300).is_false
+    assert no_error: p.assert_union!(0x2, 0x3322)
+    assert    error: p.assert_union!(0x2, 0x3300)
+
+  :it "can point to a prior numeric section"
+    p = @from_segment(b"\
+      \x00\x11\x22\x33\x44\x55\x66\x77\
+      \x88\x99\xaa\xbb\xcc\xdd\xee\xff\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xf0\xff\xff\xff\x02\x00\x00\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ", 0x18)
+
+    assert: p.u64(0x0) == 0x7766554433221100
+    assert: p.u64(0x8) == 0xffeeddccbbaa9988
+    assert: p.u64(0x10) == 0 // outside the data bounds
+
+  :it "can follow struct pointers to other structs"
+    p = @from_segment(b"\
+      \x00\x00\x00\x00\x00\x00\x03\x00\
+      \x08\x00\x00\x00\x02\x00\x00\x00\
+      \x0c\x00\x00\x00\x02\x00\x00\x00\
+      \x10\x00\x00\x00\x02\x00\x00\x00\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \x55\x55\x55\x55\x55\x55\x55\x55\
+      \x66\x66\x66\x66\x66\x66\x66\x66\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ")
+
+    p0 = p.struct(0)
+    p1 = p.struct(1)
+    p2 = p.struct(2)
+    p3 = p.struct(3) // outside the pointer bounds - empty/invalid pointer
+
+    assert: p0.u64(0x0) == 0x1111111111111111
+    assert: p0.u64(0x8) == 0x2222222222222222
+    assert: p0.u64(0x10) == 0 // outside the data bounds
+    assert: p1.u64(0x0) == 0x3333333333333333
+    assert: p1.u64(0x8) == 0x4444444444444444
+    assert: p1.u64(0x10) == 0 // outside the data bounds
+    assert: p2.u64(0x0) == 0x5555555555555555
+    assert: p2.u64(0x8) == 0x6666666666666666
+    assert: p2.u64(0x10) == 0 // outside the data bounds
+    assert: p3.u64(0x0) == 0 // an empty/invalid pointer has no data
+    assert: p3.u64(0x8) == 0 // an empty/invalid pointer has no data

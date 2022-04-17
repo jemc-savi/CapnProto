@@ -1,0 +1,113 @@
+:struct CapnProto.Pointer.Struct
+  :let _segments CapnProto.Segments
+  :let _segment CapnProto.Segment
+  :let _byte_offset U32
+  :let _data_word_count U16
+  :let _pointers_count U16
+  :new _new(
+    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointers_count
+  )
+
+  :new empty(@_segments, @_segment)
+    @_byte_offset = 0
+    @_data_word_count = 0
+    @_pointers_count = 0
+
+  :fun non from_segments!(
+    segments CapnProto.Segments
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    @_parse!(segments, segment, start_offset.u32, value)
+
+  :fun non _parse!(segments, segment, current_offset U32, value U64)
+    // lsb                      struct pointer                       msb
+    // +-+-----------------------------+---------------+---------------+
+    // |A|             B               |       C       |       D       |
+    // +-+-----------------------------+---------------+---------------+
+    //
+    // A (2 bits) = 0, to indicate that this is a struct pointer.
+    // B (30 bits) = Offset, in words, from the end of the pointer to the
+    //     start of the struct's data section.  Signed.
+    // C (16 bits) = Size of the struct's data section, in words.
+    // D (16 bits) = Size of the struct's pointer section, in words.
+
+    // The 2 least significant bits (A) encode the pointer kind.
+    // Raise an error if this is not coded as a struct pointer (kind zero).
+    // TODO: Handle far pointers
+    error! unless (value.u8.bit_and(0b11) == 0)
+
+    // The bottom 32 bits of the value (excluding the 2 least significant bits)
+    // encode a 30-bit signed integer (B) indicating the offset in 8-byte words
+    // to the pointed-to location within the segment, from the current offset.
+    //
+    // Given that we know the lowest two bits are zero, we can treat this
+    // as a 32-bit signed integer indicating half of the actual offset,
+    // because multiplying by 4 is the same as bit shifting rightward by 2,
+    // and 4 is half of the factor of 8 we need to mutiply by to translate
+    // the offset from units of 8-byte words to units of bytes.
+    //
+    // We first truncate the U64 to a U32, then as a separate step,
+    // we reinterpret the unsigned U32 as a signed I32.
+    // When we add the signed offset half to the current offset, any overflow
+    // or underflow is treated as a protocol error (an invalid pointer).
+    offset_half = value.u32.i32
+    byte_offset = (current_offset.i32 +! 8 +! offset_half +! offset_half).u32!
+
+    // The two upper U16 parts of the value (C and D) indicate the size
+    // of the struct's data section and its pointers section, in 8-byte words.
+    // These allow us to calculate the pointers section offset and end offset.
+    data_word_count = value.bit_shr(32).u16
+    pointers_count = value.bit_shr(48).u16
+
+    @_new(segments, segment, byte_offset, data_word_count, pointers_count)
+
+  :fun _ptr_byte_offset!(n U16)
+    error! unless (@_pointers_count > n)
+    @_byte_offset +! (@_data_word_count +! n).u32 * 8
+
+  :fun _u8!(n U32)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._u8!(@_byte_offset +! n)
+
+  :fun _u16!(n U32)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._u16!(@_byte_offset +! n)
+
+  :fun _u32!(n U32)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._u32!(@_byte_offset +! n)
+
+  :fun _u64!(n U32)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._u64!(@_byte_offset +! n)
+
+  :fun u8(n) U8: try (@_u8!(n) | 0)
+  :fun u16(n) U16: try (@_u16!(n) | 0)
+  :fun u32(n) U32: try (@_u32!(n) | 0)
+  :fun u64(n) U64: try (@_u64!(n) | 0)
+
+  :fun i8(n): @u8(n).i8
+  :fun i16(n): @u16(n).i16
+  :fun i32(n): @u32(n).i32
+  :fun i64(n): @u64(n).i64
+
+  :fun f32(n): @u32(n).f32
+  :fun f64(n): @u64(n).f64
+
+  :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
+
+  :fun assert_union!(n, value): error! if (@u16(n) != value)
+  :fun check_union(n, value): @u16(n) == value
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
+  :fun ref _empty_struct
+    CapnProto.Pointer.Struct.empty(@_segments, @_segment)
+  :fun ref _struct!(n):
+    byte_offset = @_ptr_byte_offset!(n)
+    CapnProto.Pointer.Struct._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
