@@ -1,0 +1,9 @@
+:trait _FromStructPointer
+  :new from_pointer(pointer CapnProto.Pointer.Struct)
+
+:struct CapnProto.List(A _FromStructPointer)
+  :let _p CapnProto.Pointer.StructList
+  :new (@_p)
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref "[]"(n): A.from_pointer(@_p[n])
