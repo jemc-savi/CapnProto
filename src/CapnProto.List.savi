@@ -7,3 +7,8 @@
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref "[]"(n): A.from_pointer(@_p[n])
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref each
+    :yields A
+    @_p.each -> (p | yield A.from_pointer(p))
