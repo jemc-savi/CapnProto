@@ -1,0 +1,84 @@
+:struct CapnProto.Pointer.Far
+  :let _segments CapnProto.Segments
+  :let _segment CapnProto.Segment
+  :let _byte_offset U32
+  :let _override_byte_offset U32
+  :let _pointer_value U64
+  :new _new(
+    @_segments
+    @_segment
+    @_byte_offset
+    @_override_byte_offset
+    @_pointer_value
+  )
+
+  :fun non _parse!(
+    segments CapnProto.Segments
+    current_segment CapnProto.Segment
+    current_offset U32
+    value U64
+  )
+    // lsb                        far pointer                        msb
+    // +-+-+---------------------------+-------------------------------+
+    // |A|B|            C              |               D               |
+    // +-+-+---------------------------+-------------------------------+
+
+    // A (2 bits) = 2, to indicate that this is a far pointer.
+    // B (1 bit) = 0 if the landing pad is one word, 1 if it is two words.
+    //     See explanation below.
+    // C (29 bits) = Offset, in words, from the start of the target segment
+    //     to the location of the far-pointer landing-pad within that
+    //     segment.  Unsigned.
+    // D (32 bits) = ID of the target segment.  (Segments are numbered
+    //     sequentially starting from zero.)
+
+    // The 2 least significant bits (A) encode the pointer kind.
+    // Raise an error if this is not coded as a list pointer (kind two).
+    // The next bit (B) is set only in the rare case of a "double far" pointer.
+    error! unless (value.u8.bit_and(0b11) == 2)
+    is_double_far = (value.u8.bit_and(0b100) == 0b100)
+
+    // The bottom 32 bits of the value (excluding the 3 least significant bits
+    // mentioned above), encode a 29-bit unsigned integer (C) indicating the
+    // absolute offset in 8-byte words of a location within the target segment.
+    //
+    // Using a bit mask to zero out the bottom three bits, we can treat the
+    // 29-bit integer in units of 8-byte words as if it were a 32-bit integer
+    // in units of bytes, because the 3 zero bits represent a factor of 8.
+    byte_offset = value.u32.bit_and(0xFFFFFFF8)
+
+    // The upper 32-bits of the value (D), represent the segment ID, as an
+    // index into the list of segments to point to the target segment.
+    segment_id = value.bit_shr(32).u32
+    segment = segments._list[segment_id.usize]!
+
+    // The pointer value pointed to by the far pointer is retrieved from that
+    // particular byte offset within the target segment.
+    pointer_value = segment._u64!(byte_offset.u32)
+
+    // In the case of a double-far pointer, the pointer value is another far
+    // pointer, pointing to the start of the content in another segment (rather
+    // than pointing to a "landing pad" pointer as far pointers usually do).
+    // We treat this as an override on the byte offset, which we fill here.
+    override_byte_offset U32 = -1
+    if is_double_far (
+      // The landing pad of a double-far pointer is a normal far pointer.
+      // We must validate it as such, then get from it the override byte offset.
+      error! unless (pointer_value.u8.bit_and(0b111) == 0b010)
+      override_byte_offset = pointer_value.u32.bit_and(0xFFFFFFF8)
+
+      // The second half of the landing pad of a double-far pointer is a
+      // tag pointer value which is like a normal pointer to data,
+      // except that its byte offset is always zero and is thus expected
+      // to be overridden by the override byte offset gathered above.
+      tag_pointer_value = segment._u64!(byte_offset +! 8)
+
+      // We follow the second far pointer to the second target segment.
+      segment_id = pointer_value.bit_shr(32).u32
+      segment = segments._list[segment_id.usize]!
+
+      // And we treat the tag pointer value as the one that describes the data.
+      pointer_value = tag_pointer_value
+    )
+
+    @_new(segments, segment, byte_offset, override_byte_offset, pointer_value)

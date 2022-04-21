@@ -19,6 +19,16 @@
     @_parse!(segments, segment, start_offset.u32, value)
 
   :fun non _parse!(segments, segment, current_offset U32, value U64)
+    // Handle the case that this may be a far pointer, pointing to the pointer.
+    override_byte_offset U32 = -1
+    try (
+      far = CapnProto.Pointer.Far._parse!(segments, segment, current_offset, value)
+      segment = far._segment
+      current_offset = far._byte_offset
+      override_byte_offset = far._override_byte_offset
+      value = far._pointer_value
+    )
+
     // lsb                       list pointer                        msb
     // +-+-----------------------------+--+----------------------------+
     // |A|             B               |C |             D              |
@@ -43,7 +53,6 @@
 
     // The 2 least significant bits (A) encode the pointer kind.
     // Raise an error if this is not coded as a list pointer (kind one).
-    // TODO: Handle far pointers
     error! unless (value.u8.bit_and(0b11) == 1)
     lower_32 = value.u32.bit_xor(1)
 
@@ -72,6 +81,7 @@
     // or underflow is treated as a protocol error (an invalid pointer).
     offset_half = lower_32.i32
     byte_offset = (current_offset.i32 +! 8 +! offset_half +! offset_half).u32!
+    if (override_byte_offset != -1) (byte_offset = override_byte_offset)
 
     // The upper 32-bits of the value, excluding the least significant 3 bits,
     // (D) indicate the number of elements in the list, which is the same as

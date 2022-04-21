@@ -11,6 +11,18 @@
     )
     pointer
 
+  :fun from_segments(chunks Array(Bytes), byte_offset USize = 0)
+    segments = CapnProto.Segments.new([])
+    chunks.each -> (chunk |
+      segments._list.push(CapnProto.Segment.new(chunk.clone))
+    )
+    segment = try (segments._list[0]! | CapnProto.Segment.new(b"".clone))
+    pointer = CapnProto.Pointer.Struct.empty(segments, segment)
+    assert no_error: (
+      pointer = CapnProto.Pointer.Struct.from_segments!(segments, byte_offset)
+    )
+    pointer
+
   :it "reads numeric values from the data region"
     p = @from_segment(b"\
       \x00\x00\x00\x00\x02\x00\x00\x00\
@@ -113,3 +125,48 @@
     assert: "\(p.text(1))" == "Here is a text!"
     assert: "\(p.text(2))" == "Here's some text with length 31"
     assert: "\(p.text(3))" == "" // outside the pointer region
+
+  :it "can point to a data region via a far pointer"
+    p = @from_segments([b"\
+      \x12\x00\x00\x00\x02\x00\x00\x00\
+    ", b"\
+      There's nothing meaningful in this middle segment.
+      It's just a placeholder in between the other two.
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x00\x00\x00\x00\x02\x00\x00\x00\
+      \x00\x11\x22\x33\x44\x55\x66\x77\
+      \x88\x99\xaa\xbb\xcc\xdd\xee\xff\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    "])
+
+    assert: p.u64(0x0) == 0x7766554433221100
+    assert: p.u64(0x8) == 0xffeeddccbbaa9988
+    assert: p.u64(0x10) == 0 // outside the data region
+
+  :it "can point to a data region via a double-far pointer"
+    p = @from_segments([b"\
+      \x26\x00\x00\x00\x01\x00\x00\x00\
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x12\x00\x00\x00\x02\x00\x00\x00\
+      \x00\x00\x00\x00\x02\x00\x00\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x00\x11\x22\x33\x44\x55\x66\x77\
+      \x88\x99\xaa\xbb\xcc\xdd\xee\xff\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    "])
+
+    assert: p.u64(0x0) == 0x7766554433221100
+    assert: p.u64(0x8) == 0xffeeddccbbaa9988
+    assert: p.u64(0x10) == 0 // outside the data region
