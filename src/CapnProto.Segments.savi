@@ -1,0 +1,121 @@
+:struct CapnProto.Segments
+  :let _list Array(CapnProto.Segment)'ref
+  :new (@_list)
+
+:class CapnProto.Segments.Reader
+  :var _header: b""
+  :var _segments: CapnProto.Segments.new([]) // TODO: iso
+
+  :fun ref take_segments: @_segments <<= CapnProto.Segments.new([])
+
+  :: The maximum total size that the segment buffers are allowed to allocate.
+  ::
+  :: This security limit should be configured to a size that is large enough
+  :: for any legitimate application messages, but small enough so as to not
+  :: allow attackers to cause out-of-memory errors by announcing large sizes.
+  :const max_total_size USize: 0x4000000 // 64 MiB
+
+  :: Based on the captured header, determine the expected segment count.
+  :: Returns zero if no header has been captured yet.
+  :fun _expected_segment_count USize
+    try (@_header.read_native_u32!(0).usize + 1 | 0)
+
+  :: Based on the captured header, determine the expected size for a segment.
+  :: Returns zero if no header has been captured yet.
+  :fun _expected_segment_size(segment_id USize) USize
+    try (
+      @_header.read_native_u32!((segment_id + 1) * 4)
+        .usize
+        .saturating_multiply(8)
+    |
+      0
+    )
+
+  :: Based on the captured header, determine the expected size for all segments.
+  :: Returns zero if no header has been captured yet.
+  :fun _expected_total_size USize
+    total USize = 0
+    @_expected_segment_count.times -> (segment_id |
+      total += @_expected_segment_size(segment_id)
+    )
+    total
+
+  :: Read segments from the given byte stream.
+  ::
+  :: Returns True if all of the segments have been fully populated into memory.
+  :: Returns False if still waiting for more bytes to arrive in the stream.
+  ::
+  :: Raises an error if continuing to read the segments into memory would
+  :: exceed the security limit imposed by the `max_total_size` constant.
+  :fun ref read!(stream ByteStream.Reader) Bool
+    // First, if we haven't read the header yet, read it now.
+    if @_header.is_empty (
+      if !@_read_header!(stream) (return False)
+    )
+
+    // Then read any available segments from the stream.
+    @_read_all_segments(stream)
+
+  :: Read the "segment table" header portion preceding and framing the segments.
+  ::
+  :: Returns False if there aren't enough bytes to read the complete header yet.
+  :: Raises an error if the header causes a max size violation.
+  :fun ref _read_header!(stream ByteStream.Reader) Bool
+    // Determine the number of segments that will be in the segment table.
+    // Return False if there aren't enough bytes yet to read the first U32.
+    segment_count = try (
+      stream.peek_native_u32!.le_to_native +! 1
+    |
+      return False
+    )
+
+    // Determine the number of bytes to expect in the segment table header.
+    // Raise an error if even the header alone will exceed our max size.
+    header_has_padding = segment_count.is_even
+    header_size =
+      (segment_count.usize +! 1) *! 4 +! if header_has_padding (4 | 0)
+    error! if (header_size > @max_total_size)
+
+    // Extract the header bytes into our field for storage later.
+    // Return False if the complete header bytes aren't available yet.
+    @_header = try (
+      stream.advance!(header_size).extract_token
+    |
+      return False
+    )
+
+    // Now that we have the header, we can calculate the expected total size.
+    // We'll reserve enough space in the stream buffer for that many bytes.
+    // But first, raise an error if the size would violate our security limit.
+    expected_total_size = @_expected_total_size
+    if (expected_total_size + header_size > @max_total_size) (
+      // Error out, but first clear the header so that we'll be ready to
+      // accept a different message header the next time we try to read.
+      @_header = b""
+      error!
+    )
+    stream.reserve_bytes_ahead(expected_total_size)
+
+    True
+
+  :fun ref _read_all_segments(stream ByteStream.Reader) Bool
+    // Keep reading segments one by one until we've collected them all.
+    // The header informs us about the size of each segment.
+    count = @_expected_segment_count
+    while (@_segments._list.size < count) (
+      segment_id = @_segments._list.size
+      segment_size = @_expected_segment_size(segment_id)
+      try (
+        @_segments._list << CapnProto.Segment.new(
+          stream.advance!(segment_size).extract_token
+        )
+      |
+        return False
+      )
+    )
+
+    // Nice, we successfully read all the segments. Clear the header,
+    // so that we'll be ready to read in a different set of segments next time.
+    @_header = b""
+
+    True

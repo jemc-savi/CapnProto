@@ -96,8 +96,8 @@
     @_segment._bytes[@_byte_offset.usize +! index]!
 
   :fun each_with_index(from USize = 0, to = USize.max_value, stride USize = 1)
-    start = try (from +! @_byte_offset.usize | USize.max_value)
-    finish = try (to.min(@_byte_count.usize) +! @_byte_offset.usize | USize.max_value)
+    start = from.saturating_add(@_byte_offset.usize)
+    finish = to.min(@_byte_count.usize).saturating_add(@_byte_offset.usize)
 
     @_segment._bytes.each_with_index(start, finish, stride) -> (byte, index |
       yield (byte, index)
@@ -108,8 +108,8 @@
     to USize = 0
     stride USize = 1
   ) None
-    start = try (from.min(@_byte_count.usize) +! @_byte_offset.usize | USize.max_value)
-    finish = try (to +! @_byte_offset.usize | USize.max_value)
+    start = from.min(@_byte_count.usize).saturating_add(@_byte_offset.usize)
+    finish = to.saturating_add(@_byte_offset.usize)
 
     @_segment._bytes.reverse_each_with_index(start, finish, stride) -> (byte, index |
       yield (byte, index)

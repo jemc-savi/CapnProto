@@ -1,6 +1,9 @@
 :manifest lib CapnProto
   :sources "src/*.savi"
 
+  :dependency ByteStream v0
+    :from "github:savi-lang/ByteStream"
+
 :manifest bin "spec"
   :copies CapnProto
   :sources "spec/*.savi"
