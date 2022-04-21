@@ -67,6 +67,14 @@
     assert: p[3].u64(0x8) == 0 // outside the list region
     assert: "\(p[3].text(0))" == "" // outside the list region
 
+    first_words Array(U64) = []
+    p.each -> (struct | first_words << struct.u64(0x0))
+    assert: first_words == [
+      0x1111111111111111
+      0x3333333333333333
+      0x5555555555555555
+    ]
+
   :it "can point to a struct list region via a far pointer"
     p = @from_segments([b"\
       \x12\x00\x00\x00\x02\x00\x00\x00\

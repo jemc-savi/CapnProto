@@ -134,3 +134,15 @@
       CapnProto.Pointer.Struct.empty(@_segments, @_segment)
     )
 
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref each
+    @_list_count.times -> (n |
+      try (
+        byte_offset = @_byte_offset
+          +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
+
+        yield CapnProto.Pointer.Struct._new(
+          @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
+        )
+      )
+    )
