@@ -80,10 +80,27 @@
 
     @_new(segments, segment, byte_offset, byte_count)
 
-  :fun each_byte
-    @_segment._bytes.each(
-      @_byte_offset.usize
-      (@_byte_offset + @_byte_count).usize
-    ) -> (byte |
-      yield byte
+  :is Indexable(U8)
+
+  :fun "[]!"(index)
+    @_segment._bytes[@_byte_offset.usize +! index]!
+
+  :fun each_with_index(from USize = 0, to = USize.max_value, stride USize = 1)
+    start = try (from +! @_byte_offset.usize | USize.max_value)
+    finish = try (to.min(@_byte_count.usize) +! @_byte_offset.usize | USize.max_value)
+
+    @_segment._bytes.each_with_index(start, finish, stride) -> (byte, index |
+      yield (byte, index)
+    )
+
+  :fun reverse_each_with_index(
+    from = USize.max_value
+    to USize = 0
+    stride USize = 1
+  ) None
+    start = try (from.min(@_byte_count.usize) +! @_byte_offset.usize | USize.max_value)
+    finish = try (to +! @_byte_offset.usize | USize.max_value)
+
+    @_segment._bytes.reverse_each_with_index(start, finish, stride) -> (byte, index |
+      yield (byte, index)
     )

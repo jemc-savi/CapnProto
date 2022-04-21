@@ -102,14 +102,14 @@
       \x09\x00\x00\x00\x42\x00\x00\x00\
       \x09\x00\x00\x00\x82\x00\x00\x00\
       \x0d\x00\x00\x00\x02\x01\x00\x00\
-      Hi, Text\
-      Here's some text\
-      Here's some text with length 32!\
+      Hi Text\x00\
+      Here is a text!\x00\
+      Here's some text with length 31\x00\
       Excellent Example of a Text Set!\
       This text has no pointer, so it won't be seen.\
     ")
 
-    assert: "\(p.text(0))" == "Hi, Text"
-    assert: "\(p.text(1))" == "Here's some text"
-    assert: "\(p.text(2))" == "Here's some text with length 32!"
+    assert: "\(p.text(0))" == "Hi Text"
+    assert: "\(p.text(1))" == "Here is a text!"
+    assert: "\(p.text(2))" == "Here's some text with length 31"
     assert: "\(p.text(3))" == "" // outside the pointer region
