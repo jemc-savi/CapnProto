@@ -11,6 +11,18 @@
     )
     pointer
 
+  :fun from_segments(chunks Array(Bytes), byte_offset USize = 0)
+    segments = CapnProto.Segments.new([])
+    chunks.each -> (chunk |
+      segments._list.push(CapnProto.Segment.new(chunk.clone))
+    )
+    segment = try (segments._list[0]! | CapnProto.Segment.new(b"".clone))
+    pointer = CapnProto.Pointer.StructList.empty(segments, segment)
+    assert no_error: (
+      pointer = CapnProto.Pointer.StructList.from_segments!(segments, byte_offset)
+    )
+    pointer
+
   :it "reads struct values from a struct list region"
     p = @from_segment(b"\
       \x01\x00\x00\x00\x1f\x01\x00\x00\
@@ -54,3 +66,60 @@
     assert: p[3].u64(0x0) == 0 // outside the list region
     assert: p[3].u64(0x8) == 0 // outside the list region
     assert: "\(p[3].text(0))" == "" // outside the list region
+
+  :it "can point to a struct list region via a far pointer"
+    p = @from_segments([b"\
+      \x12\x00\x00\x00\x02\x00\x00\x00\
+    ", b"\
+      There's nothing meaningful in this middle segment.
+      It's just a placeholder in between the other two.
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x01\x00\x00\x00\x27\x00\x00\x00\
+      \x08\x00\x00\x00\x02\x00\x00\x00\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    "])
+
+    assert: p[0].u64(0x0) == 0x1111111111111111
+    assert: p[0].u64(0x8) == 0x2222222222222222
+    assert: p[0].u64(0x10) == 0 // outside the data region
+    assert: p[1].u64(0x0) == 0x3333333333333333
+    assert: p[1].u64(0x8) == 0x4444444444444444
+    assert: p[1].u64(0x10) == 0 // outside the data region
+
+  :it "can point to a struct list region via a double-far pointer"
+    p = @from_segments([b"\
+      \x26\x00\x00\x00\x01\x00\x00\x00\
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x12\x00\x00\x00\x02\x00\x00\x00\
+      \x01\x00\x00\x00\x27\x00\x00\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x08\x00\x00\x00\x02\x00\x00\x00\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    "])
+
+    assert: p[0].u64(0x0) == 0x1111111111111111
+    assert: p[0].u64(0x8) == 0x2222222222222222
+    assert: p[0].u64(0x10) == 0 // outside the data region
+    assert: p[1].u64(0x0) == 0x3333333333333333
+    assert: p[1].u64(0x8) == 0x4444444444444444
+    assert: p[1].u64(0x10) == 0 // outside the data region

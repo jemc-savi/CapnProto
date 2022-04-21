@@ -23,6 +23,16 @@
     @_parse!(segments, segment, start_offset.u32, value)
 
   :fun non _parse!(segments, segment, current_offset U32, value U64)
+    // Handle the case that this may be a far pointer, pointing to the pointer.
+    override_byte_offset U32 = -1
+    try (
+      far = CapnProto.Pointer.Far._parse!(segments, segment, current_offset, value)
+      segment = far._segment
+      current_offset = far._byte_offset
+      override_byte_offset = far._override_byte_offset
+      value = far._pointer_value
+    )
+
     // lsb                      struct pointer                       msb
     // +-+-----------------------------+---------------+---------------+
     // |A|             B               |       C       |       D       |
@@ -36,7 +46,6 @@
 
     // The 2 least significant bits (A) encode the pointer kind.
     // Raise an error if this is not coded as a struct pointer (kind zero).
-    // TODO: Handle far pointers
     error! unless (value.u8.bit_and(0b11) == 0)
 
     // The bottom 32 bits of the value (excluding the 2 least significant bits)
@@ -55,6 +64,7 @@
     // or underflow is treated as a protocol error (an invalid pointer).
     offset_half = value.u32.i32
     byte_offset = (current_offset.i32 +! 8 +! offset_half +! offset_half).u32!
+    if (override_byte_offset != -1) (byte_offset = override_byte_offset)
 
     // The two upper U16 parts of the value (C and D) indicate the size
     // of the struct's data section and its pointers section, in 8-byte words.

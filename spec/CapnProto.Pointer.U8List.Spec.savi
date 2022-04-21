@@ -11,6 +11,18 @@
     )
     pointer
 
+  :fun from_segments(chunks Array(Bytes), byte_offset USize = 0)
+    segments = CapnProto.Segments.new([])
+    chunks.each -> (chunk |
+      segments._list.push(CapnProto.Segment.new(chunk.clone))
+    )
+    segment = try (segments._list[0]! | CapnProto.Segment.new(b"".clone))
+    pointer = CapnProto.Pointer.U8List.empty(segments, segment)
+    assert no_error: (
+      pointer = CapnProto.Pointer.U8List.from_segments!(segments, byte_offset)
+    )
+    pointer
+
   :it "reads text from a byte region"
     p = @from_segment(b"\
       \x01\x00\x00\x00\x02\x01\x00\x00\
@@ -30,3 +42,40 @@
     ", 0x20)
 
     assert: "\(CapnProto.Text.new(p))" == "Here is a text!"
+
+  :it "can point to a byte region via a far pointer"
+    p = @from_segments([b"\
+      \x12\x00\x00\x00\x02\x00\x00\x00\
+    ", b"\
+      There's nothing meaningful in this middle segment.
+      It's just a placeholder in between the other two.
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x01\x00\x00\x00\x02\x01\x00\x00\
+      Here's some text with length 31\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    "])
+
+    assert: "\(CapnProto.Text.new(p))" == "Here's some text with length 31"
+
+  :it "can point to a byte region via a double-far pointer"
+    p = @from_segments([b"\
+      \x26\x00\x00\x00\x01\x00\x00\x00\
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \x12\x00\x00\x00\x02\x00\x00\x00\
+      \x01\x00\x00\x00\x02\x01\x00\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    ", b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      Here's some text with length 31\x00\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    "])
+
+    assert: "\(CapnProto.Text.new(p))" == "Here's some text with length 31"
