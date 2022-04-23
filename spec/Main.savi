@@ -4,4 +4,5 @@
       Spec.Run(CapnProto.Pointer.Struct.Spec).new(env)
       Spec.Run(CapnProto.Pointer.StructList.Spec).new(env)
       Spec.Run(CapnProto.Pointer.U8List.Spec).new(env)
+      Spec.Run(CapnProto.Segments.Reader.Spec).new(env)
     ])

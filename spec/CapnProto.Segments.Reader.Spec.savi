@@ -1,0 +1,178 @@
+:class CapnProto.Segments.Reader.Spec
+  :is Spec
+  :const describes: "CapnProto.Segments.Reader"
+
+  :it "reads an odd number of segments, all at once (from a complete stream)"
+    reader = CapnProto.Segments.Reader.new
+    stream = ByteStream.Reader.new
+    write_stream = ByteStream.Writer.to_reader(stream)
+
+    write_stream << b"\x02\x00\x00\x00" // there will be 3 segments
+    write_stream << b"\x03\x00\x00\x00" // the first will be 3 words long
+    write_stream << b"\x04\x00\x00\x00" // the second will be 4 words long
+    write_stream << b"\x05\x00\x00\x00" // the last will be 5 words long
+    write_stream << b"\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \x55\x55\x55\x55\x55\x55\x55\x55\
+      \x66\x66\x66\x66\x66\x66\x66\x66\
+      \x77\x77\x77\x77\x77\x77\x77\x77\
+      \x88\x88\x88\x88\x88\x88\x88\x88\
+      \x99\x99\x99\x99\x99\x99\x99\x99\
+      \xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\
+      \xbb\xbb\xbb\xbb\xbb\xbb\xbb\xbb\
+      \xcc\xcc\xcc\xcc\xcc\xcc\xcc\xcc\
+    " // the segments themselves
+    write_stream << b"\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    " // additional data that isn't actually part of the segments
+    assert no_error: write_stream.flush!
+
+    assert: reader.read!(stream) == True
+    segments = reader.take_segments
+
+    assert: segments._list[0]!._bytes == b"\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+    "
+    assert: segments._list[1]!._bytes == b"\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \x55\x55\x55\x55\x55\x55\x55\x55\
+      \x66\x66\x66\x66\x66\x66\x66\x66\
+      \x77\x77\x77\x77\x77\x77\x77\x77\
+    "
+    assert: segments._list[2]!._bytes == b"\
+      \x88\x88\x88\x88\x88\x88\x88\x88\
+      \x99\x99\x99\x99\x99\x99\x99\x99\
+      \xaa\xaa\xaa\xaa\xaa\xaa\xaa\xaa\
+      \xbb\xbb\xbb\xbb\xbb\xbb\xbb\xbb\
+      \xcc\xcc\xcc\xcc\xcc\xcc\xcc\xcc\
+    "
+
+  :it "reads an even number of segments, from a frequently interrupted stream"
+    reader = CapnProto.Segments.Reader.new
+    stream = ByteStream.Reader.new
+    write_stream = ByteStream.Writer.to_reader(stream)
+
+    // There will be 2 segments, but we will write just one byte first,
+    // which isn't enough to read the full segment count indicator yet.
+    write_stream << b"\x01"
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == False
+    assert: reader._header.is_empty
+
+    // Now we'll write the rest of the bytes needed to know the segment count,
+    // but it's not enough yet to read the full header.
+    write_stream << b"\x00\x00\x00"
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == False
+    assert: reader._header.is_empty
+
+    // The first segment will be 3 words long.
+    // But this isn't the full header yet.
+    write_stream << b"\x03\x00\x00\x00"
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == False
+    assert: reader._header.is_empty
+
+    // The second segment will be 5 words long.
+    // We also include the header padding here (because the count is even).
+    // This concludes the full header length.
+    write_stream << b"\x05\x00\x00\x00\x00\x00\x00\x00"
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == False
+    assert: reader._header.is_empty == False
+    assert: reader._header.is_not_empty
+    assert: reader._expected_segment_count == 2
+    assert: reader._expected_total_size == 64
+    assert: reader._expected_segment_size(0) == 24
+    assert: reader._expected_segment_size(1) == 40
+    assert: reader._expected_segment_size(2) == 0 // this segment will not exist
+    assert: reader._segments._list.is_empty
+
+    // Now we write part of (but not all of) the first segment.
+    // It won't be ready to read yet.
+    write_stream << b"\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+    " // the segments themselves
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == False
+    assert: reader._segments._list.is_empty
+
+    // Now we write the rest of the first segment and part of the second one.
+    // Only the first segment will be ready to read.
+    write_stream << b"\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \x55\x55\x55\x55\x55\x55\x55\x55\
+      \x66\x66\x66\x66\x66\x66\x66\x66\
+    " // the segments themselves
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == False
+    assert: reader._segments._list.size == 1
+    assert: reader._segments._list[0]!._bytes.size == 24
+
+    // Now we write the rest of the second segment as well as some junk data.
+    write_stream << b"\
+      \x77\x77\x77\x77\x77\x77\x77\x77\
+      \x88\x88\x88\x88\x88\x88\x88\x88\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+      \xde\xad\xbe\xef\xde\xad\xbe\xef\
+    " // the segments themselves
+    assert no_error: write_stream.flush!
+    assert: reader.read!(stream) == True
+    assert: reader._header.is_empty // cleared away now that all segments are in
+    assert: reader._segments._list.size == 2
+    assert: reader._segments._list[0]!._bytes.size == 24
+    assert: reader._segments._list[1]!._bytes.size == 40
+
+    segments = reader.take_segments
+
+    assert: segments._list[0]!._bytes == b"\
+      \x11\x11\x11\x11\x11\x11\x11\x11\
+      \x22\x22\x22\x22\x22\x22\x22\x22\
+      \x33\x33\x33\x33\x33\x33\x33\x33\
+    "
+    assert: segments._list[1]!._bytes == b"\
+      \x44\x44\x44\x44\x44\x44\x44\x44\
+      \x55\x55\x55\x55\x55\x55\x55\x55\
+      \x66\x66\x66\x66\x66\x66\x66\x66\
+      \x77\x77\x77\x77\x77\x77\x77\x77\
+      \x88\x88\x88\x88\x88\x88\x88\x88\
+    "
+
+  :it "refuses to read a header whose segment count is too large"
+    reader = CapnProto.Segments.Reader.new
+    stream = ByteStream.Reader.new
+    write_stream = ByteStream.Writer.to_reader(stream)
+
+    // There will be 0x1000000 segments, which will exceed our 64 MiB budget
+    // just to read the header data alone (let alone the segments themselves).
+    write_stream << b"\0xff\xff\xff\x00"
+    assert no_error: write_stream.flush!
+    assert error: reader.read!(stream)
+    assert: reader._header.is_empty
+
+  :it "refuses to read a header announcing segments that are too large"
+    reader = CapnProto.Segments.Reader.new
+    stream = ByteStream.Reader.new
+    write_stream = ByteStream.Writer.to_reader(stream)
+
+    // There will be 4 segments, each of which will be 0x1000000 bytes
+    // (that is, 0x200000 words), which exactly matches our 64 MiB budget
+    // but will exceed it if you count the header data toward the budget too.
+    write_stream << b"\
+      \0x03\x00\x00\x00\
+      \0x00\x00\x20\x00\
+      \0x00\x00\x20\x00\
+      \0x00\x00\x20\x00\
+      \0x00\x00\x20\x00\
+    "
+    assert no_error: write_stream.flush!
+    assert error: reader.read!(stream)
+    assert: reader._header.is_empty
