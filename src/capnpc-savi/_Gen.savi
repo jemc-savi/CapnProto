@@ -1,0 +1,366 @@
+:class _Gen
+  :var _out: String.new_iso
+  :let req CapnProto.Meta.CodeGeneratorRequest
+  :new (@req, node CapnProto.Meta.Node)
+    @_emit_file(node)
+
+  :fun ref take_string: @_out <<= String.new_iso
+
+  // TODO: not `:fun ref`
+  :fun ref _find_node!(id U64) CapnProto.Meta.Node
+    @req.nodes.each -> (node |
+      return node if (node.id == id)
+    )
+    error!
+
+  // TODO: not `:fun ref`
+  :fun ref _find_node_scoped_name(id U64) String
+    try (
+      @_node_scoped_name(@_find_node!(id))
+    |
+      "UNKNOWN_ID"
+    )
+
+  // TODO: not `:fun ref`
+  :fun ref _node_scoped_name(node CapnProto.Meta.Node) String
+    try (
+      case (
+      | node.is_file |
+        "CapnProto.Meta" // TODO: not hard-coded here
+      | node.is_struct && node.struct!.is_group |
+        @_node_scoped_name_of_group!(node)
+      |
+        @_node_scoped_name_of_typedecl!(node)
+      )
+    |
+      "UNKNOWN_NAME"
+    )
+
+  // TODO: not `:fun ref`
+  :fun ref _node_scoped_name_of_group!(node CapnProto.Meta.Node) String
+    scope_node = @_find_node!(node.scope_id)
+    scope_node.struct!.fields.each -> (field |
+      try (
+        if (node.id == field.group!.type_id) (
+          return "\(@_node_scoped_name(scope_node)).AS_\(field.name)"
+        )
+      )
+    )
+    error!
+
+  // TODO: not `:fun ref`
+  :fun ref _node_scoped_name_of_typedecl!(node CapnProto.Meta.Node) String
+    scope_node = @_find_node!(node.scope_id)
+    scope_node.nested_nodes.each -> (nested |
+      if (nested.id == node.id) (
+        return "\(@_node_scoped_name(scope_node)).\(nested.name)"
+      )
+    )
+    error!
+
+  // TODO: not `:fun ref`
+  :fun ref _is_pointer_type(type CapnProto.Meta.Type)
+    type.is_text || type.is_data || type.is_list
+    || type.is_struct || type.is_interface || type.is_any_pointer
+
+  // TODO: not `:fun ref`
+  :fun ref _type_name(t CapnProto.Meta.Type)
+    case (
+    | t.is_void | "None"
+    | t.is_bool | "Bool"
+    | t.is_int8 | "I8"
+    | t.is_int16 | "I16"
+    | t.is_int32 | "I32"
+    | t.is_int64 | "I64"
+    | t.is_uint8 | "U8"
+    | t.is_uint16 | "U16"
+    | t.is_uint32 | "U32"
+    | t.is_uint64 | "U64"
+    | t.is_float32 | "F32"
+    | t.is_float64 | "F64"
+    | t.is_text | "CapnProto.Text"
+    | t.is_data | "CapnProto.Data"
+    | t.is_list | "CapnProto.List(\(try @_type_name(t.list!.element_type)))"
+    | t.is_enum | "\(try @_find_node_scoped_name(t.enum!.type_id))"
+    | t.is_struct | "\(try @_find_node_scoped_name(t.struct!.type_id))"
+    | t.is_interface | "INTERFACES_NOT_IMPLEMENTED"
+    | t.is_any_pointer | "ANY_POINTER_NOT_IMPLEMENTED"
+    | "NOT_IMPLEMENTED"
+    )
+
+  // TODO: not `:fun ref`
+  :fun ref _show_value(value CapnProto.Meta.Value) String
+    return "None" if value.is_void
+    try (string = "\(value.bool!)",    return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.int8!)",    return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.int16!)",   return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.int32!)",   return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.int64!)",   return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.uint8!)",   return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.uint16!)",  return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.uint32!)",  return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.uint64!)",  return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.float32!)", return --string) // TODO: this local variable shouldn't be needed
+    try (string = "\(value.float64!)", return --string) // TODO: this local variable shouldn't be needed
+    // TODO: text
+    // TODO: data
+    // TODO: list
+    // TODO: enum
+    // TODO: struct
+    // TODO: interface
+    // TODO: any_pointer
+    "VALUE_NOT_IMPLEMENTED"
+
+  :fun ref _emit_file(node CapnProto.Meta.Node)
+    @_out << <<<
+      ///
+      // NOTE: This file was auto-generated from a Cap'n Proto file
+      // using the `capnp` compiler with the `--output=savi` option.
+    >>>
+    node.nested_nodes.each -> (nest_info |
+      try @_emit_type(@_find_node!(nest_info.id))
+    )
+
+  :fun ref _emit_type(node CapnProto.Meta.Node)
+    case (
+    | node.is_enum | @_emit_enum(node)
+    | node.is_struct | @_emit_struct(node)
+    | @_out << "\n\n// UNHANDLED: \(node.display_name)"
+    )
+
+  :fun ref _emit_enum(node CapnProto.Meta.Node)
+    enum = try (node.enum! | return)
+    @_out << "\n\n:enum \(@_node_scoped_name(node))"
+    @_out << "\n  :bit_width 16"
+    @_out << "\n"
+
+    value U64 = 0
+    zero_name = ""
+    enum.enumerants.each -> (enumerant |
+      if (value == 0) (zero_name = "\(_TextCase.Pascal[enumerant.name])")
+      @_out << "\n  :member \(_TextCase.Pascal[enumerant.name]) \(value)"
+      value += 1
+    )
+
+    @_out << "\n\n  :fun non _new(u16 U16)"
+    @_out << "\n    try ("
+    @_out << "\n      @from_u64!(u16.u64)"
+    @_out << "\n    |"
+    @_out << "\n      \(@_node_scoped_name(node)).\(zero_name)"
+    @_out << "\n    )"
+
+  :fun ref _emit_struct(node CapnProto.Meta.Node)
+    @_out << "\n\n:struct \(@_node_scoped_name(node))"
+    @_out << "\n  :let _p CapnProto.Pointer.Struct"
+    @_out << "\n  :new from_pointer(@_p)"
+
+    // Emit constant values.
+    node.nested_nodes.each -> (nest_info |
+      try (
+        const = @_find_node!(nest_info.id).const!
+        @_out << "\n\n  :const \(
+          _TextCase.Snake[nest_info.name]
+        ) \(
+          @_type_name(const.type)
+        ): \(
+          @_show_value(const.value)
+        )"
+      )
+    )
+
+    // Emit field accessor methods.
+    fields = try (node.struct!.fields | return)
+    fields.each -> (field |
+      @_out << "\n"
+      try @_emit_field_check_union_method!(node, field)
+      @_emit_field_getter(node, field)
+    )
+
+    // Emit other type definitions that act as groups for this struct.
+    fields.each -> (field |
+      try @_emit_struct(@_find_node!(field.group!.type_id))
+    )
+
+    // Emit other type definitions that are nested within this struct.
+    node.nested_nodes.each -> (nest_info |
+      try (
+        nested = @_find_node!(nest_info.id)
+        next if nested.is_const
+        @_emit_type(nested)
+      )
+    )
+
+  :fun ref _emit_field_getter(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+  )
+    is_union = field.discriminant_value != field.no_discriminant
+    needs_ref = try (@_is_pointer_type(field.slot!.type) | True)
+    @_out << "\n  :fun\(
+      if needs_ref " ref" // TODO: remove this `ref`
+    ) \(_TextCase.Snake[field.name])\(
+      if is_union "!"
+    ): "
+    if is_union (
+      try @_emit_field_check_union!(node, field, True)
+      @_out << ", "
+    )
+    @_emit_field_get_expr(field)
+
+  :fun ref _emit_field_check_union_method!(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+  )
+    error! if (field.discriminant_value == field.no_discriminant)
+    @_out << "\n  :fun is_\(_TextCase.Snake[field.name]): "
+    try @_emit_field_check_union!(node, field, False)
+
+  :fun ref _emit_field_check_union!(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+    is_assert Bool
+  )
+    // Error if this field is not a struct, or not a discriminated one.
+    struct = node.struct!
+    error! unless (struct.discriminant_count > 1)
+    error! if (field.discriminant_value == field.no_discriminant)
+
+    @_out << "@_p.\(
+      if is_assert ("assert_union!" | "check_union")
+    )(\(
+      (struct.discriminant_offset * 2).format.hex.without_leading_zeros
+    ), \(
+      field.discriminant_value
+    ))"
+
+  :fun ref _emit_field_get_expr(field CapnProto.Meta.Field)
+    // First, handle the case where the field is a group instead of a slot.
+    try (
+      type_id = field.group!.type_id
+      @_out << "\(@_find_node_scoped_name(type_id)).from_pointer(@_p)"
+      return
+    )
+
+    // Otherwise, it must be a slot (unless a more recent version of the
+    // CapnProto.Meta.Field type has some other option in its union, in
+    // which case we can do nothing useful here and must return early).
+    slot = try (field.slot! | return)
+
+    // TODO: Add support for default values.
+    type = slot.type
+    offset = slot.offset
+    case (
+    | type.is_void |
+      @_out << "None"
+    | type.is_bool |
+      @_out << "@_p.bool(\(
+        (offset / 8).format.hex.without_leading_zeros
+      ), \(
+        U8[1].bit_shl((offset % 8).u8).format.binary
+      ))"
+    | type.is_int8 |
+      @_out << "@_p.i8(\((offset * 1).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.int8! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int8!))"
+        )
+      )
+    | type.is_int16 |
+      @_out << "@_p.i16(\((offset * 2).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.int16! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int16!))"
+        )
+      )
+    | type.is_int32 |
+      @_out << "@_p.i32(\((offset * 4).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.int32! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int32!))"
+        )
+      )
+    | type.is_int64 |
+      @_out << "@_p.i64(\((offset * 8).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.int64! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int64!))"
+        )
+      )
+    | type.is_uint8 |
+      @_out << "@_p.u8(\((offset * 1).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.uint8! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint8!))"
+        )
+      )
+    | type.is_uint16 |
+      @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.uint16! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint16!))"
+        )
+      )
+    | type.is_uint32 |
+      @_out << "@_p.u32(\((offset * 4).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.uint32! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint32!))"
+        )
+      )
+    | type.is_uint64 |
+      @_out << "@_p.u64(\((offset * 8).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.uint64! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint64!))"
+        )
+      )
+    | type.is_float32 |
+      @_out << "@_p.f32(\((offset * 4).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.float32! != 0) (
+          @_out << " // UNHANDLED: default_value"
+        )
+      )
+    | type.is_float64 |
+      @_out << "@_p.f64(\((offset * 8).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.float64! != 0) (
+          @_out << " // UNHANDLED: default_value"
+        )
+      )
+    | type.is_text |
+      @_out << "@_p.text(\(offset))"
+      try (
+        if (slot.default_value.text!.size > 0) (
+          @_out << " // UNHANDLED: default_value"
+        )
+      )
+    | type.is_data |
+      @_out << "@_p.data(\(offset))"
+      try (
+        if (slot.default_value.data!.size > 0) (
+          @_out << " // UNHANDLED: default_value"
+        )
+      )
+    | type.is_list |
+      // TODO: handle default list values
+      @_out << "\(@_type_name(type)).new(@_p.list(\(offset)))"
+    | type.is_enum |
+      @_out << "\(@_type_name(type))._new("
+      @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"
+      try (
+        if (slot.default_value.uint16! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint16!))"
+        )
+      )
+      @_out << ")"
+    | type.is_struct |
+      // TODO: handle default list values
+      @_out << "\(@_type_name(type)).from_pointer(@_p.struct(\(offset)))"
+    | type.is_interface |
+      @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
+    | type.is_any_pointer |
+      @_out << "None // UNHANDLED: anyPointer" // TODO: handle "any pointer"
+    |
+      @_out << "NOT_IMPLEMENTED"
+    )

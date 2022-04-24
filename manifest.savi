@@ -23,3 +23,21 @@
   :transitive dependency Timer v0
     :from "github:savi-lang/Timer"
     :depends on Time
+
+:manifest bin "capnpc-savi"
+  :copies CapnProto
+  :sources "src/capnpc-savi/*.savi"
+
+  :dependency StdIn v0
+    :from "github:savi-lang/StdIn"
+    :depends on ByteStream
+    :depends on IO
+    :depends on OSError
+
+  :dependency IO v0
+    :from "github:savi-lang/IO"
+    :depends on ByteStream
+    :depends on OSError
+
+  :transitive dependency OSError v0
+    :from "github:savi-lang/OSError"
