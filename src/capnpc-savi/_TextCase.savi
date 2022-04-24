@@ -1,0 +1,46 @@
+// TODO: Move this utility to more generally available library?
+:struct _TextCase.Snake
+  :let _text CapnProto.Text // TODO: make this work on a more general interface
+  :new (@_text)
+  :fun non "[]"(text): @new(text) // convenience constructor
+
+  :is IntoString
+  :fun into_string_space: @_text.size * 2 // TODO: less lazy, less conservative
+  :fun into_string(out String'iso) String'iso
+    // TODO: UTF8-aware per-codepoint instead of per-byte here:
+    @_text.each_byte_with_index -> (byte, index |
+      if (byte >= 'A' && byte <= 'Z') (
+        if (index != 0) out.push_byte('_')
+        out.push_byte(byte + 'a' - 'A')
+      |
+        out.push_byte(byte)
+      )
+    )
+    --out
+
+// TODO: Move this utility to more generally available library?
+:struct _TextCase.Pascal
+  :let _text CapnProto.Text // TODO: make this work on a more general interface
+  :new (@_text)
+  :fun non "[]"(text): @new(text) // convenience constructor
+
+  :is IntoString
+  :fun into_string_space: @_text.size
+  :fun into_string(out String'iso) String'iso
+    should_capitalize_next_byte = True
+    // TODO: UTF8-aware per-codepoint instead of per-byte here:
+    @_text.each_byte_with_index -> (byte, index |
+      if (byte == '_') (
+        should_capitalize_next_byte = True
+        next
+      )
+
+      if (byte >= 'a' && byte <= 'z' && should_capitalize_next_byte) (
+        out.push_byte(byte + 'A' - 'a')
+      |
+        out.push_byte(byte)
+      )
+
+      should_capitalize_next_byte = False
+    )
+    --out

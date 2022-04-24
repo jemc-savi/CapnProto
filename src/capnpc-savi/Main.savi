@@ -1,0 +1,36 @@
+:actor Main
+  :is StdIn.Actor
+  :let env Env
+  :let io StdIn.Engine
+  :let _reader: CapnProto.Segments.Reader.new
+  :new (@env)
+    @io = StdIn.Engine.new(@)
+    StdIn.Ticket.get(@env.root.ticket_issuer, @)
+
+  :fun ref io_react(action IO.Action)
+    case action == (
+    | IO.Action.Read |
+      try (
+        if @_reader.read!(@io.read_stream) @_handle_segments
+      |
+        @env.err.print("Maximum total capnpc segments size exceeded")
+      )
+    )
+    @
+
+  :fun ref _handle_segments
+    try (
+      segments = @_reader.take_segments
+      pointer = CapnProto.Pointer.Struct.from_segments!(segments)
+      req = CapnProto.Meta.CodeGeneratorRequest.from_pointer(pointer)
+      @_generate(req)
+    |
+      @env.err.print("Failed to parse the root of the capnpc data")
+    )
+
+  :fun ref _generate(req CapnProto.Meta.CodeGeneratorRequest)
+    req.nodes.each -> (node |
+      if node.is_file (
+        @env.out.print(_Gen.new(req, node).take_string)
+      )
+    )
