@@ -46,3 +46,15 @@ jobs:
   #
   # Add any custom jobs you need below this comment.
   # The area above this comment is reserved for future standard jobs.
+
+  # Compile `capnpc-savi` and use it to regenerate `CapnProto.Meta` definitions.
+  capnpc-savi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: savi-lang/action-install@v1.0.0
+      - run: sudo apt-get install capnproto
+      - run: savi deps update --for capnpc-savi
+      - run: savi build capnpc-savi
+      - run: capnp compile src/CapnProto.Meta.capnp --output=- | bin/capnpc-savi > src/CapnProto.Meta.capnp.savi
+      - run: git diff --exit-code
