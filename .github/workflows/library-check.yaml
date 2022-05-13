@@ -24,13 +24,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{matrix.os}}
+        include:
+          - { os: ubuntu-latest, shell: bash }
+          - { os: macos-latest, shell: bash }
+          - { os: windows-latest, shell: 'wsl-bash {0}' }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
     steps:
       - uses: actions/checkout@v2
-      - uses: savi-lang/action-install@v1.0.0
+      - uses: savi-lang/action-install@v1.1.0
       - run: savi deps update --for spec
-      - run: savi run spec
+      - run: savi run spec ${{ runner.os == 'Windows' && '--cross-compile=x86_64-unknown-windows-msvc' || '' }}
 
   # Check formatting of all files in the repository.
   format:
