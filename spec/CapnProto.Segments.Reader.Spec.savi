@@ -153,7 +153,7 @@
 
     // There will be 0x1000000 segments, which will exceed our 64 MiB budget
     // just to read the header data alone (let alone the segments themselves).
-    write_stream << b"\0xff\xff\xff\x00"
+    write_stream << b"\xff\xff\xff\x00"
     assert no_error: write_stream.flush!
     assert error: reader.read!(stream)
     assert: reader._header.is_empty
@@ -167,11 +167,12 @@
     // (that is, 0x200000 words), which exactly matches our 64 MiB budget
     // but will exceed it if you count the header data toward the budget too.
     write_stream << b"\
-      \0x03\x00\x00\x00\
-      \0x00\x00\x20\x00\
-      \0x00\x00\x20\x00\
-      \0x00\x00\x20\x00\
-      \0x00\x00\x20\x00\
+      \x03\x00\x00\x00\
+      \x00\x00\x20\x00\
+      \x00\x00\x20\x00\
+      \x00\x00\x20\x00\
+      \x00\x00\x20\x00\
+      \x00\x00\x00\x00\
     "
     assert no_error: write_stream.flush!
     assert error: reader.read!(stream)
