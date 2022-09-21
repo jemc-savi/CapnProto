@@ -1,0 +1,42 @@
+name: release
+
+on:
+  pull_request: # (only to prove the build is working)
+  workflow_dispatch:
+    inputs:
+      version-tag:
+        description: |
+          The name of the version to release (e.g. `v1.2.3` or `v0.20220131.0`).
+        required: true
+
+jobs:
+  all:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: get-version
+        run: echo ::set-output name=version::$(echo "${{ github.ref_name }}" | tr '/' '-')
+      - uses: savi-lang/action-install@v1.0.0
+      - uses: ./.github/actions/build-release
+        id: capnpc-savi
+        with:
+          manifest-name: capnpc-savi
+          tarball-name: capnpc-savi-${{ github.event.inputs.version-tag }}
+          x86_64-unknown-linux-gnu: true
+          x86_64-unknown-linux-musl: true
+          arm64-unknown-linux-musl: true
+          x86_64-unknown-freebsd: true
+          x86_64-apple-macosx: true
+          arm64-apple-macosx: true
+          macosx-accept-license: true
+          # TODO: Enable Windows build when the IO package works on Windows.
+          # x86_64-unknown-windows-msvc: true
+          # windows-accept-license: true
+      - uses: softprops/action-gh-release@v1
+        if: ${{ github.event.inputs.version-tag != '' }}
+        with:
+          tag_name: ${{ github.event.inputs.version-tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            ${{ steps.capnpc-savi.outputs.tarball-directory }}/*
