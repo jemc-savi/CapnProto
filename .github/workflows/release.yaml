@@ -17,7 +17,7 @@ jobs:
       - id: get-version
         run: echo ::set-output name=version::$(echo "${{ github.ref_name }}" | tr '/' '-')
       - uses: savi-lang/action-install@v1.0.0
-      - uses: ./.github/actions/build-release
+      - uses: savi-lang/action-build-release@v1
         id: capnpc-savi
         with:
           manifest-name: capnpc-savi
