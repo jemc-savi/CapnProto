@@ -34,7 +34,7 @@ jobs:
         shell: ${{ matrix.shell }}
     steps:
       - uses: actions/checkout@v2
-      - uses: savi-lang/action-install@v1.1.0
+      - uses: savi-lang/action-install@v1
       - run: savi deps update --for spec
       - run: savi run spec ${{ runner.os == 'Windows' && '--cross-compile=x86_64-unknown-windows-msvc' || '' }}
 
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: savi-lang/action-install@v1.0.0
+      - uses: savi-lang/action-install@v1
       - run: savi format --check
 
   ##
