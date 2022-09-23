@@ -37,6 +37,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version-tag }}
           generate_release_notes: true
+          token: ${{ secrets.BOT_GITHUB_TOKEN }} # (to allow triggering other workflows)
           fail_on_unmatched_files: true
           files: |
             ${{ steps.capnpc-savi.outputs.tarball-directory }}/*
