@@ -21,6 +21,7 @@
 name: library-release
 
 on:
+  pull_request: # (only to verify that the release build is working in PRs)
   workflow_dispatch:
     inputs:
       version-tag:
