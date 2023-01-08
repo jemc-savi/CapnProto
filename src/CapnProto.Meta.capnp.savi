@@ -7,12 +7,15 @@
   :new from_pointer(@_p)
 
   :fun id: @_p.u64(0x0)
+  :fun ref "id="(new_value U64): @_p.set_u64(0x0, new_value)
 
   :fun ref display_name: @_p.text(0)
 
   :fun display_name_prefix_length: @_p.u32(0x8)
+  :fun ref "display_name_prefix_length="(new_value U32): @_p.set_u32(0x8, new_value)
 
   :fun scope_id: @_p.u64(0x10)
+  :fun ref "scope_id="(new_value U64): @_p.set_u64(0x10, new_value)
 
   :fun ref nested_nodes: CapnProto.List(CapnProto.Meta.Node.NestedNode).new(@_p.list(1))
 
@@ -39,22 +42,29 @@
   :fun ref parameters: CapnProto.List(CapnProto.Meta.Node.Parameter).new(@_p.list(5))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
+  :fun ref "is_generic="(new_value Bool): @_p.set_bool(0x24, 0b00000001, new_value)
 
 :struct CapnProto.Meta.Node.AS_struct
   :let _p CapnProto.Pointer.Struct
   :new from_pointer(@_p)
 
   :fun data_word_count: @_p.u16(0xe)
+  :fun ref "data_word_count="(new_value U16): @_p.set_u16(0xe, new_value)
 
   :fun pointer_count: @_p.u16(0x18)
+  :fun ref "pointer_count="(new_value U16): @_p.set_u16(0x18, new_value)
 
   :fun preferred_list_encoding: CapnProto.Meta.ElementSize._new(@_p.u16(0x1a))
+  :fun ref "preferred_list_encoding="(new_value CapnProto.Meta.ElementSize): @_p.set_u16(0x1a, new_value.u16)
 
   :fun is_group: @_p.bool(0x1c, 0b00000001)
+  :fun ref "is_group="(new_value Bool): @_p.set_bool(0x1c, 0b00000001, new_value)
 
   :fun discriminant_count: @_p.u16(0x1e)
+  :fun ref "discriminant_count="(new_value U16): @_p.set_u16(0x1e, new_value)
 
   :fun discriminant_offset: @_p.u32(0x20)
+  :fun ref "discriminant_offset="(new_value U32): @_p.set_u32(0x20, new_value)
 
   :fun ref fields: CapnProto.List(CapnProto.Meta.Field).new(@_p.list(3))
 
@@ -87,28 +97,40 @@
   :fun ref type: CapnProto.Meta.Type.from_pointer(@_p.struct(3))
 
   :fun targets_file: @_p.bool(0xe, 0b00000001)
+  :fun ref "targets_file="(new_value Bool): @_p.set_bool(0xe, 0b00000001, new_value)
 
   :fun targets_const: @_p.bool(0xe, 0b00000010)
+  :fun ref "targets_const="(new_value Bool): @_p.set_bool(0xe, 0b00000010, new_value)
 
   :fun targets_enum: @_p.bool(0xe, 0b00000100)
+  :fun ref "targets_enum="(new_value Bool): @_p.set_bool(0xe, 0b00000100, new_value)
 
   :fun targets_enumerant: @_p.bool(0xe, 0b00001000)
+  :fun ref "targets_enumerant="(new_value Bool): @_p.set_bool(0xe, 0b00001000, new_value)
 
   :fun targets_struct: @_p.bool(0xe, 0b00010000)
+  :fun ref "targets_struct="(new_value Bool): @_p.set_bool(0xe, 0b00010000, new_value)
 
   :fun targets_field: @_p.bool(0xe, 0b00100000)
+  :fun ref "targets_field="(new_value Bool): @_p.set_bool(0xe, 0b00100000, new_value)
 
   :fun targets_union: @_p.bool(0xe, 0b01000000)
+  :fun ref "targets_union="(new_value Bool): @_p.set_bool(0xe, 0b01000000, new_value)
 
   :fun targets_group: @_p.bool(0xe, 0b10000000)
+  :fun ref "targets_group="(new_value Bool): @_p.set_bool(0xe, 0b10000000, new_value)
 
   :fun targets_interface: @_p.bool(0xf, 0b00000001)
+  :fun ref "targets_interface="(new_value Bool): @_p.set_bool(0xf, 0b00000001, new_value)
 
   :fun targets_method: @_p.bool(0xf, 0b00000010)
+  :fun ref "targets_method="(new_value Bool): @_p.set_bool(0xf, 0b00000010, new_value)
 
   :fun targets_param: @_p.bool(0xf, 0b00000100)
+  :fun ref "targets_param="(new_value Bool): @_p.set_bool(0xf, 0b00000100, new_value)
 
   :fun targets_annotation: @_p.bool(0xf, 0b00001000)
+  :fun ref "targets_annotation="(new_value Bool): @_p.set_bool(0xf, 0b00001000, new_value)
 
 :struct CapnProto.Meta.Node.Parameter
   :let _p CapnProto.Pointer.Struct
@@ -123,6 +145,7 @@
   :fun ref name: @_p.text(0)
 
   :fun id: @_p.u64(0x0)
+  :fun ref "id="(new_value U64): @_p.set_u64(0x0, new_value)
 
 :struct CapnProto.Meta.Field
   :let _p CapnProto.Pointer.Struct
@@ -133,10 +156,12 @@
   :fun ref name: @_p.text(0)
 
   :fun code_order: @_p.u16(0x0)
+  :fun ref "code_order="(new_value U16): @_p.set_u16(0x0, new_value)
 
   :fun ref annotations: CapnProto.List(CapnProto.Meta.Annotation).new(@_p.list(1))
 
   :fun discriminant_value: @_p.u16(0x2).bit_xor(65535)
+  :fun ref "discriminant_value="(new_value U16): @_p.set_u16(0x2, new_value.bit_xor(65535))
 
   :fun is_slot: @_p.check_union(0x8, 0)
   :fun ref slot!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.from_pointer(@_p)
@@ -151,18 +176,21 @@
   :new from_pointer(@_p)
 
   :fun offset: @_p.u32(0x4)
+  :fun ref "offset="(new_value U32): @_p.set_u32(0x4, new_value)
 
   :fun ref type: CapnProto.Meta.Type.from_pointer(@_p.struct(2))
 
   :fun ref default_value: CapnProto.Meta.Value.from_pointer(@_p.struct(3))
 
   :fun had_explicit_default: @_p.bool(0x10, 0b00000001)
+  :fun ref "had_explicit_default="(new_value Bool): @_p.set_bool(0x10, 0b00000001, new_value)
 
 :struct CapnProto.Meta.Field.AS_group
   :let _p CapnProto.Pointer.Struct
   :new from_pointer(@_p)
 
   :fun type_id: @_p.u64(0x10)
+  :fun ref "type_id="(new_value U64): @_p.set_u64(0x10, new_value)
 
 :struct CapnProto.Meta.Field.AS_ordinal
   :let _p CapnProto.Pointer.Struct
@@ -181,6 +209,7 @@
   :fun ref name: @_p.text(0)
 
   :fun code_order: @_p.u16(0x0)
+  :fun ref "code_order="(new_value U16): @_p.set_u16(0x0, new_value)
 
   :fun ref annotations: CapnProto.List(CapnProto.Meta.Annotation).new(@_p.list(1))
 
@@ -189,6 +218,7 @@
   :new from_pointer(@_p)
 
   :fun id: @_p.u64(0x0)
+  :fun ref "id="(new_value U64): @_p.set_u64(0x0, new_value)
 
   :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
 
@@ -199,10 +229,13 @@
   :fun ref name: @_p.text(0)
 
   :fun code_order: @_p.u16(0x0)
+  :fun ref "code_order="(new_value U16): @_p.set_u16(0x0, new_value)
 
   :fun param_struct_type: @_p.u64(0x8)
+  :fun ref "param_struct_type="(new_value U64): @_p.set_u64(0x8, new_value)
 
   :fun result_struct_type: @_p.u64(0x10)
+  :fun ref "result_struct_type="(new_value U64): @_p.set_u64(0x10, new_value)
 
   :fun ref annotations: CapnProto.List(CapnProto.Meta.Annotation).new(@_p.list(1))
 
@@ -284,6 +317,7 @@
   :new from_pointer(@_p)
 
   :fun type_id: @_p.u64(0x8)
+  :fun ref "type_id="(new_value U64): @_p.set_u64(0x8, new_value)
 
   :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
 
@@ -292,6 +326,7 @@
   :new from_pointer(@_p)
 
   :fun type_id: @_p.u64(0x8)
+  :fun ref "type_id="(new_value U64): @_p.set_u64(0x8, new_value)
 
   :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
 
@@ -300,6 +335,7 @@
   :new from_pointer(@_p)
 
   :fun type_id: @_p.u64(0x8)
+  :fun ref "type_id="(new_value U64): @_p.set_u64(0x8, new_value)
 
   :fun ref brand: CapnProto.Meta.Brand.from_pointer(@_p.struct(0))
 
@@ -337,14 +373,17 @@
   :new from_pointer(@_p)
 
   :fun scope_id: @_p.u64(0x10)
+  :fun ref "scope_id="(new_value U64): @_p.set_u64(0x10, new_value)
 
   :fun parameter_index: @_p.u16(0xa)
+  :fun ref "parameter_index="(new_value U16): @_p.set_u16(0xa, new_value)
 
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter
   :let _p CapnProto.Pointer.Struct
   :new from_pointer(@_p)
 
   :fun parameter_index: @_p.u16(0xa)
+  :fun ref "parameter_index="(new_value U16): @_p.set_u16(0xa, new_value)
 
 :struct CapnProto.Meta.Brand
   :let _p CapnProto.Pointer.Struct
@@ -357,6 +396,7 @@
   :new from_pointer(@_p)
 
   :fun scope_id: @_p.u64(0x0)
+  :fun ref "scope_id="(new_value U64): @_p.set_u64(0x0, new_value)
 
   :fun is_bind: @_p.check_union(0x8, 0)
   :fun ref bind!: @_p.assert_union!(0x8, 0), CapnProto.List(CapnProto.Meta.Brand.Binding).new(@_p.list(0))
@@ -440,6 +480,7 @@
   :new from_pointer(@_p)
 
   :fun id: @_p.u64(0x0)
+  :fun ref "id="(new_value U64): @_p.set_u64(0x0, new_value)
 
   :fun ref value: CapnProto.Meta.Value.from_pointer(@_p.struct(0))
 
@@ -477,6 +518,7 @@
   :new from_pointer(@_p)
 
   :fun id: @_p.u64(0x0)
+  :fun ref "id="(new_value U64): @_p.set_u64(0x0, new_value)
 
   :fun ref filename: @_p.text(0)
 
@@ -487,5 +529,6 @@
   :new from_pointer(@_p)
 
   :fun id: @_p.u64(0x0)
+  :fun ref "id="(new_value U64): @_p.set_u64(0x0, new_value)
 
   :fun ref name: @_p.text(0)

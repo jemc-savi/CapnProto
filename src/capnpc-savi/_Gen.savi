@@ -174,6 +174,7 @@
       @_out << "\n"
       try @_emit_field_check_union_method!(node, field)
       @_emit_field_getter(node, field)
+      try @_emit_field_setter!(node, field)
     )
 
     // Emit other type definitions that act as groups for this struct.
@@ -206,6 +207,24 @@
       @_out << ", "
     )
     @_emit_field_get_expr(field)
+
+  :fun ref _emit_field_setter!(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+  )
+    is_union = field.discriminant_value != field.no_discriminant
+    error! if is_union
+
+    slot = field.slot!
+    // TODO: implement pointer setter as a deep copy, like C++ does
+    error! if (slot.type.is_void || @_is_pointer_type(slot.type))
+
+    @_out << "\n  :fun ref \"\(
+      _TextCase.Snake[field.name]
+    )=\"(new_value \(
+      @_type_name(slot.type)
+    )): "
+    @_emit_field_set_expr(field, "new_value")
 
   :fun ref _emit_field_check_union_method!(
     node CapnProto.Meta.Node
@@ -258,6 +277,11 @@
       ), \(
         U8[1].bit_shl((offset % 8).u8).format.binary
       ))"
+      try (
+        if slot.default_value.bool! (
+          @_out << ".not"
+        )
+      )
     | type.is_int8 |
       @_out << "@_p.i8(\((offset * 1).format.hex.without_leading_zeros))"
       try (
@@ -361,6 +385,126 @@
       @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
     | type.is_any_pointer |
       @_out << "None // UNHANDLED: anyPointer" // TODO: handle "any pointer"
+    |
+      @_out << "NOT_IMPLEMENTED"
+    )
+
+  :fun ref _emit_field_set_expr(field CapnProto.Meta.Field, input_name String)
+    slot = try (field.slot! | return)
+
+    // TODO: Add support for pointer values.
+    type = slot.type
+    offset = slot.offset
+    case (
+    | type.is_bool |
+      @_out << "@_p.set_bool(\(
+        (offset / 8).format.hex.without_leading_zeros
+      ), \(
+        U8[1].bit_shl((offset % 8).u8).format.binary
+      ), \(input_name)"
+      try (
+        if slot.default_value.bool! (
+          @_out << ".not"
+        )
+      )
+      @_out << ")"
+    | type.is_int8 |
+      @_out << "@_p.set_i8(\(
+        (offset * 1).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.int8! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int8!))"
+        )
+      )
+      @_out << ")"
+    | type.is_int16 |
+      @_out << "@_p.set_i16(\(
+        (offset * 2).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.int16! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int16!))"
+        )
+      )
+      @_out << ")"
+    | type.is_int32 |
+      @_out << "@_p.set_i32(\(
+        (offset * 4).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.int32! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int32!))"
+        )
+      )
+      @_out << ")"
+    | type.is_int64 |
+      @_out << "@_p.set_i64(\(
+        (offset * 8).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.int64! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.int64!))"
+        )
+      )
+      @_out << ")"
+    | type.is_uint8 |
+      @_out << "@_p.set_u8(\(
+        (offset * 1).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.uint8! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint8!))"
+        )
+      )
+      @_out << ")"
+    | type.is_uint16 |
+      @_out << "@_p.set_u16(\(
+        (offset * 2).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.uint16! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint16!))"
+        )
+      )
+      @_out << ")"
+    | type.is_uint32 |
+      @_out << "@_p.set_u32(\(
+        (offset * 4).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.uint32! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint32!))"
+        )
+      )
+      @_out << ")"
+    | type.is_uint64 |
+      @_out << "@_p.set_u64(\(
+        (offset * 8).format.hex.without_leading_zeros), \(input_name)"
+      try (
+        if (slot.default_value.uint64! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint64!))"
+        )
+      )
+      @_out << ")"
+    | type.is_float32 |
+      @_out << "@_p.set_f32(\(
+        (offset * 4).format.hex.without_leading_zeros), \(input_name))"
+      try (
+        if (slot.default_value.float32! != 0) (
+          @_out << " // UNHANDLED: default_value"
+        )
+      )
+    | type.is_float64 |
+      @_out << "@_p.set_f64(\(
+        (offset * 8).format.hex.without_leading_zeros), \(input_name))"
+      try (
+        if (slot.default_value.float64! != 0) (
+          @_out << " // UNHANDLED: default_value"
+        )
+      )
+    | type.is_enum |
+      @_out << "@_p.set_u16(\(
+        (offset * 2).format.hex.without_leading_zeros), \(input_name).u16"
+      try (
+        if (slot.default_value.uint16! != 0) (
+          @_out << ".bit_xor(\(slot.default_value.uint16!))"
+        )
+      )
+      @_out << ")"
     |
       @_out << "NOT_IMPLEMENTED"
     )

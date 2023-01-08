@@ -23,7 +23,7 @@
     )
     pointer
 
-  :it "reads numeric values from the data region"
+  :it "reads and writes numeric values in the data region"
     p = @from_segment(b"\
       \x00\x00\x00\x00\x02\x00\x00\x00\
       \x00\x11\x22\x33\x44\x55\x66\x77\
@@ -62,6 +62,26 @@
     assert: p.check_union(0x2, 0x3300).is_false
     assert no_error: p.assert_union!(0x2, 0x3322)
     assert    error: p.assert_union!(0x2, 0x3300)
+
+    assert: p.set_u64(0x0, 0xbeeedeeed000daaa) == 0xbeeedeeed000daaa
+    assert: p.set_u64(0x8, 0xb333d333d0ffdaff) == 0xb333d333d0ffdaff
+    assert: p.set_u64(0x10, 0xdeadbeefdeadbeef) == 0xdeadbeefdeadbeef // outside
+    assert: p.u64(0x0) == 0xbeeedeeed000daaa
+    assert: p.u64(0x8) == 0xb333d333d0ffdaff
+    assert: p.set_u32(0x0, 0xbaaafaaa) == 0xbaaafaaa
+    assert: p.set_u32(0x4, 0xb000f000) == 0xb000f000
+    assert: p.set_u32(0x10, 0xdeadbeef) == 0xdeadbeef // outside
+    assert: p.u64(0x0) == 0xb000f000baaafaaa
+    assert: p.set_u16(0x0, 0x1add) == 0x1add
+    assert: p.set_u16(0x2, 0xbadd) == 0xbadd
+    assert: p.set_u16(0x10, 0xdead) == 0xdead // outside
+    assert: p.u32(0x0) == 0xbadd1add
+    assert: p.set_u8(0x0, 0xbe) == 0xbe
+    assert: p.set_u8(0x1, 0xba) == 0xba
+    assert: p.set_u16(0x10, 0xdd) == 0xdd // outside
+    assert: p.u16(0x0) == 0xbabe
+    assert: p.u64(0x0) == 0xb000f000baddbabe
+    assert: p.u64(0x8) == 0xb333d333d0ffdaff
 
   :it "can point to a prior data region"
     p = @from_segment(b"\
