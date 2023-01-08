@@ -94,6 +94,22 @@
     error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._u64!(@_byte_offset +! n)
 
+  :fun ref _set_u8!(n U32, v U8)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._set_u8!(@_byte_offset +! n, v)
+
+  :fun ref _set_u16!(n U32, v U16)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._set_u16!(@_byte_offset +! n, v)
+
+  :fun ref _set_u32!(n U32, v U32)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._set_u32!(@_byte_offset +! n, v)
+
+  :fun ref _set_u64!(n U32, v U64)
+    error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._set_u64!(@_byte_offset +! n, v)
+
   :fun u8(n) U8: try (@_u8!(n) | 0)
   :fun u16(n) U16: try (@_u16!(n) | 0)
   :fun u32(n) U32: try (@_u32!(n) | 0)
@@ -108,6 +124,27 @@
   :fun f64(n): @u64(n).f64
 
   :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
+
+  :fun ref set_u8(n, v U8): try @_set_u8!(n, v), v
+  :fun ref set_u16(n, v U16): try @_set_u16!(n, v), v
+  :fun ref set_u32(n, v U32): try @_set_u32!(n, v), v
+  :fun ref set_u64(n, v U64): try @_set_u64!(n, v), v
+
+  :fun ref set_i8(n, v I8): @set_u8(n, v.u8), v
+  :fun ref set_i16(n, v I16): @set_u16(n, v.u16), v
+  :fun ref set_i32(n, v I32): @set_u32(n, v.u32), v
+  :fun ref set_i64(n, v I64): @set_u64(n, v.u64), v
+
+  :fun ref set_f32(n, v F32): @set_u32(n, v.u32), v
+  :fun ref set_f64(n, v F64): @set_u64(n, v.u64), v
+
+  :fun ref set_bool(n, bit_mask, value Bool)
+    if value (
+      @set_u8(n, @u8(n).bit_or(bit_mask))
+    |
+      @set_u8(n, @u8(n).bit_and(bit_mask.invert))
+    )
+    value
 
   :fun assert_union!(n, value): error! if (@u16(n) != value)
   :fun check_union(n, value): @u16(n) == value

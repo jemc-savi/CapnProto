@@ -6,3 +6,8 @@
   :fun _u16!(offset U32): @_bytes.read_native_u16!(offset.usize).le_to_native
   :fun _u32!(offset U32): @_bytes.read_native_u32!(offset.usize).le_to_native
   :fun _u64!(offset U32): @_bytes.read_native_u64!(offset.usize).le_to_native
+
+  :fun ref _set_u8!(offset U32, value U8): @_bytes[offset.usize]! = value
+  :fun ref _set_u16!(offset U32, value U16): @_bytes.write_native_u16!(offset.usize, value.native_to_le)
+  :fun ref _set_u32!(offset U32, value U32): @_bytes.write_native_u32!(offset.usize, value.native_to_le)
+  :fun ref _set_u64!(offset U32, value U64): @_bytes.write_native_u64!(offset.usize, value.native_to_le)
