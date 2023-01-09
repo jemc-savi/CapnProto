@@ -64,7 +64,7 @@
     || type.is_struct || type.is_interface || type.is_any_pointer
 
   // TODO: not `:fun ref`
-  :fun ref _type_name(t CapnProto.Meta.Type)
+  :fun ref _type_name(t CapnProto.Meta.Type, is_builder Bool)
     case (
     | t.is_void | "None"
     | t.is_bool | "Bool"
@@ -80,9 +80,19 @@
     | t.is_float64 | "F64"
     | t.is_text | "CapnProto.Text"
     | t.is_data | "CapnProto.Data"
-    | t.is_list | "CapnProto.List(\(try @_type_name(t.list!.element_type)))"
+    | t.is_list |
+      "CapnProto.List\(
+        if is_builder (".Builder" | "")
+      )(\(
+        try @_type_name(t.list!.element_type, is_builder)
+      ))"
     | t.is_enum | "\(try @_find_node_scoped_name(t.enum!.type_id))"
-    | t.is_struct | "\(try @_find_node_scoped_name(t.struct!.type_id))"
+    | t.is_struct |
+      "\(
+        try @_find_node_scoped_name(t.struct!.type_id)
+      )\(
+        if is_builder (".Builder" | "")
+      )"
     | t.is_interface | "INTERFACES_NOT_IMPLEMENTED"
     | t.is_any_pointer | "ANY_POINTER_NOT_IMPLEMENTED"
     | "NOT_IMPLEMENTED"
@@ -118,13 +128,16 @@
       // using the `capnp` compiler with the `--output=savi` option.
     >>>
     node.nested_nodes.each -> (nest_info |
-      try @_emit_type(@_find_node!(nest_info.id))
+      try @_emit_type(@_find_node!(nest_info.id), False)
+    )
+    node.nested_nodes.each -> (nest_info |
+      try @_emit_type(@_find_node!(nest_info.id), True)
     )
 
-  :fun ref _emit_type(node CapnProto.Meta.Node)
+  :fun ref _emit_type(node CapnProto.Meta.Node, is_builder Bool)
     case (
-    | node.is_enum | @_emit_enum(node)
-    | node.is_struct | @_emit_struct(node)
+    | node.is_enum | if is_builder.is_false @_emit_enum(node)
+    | node.is_struct | @_emit_struct(node, is_builder)
     | @_out << "\n\n// UNHANDLED: \(node.display_name)"
     )
 
@@ -149,9 +162,11 @@
     @_out << "\n      \(@_node_scoped_name(node)).\(zero_name)"
     @_out << "\n    )"
 
-  :fun ref _emit_struct(node CapnProto.Meta.Node)
+  :fun ref _emit_struct(node CapnProto.Meta.Node, is_builder Bool)
     @_out << "\n\n:struct \(@_node_scoped_name(node))"
+    if is_builder (@_out << ".Builder")
     @_out << "\n  :let _p CapnProto.Pointer.Struct"
+    if is_builder (@_out << ".Builder")
     @_out << "\n  :new from_pointer(@_p)"
 
     // Emit constant values.
@@ -161,7 +176,7 @@
         @_out << "\n\n  :const \(
           _TextCase.Snake[nest_info.name]
         ) \(
-          @_type_name(const.type)
+          @_type_name(const.type, is_builder)
         ): \(
           @_show_value(const.value)
         )"
@@ -173,13 +188,15 @@
     fields.each -> (field |
       @_out << "\n"
       try @_emit_field_check_union_method!(node, field)
-      @_emit_field_getter(node, field)
-      try @_emit_field_setter!(node, field)
+      @_emit_field_getter(node, field, is_builder)
+      if is_builder (
+        try @_emit_field_setter!(node, field)
+      )
     )
 
     // Emit other type definitions that act as groups for this struct.
     fields.each -> (field |
-      try @_emit_struct(@_find_node!(field.group!.type_id))
+      try @_emit_struct(@_find_node!(field.group!.type_id), is_builder)
     )
 
     // Emit other type definitions that are nested within this struct.
@@ -187,13 +204,14 @@
       try (
         nested = @_find_node!(nest_info.id)
         next if nested.is_const
-        @_emit_type(nested)
+        @_emit_type(nested, is_builder)
       )
     )
 
   :fun ref _emit_field_getter(
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
+    is_builder Bool
   )
     is_union = field.discriminant_value != field.no_discriminant
     needs_ref = try (@_is_pointer_type(field.slot!.type) | True)
@@ -206,7 +224,7 @@
       try @_emit_field_check_union!(node, field, True)
       @_out << ", "
     )
-    @_emit_field_get_expr(field)
+    @_emit_field_get_expr(field, is_builder)
 
   :fun ref _emit_field_setter!(
     node CapnProto.Meta.Node
@@ -222,7 +240,7 @@
     @_out << "\n  :fun ref \"\(
       _TextCase.Snake[field.name]
     )=\"(new_value \(
-      @_type_name(slot.type)
+      @_type_name(slot.type, False)
     )): "
     @_emit_field_set_expr(field, "new_value")
 
@@ -252,11 +270,15 @@
       field.discriminant_value
     ))"
 
-  :fun ref _emit_field_get_expr(field CapnProto.Meta.Field)
+  :fun ref _emit_field_get_expr(field CapnProto.Meta.Field, is_builder Bool)
     // First, handle the case where the field is a group instead of a slot.
     try (
       type_id = field.group!.type_id
-      @_out << "\(@_find_node_scoped_name(type_id)).from_pointer(@_p)"
+      @_out << "\(
+        @_find_node_scoped_name(type_id)
+      )\(
+        if is_builder (".Builder" | "")
+      ).from_pointer(@_p)"
       return
     )
 
@@ -368,9 +390,9 @@
       )
     | type.is_list |
       // TODO: handle default list values
-      @_out << "\(@_type_name(type)).new(@_p.list(\(offset)))"
+      @_out << "\(@_type_name(type, is_builder)).new(@_p.list(\(offset)))"
     | type.is_enum |
-      @_out << "\(@_type_name(type))._new("
+      @_out << "\(@_type_name(type, is_builder))._new("
       @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.uint16! != 0) (
@@ -380,7 +402,7 @@
       @_out << ")"
     | type.is_struct |
       // TODO: handle default list values
-      @_out << "\(@_type_name(type)).from_pointer(@_p.struct(\(offset)))"
+      @_out << "\(@_type_name(type, is_builder)).from_pointer(@_p.struct(\(offset)))"
     | type.is_interface |
       @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
     | type.is_any_pointer |

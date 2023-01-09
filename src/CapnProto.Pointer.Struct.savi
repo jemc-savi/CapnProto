@@ -1,28 +1,14 @@
-:struct CapnProto.Pointer.Struct
-  :let _segments CapnProto.Segments
-  :let _segment CapnProto.Segment
-  :let _byte_offset U32
-  :let _data_word_count U16
-  :let _pointers_count U16
+:trait _ParsedStructPointer
   :new _new(
-    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointers_count
-  )
-
-  :new empty(@_segments, @_segment)
-    @_byte_offset = 0
-    @_data_word_count = 0
-    @_pointers_count = 0
-
-  :fun non from_segments!(
     segments CapnProto.Segments
-    start_offset USize = 0
-    segment_index USize = 0
+    segment CapnProto.Segment
+    byte_offset U32
+    data_word_count U16
+    pointers_count U16
   )
-    segment = segments._list[segment_index]!
-    value = segment._u64!(start_offset.u32)
-    @_parse!(segments, segment, start_offset.u32, value)
 
-  :fun non _parse!(segments, segment, current_offset U32, value U64)
+:module _ParseStructPointer(A _ParsedStructPointer)
+  :fun _parse!(segments, segment, current_offset U32, value U64)
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
     try (
@@ -72,7 +58,33 @@
     data_word_count = value.bit_shr(32).u16
     pointers_count = value.bit_shr(48).u16
 
-    @_new(segments, segment, byte_offset, data_word_count, pointers_count)
+    A._new(segments, segment, byte_offset, data_word_count, pointers_count)
+
+:struct CapnProto.Pointer.Struct
+  :let _segments CapnProto.Segments
+  :let _segment CapnProto.Segment
+  :let _byte_offset U32
+  :let _data_word_count U16
+  :let _pointers_count U16
+  :new _new(
+    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointers_count
+  )
+
+  :new empty(@_segments, @_segment)
+    @_byte_offset = 0
+    @_data_word_count = 0
+    @_pointers_count = 0
+
+  :fun non from_segments!(
+    segments CapnProto.Segments
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    _ParseStructPointer(CapnProto.Pointer.Struct)._parse!(
+      segments, segment, start_offset.u32, value
+    )
 
   :fun _ptr_byte_offset!(n U16)
     error! unless (@_pointers_count > n)
@@ -108,6 +120,126 @@
 
   :fun ref _set_u64!(n U32, v U64)
     error! unless (@_data_word_count.u32 * 8 > n)
+    @_segment._set_u64!(@_byte_offset +! n, v)
+
+  :fun u8(n) U8: try (@_u8!(n) | 0)
+  :fun u16(n) U16: try (@_u16!(n) | 0)
+  :fun u32(n) U32: try (@_u32!(n) | 0)
+  :fun u64(n) U64: try (@_u64!(n) | 0)
+
+  :fun i8(n): @u8(n).i8
+  :fun i16(n): @u16(n).i16
+  :fun i32(n): @u32(n).i32
+  :fun i64(n): @u64(n).i64
+
+  :fun f32(n): @u32(n).f32
+  :fun f64(n): @u64(n).f64
+
+  :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
+
+  :fun assert_union!(n, value): error! if (@u16(n) != value)
+  :fun check_union(n, value): @u16(n) == value
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref text(n): try (@_text!(n) | @_empty_text)
+  :fun ref _empty_text
+    CapnProto.Text.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+  :fun ref _text!(n)
+    byte_offset = @_ptr_byte_offset!(n)
+    CapnProto.Text._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref data(n): try (@_data!(n) | @_empty_data)
+  :fun ref _empty_data
+    CapnProto.Data.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+  :fun ref _data!(n)
+    byte_offset = @_ptr_byte_offset!(n)
+    CapnProto.Data._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
+  :fun ref _empty_struct
+    CapnProto.Pointer.Struct.empty(@_segments, @_segment)
+  :fun ref _struct!(n):
+    byte_offset = @_ptr_byte_offset!(n)
+    _ParseStructPointer(CapnProto.Pointer.Struct)._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref list(n): try (@_list!(n) | @_empty_list)
+  :fun ref _empty_list
+    CapnProto.Pointer.StructList.empty(@_segments, @_segment)
+  :fun ref _list!(n):
+    byte_offset = @_ptr_byte_offset!(n)
+    _ParseStructListPointer(CapnProto.Pointer.StructList)._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
+
+:struct CapnProto.Pointer.Struct.Builder
+  :let _segments CapnProto.Segments
+  :let _segment CapnProto.Segment
+  :let _byte_offset U32
+  :let _data_word_count U16
+  :let _pointers_count U16
+  :new _new(
+    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointers_count
+  )
+
+  :new empty(@_segments, @_segment)
+    @_byte_offset = 0
+    @_data_word_count = 0
+    @_pointers_count = 0
+
+  :fun non from_segments!(
+    segments CapnProto.Segments
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    _ParseStructPointer(CapnProto.Pointer.Struct)._parse!(
+      segments, segment, start_offset.u32, value
+    )
+
+  :fun _ptr_byte_offset!(n U16)
+    // We don't need `@_pointers_count` bounds checking in Builder.
+    @_byte_offset +! (@_data_word_count +! n).u32 * 8
+
+  :fun _u8!(n U32)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._u8!(@_byte_offset +! n)
+
+  :fun _u16!(n U32)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._u16!(@_byte_offset +! n)
+
+  :fun _u32!(n U32)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._u32!(@_byte_offset +! n)
+
+  :fun _u64!(n U32)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._u64!(@_byte_offset +! n)
+
+  :fun ref _set_u8!(n U32, v U8)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._set_u8!(@_byte_offset +! n, v)
+
+  :fun ref _set_u16!(n U32, v U16)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._set_u16!(@_byte_offset +! n, v)
+
+  :fun ref _set_u32!(n U32, v U32)
+    // We don't need `@_data_word_count` bounds checking in Builder.
+    @_segment._set_u32!(@_byte_offset +! n, v)
+
+  :fun ref _set_u64!(n U32, v U64)
+    // We don't need `@_data_word_count` bounds checking in Builder.
     @_segment._set_u64!(@_byte_offset +! n, v)
 
   :fun u8(n) U8: try (@_u8!(n) | 0)
@@ -172,19 +304,19 @@
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
   :fun ref _empty_struct
-    CapnProto.Pointer.Struct.empty(@_segments, @_segment)
+    CapnProto.Pointer.Struct.Builder.empty(@_segments, @_segment)
   :fun ref _struct!(n):
     byte_offset = @_ptr_byte_offset!(n)
-    CapnProto.Pointer.Struct._parse!(
+    _ParseStructPointer(CapnProto.Pointer.Struct.Builder)._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref list(n): try (@_list!(n) | @_empty_list)
   :fun ref _empty_list
-    CapnProto.Pointer.StructList.empty(@_segments, @_segment)
+    CapnProto.Pointer.StructList.Builder.empty(@_segments, @_segment)
   :fun ref _list!(n):
     byte_offset = @_ptr_byte_offset!(n)
-    CapnProto.Pointer.StructList._parse!(
+    _ParseStructListPointer(CapnProto.Pointer.StructList.Builder)._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )

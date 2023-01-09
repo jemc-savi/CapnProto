@@ -12,3 +12,18 @@
   :fun ref each
     :yields A
     @_p.each -> (p | yield A.from_pointer(p))
+
+:trait _FromStructPointerBuilder
+  :new from_pointer(pointer CapnProto.Pointer.Struct.Builder)
+
+:struct CapnProto.List.Builder(A _FromStructPointerBuilder)
+  :let _p CapnProto.Pointer.StructList.Builder
+  :new (@_p)
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref "[]"(n): A.from_pointer(@_p[n])
+
+  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
+  :fun ref each
+    :yields A
+    @_p.each -> (p | yield A.from_pointer(p))

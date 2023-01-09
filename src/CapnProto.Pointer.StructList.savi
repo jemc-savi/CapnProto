@@ -1,34 +1,15 @@
-:struct CapnProto.Pointer.StructList
-  :let _segments CapnProto.Segments
-  :let _segment CapnProto.Segment
-  :let _byte_offset U32
-  :let _list_count U32
-  :let _data_word_count U16
-  :let _pointers_count U16
+:trait _ParsedStructListPointer
+  :new empty(segments CapnProto.Segments, segment CapnProto.Segment)
   :new _new(
-    @_segments
-    @_segment
-    @_byte_offset
-    @_list_count
-    @_data_word_count
-    @_pointers_count
-  )
-
-  :new empty(@_segments, @_segment)
-    @_byte_offset = 0
-    @_list_count = 0
-    @_data_word_count = 0
-    @_pointers_count = 0
-
-  :fun non from_segments!(
     segments CapnProto.Segments
-    start_offset USize = 0
-    segment_index USize = 0
+    segment CapnProto.Segment
+    byte_offset U32
+    list_count U32
+    data_word_count U16
+    pointers_count U16
   )
-    segment = segments._list[segment_index]!
-    value = segment._u64!(start_offset.u32)
-    @_parse!(segments, segment, start_offset.u32, value)
 
+:module _ParseStructListPointer(A _ParsedStructListPointer)
   :fun non _parse!(segments, segment, current_offset U32, value U64)
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
@@ -99,7 +80,7 @@
     // (D) indicate the number of 8-byte words of space needed for the list,
     // which is distinct from the number of elements in the list.
     word_count = upper_32.bit_shr(3).usize
-    return @empty(segments, segment) if (word_count == 0)
+    return A.empty(segments, segment) if (word_count == 0)
 
     // Read the tag pointer, which is similar to a struct pointer,
     // and describes the individual size of all structs in the list,
@@ -110,13 +91,46 @@
     data_word_count = tag_value.bit_shr(32).u16
     pointers_count = tag_value.bit_shr(48).u16
 
-    @_new(
+    A._new(
       segments
       segment
       byte_offset
       list_count
       data_word_count
       pointers_count
+    )
+
+:struct CapnProto.Pointer.StructList
+  :let _segments CapnProto.Segments
+  :let _segment CapnProto.Segment
+  :let _byte_offset U32
+  :let _list_count U32
+  :let _data_word_count U16
+  :let _pointers_count U16
+  :new _new(
+    @_segments
+    @_segment
+    @_byte_offset
+    @_list_count
+    @_data_word_count
+    @_pointers_count
+  )
+
+  :new empty(@_segments, @_segment)
+    @_byte_offset = 0
+    @_list_count = 0
+    @_data_word_count = 0
+    @_pointers_count = 0
+
+  :fun non from_segments!(
+    segments CapnProto.Segments
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    _ParseStructListPointer(CapnProto.Pointer.StructList)._parse!(
+      segments, segment, start_offset.u32, value
     )
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
@@ -142,6 +156,65 @@
           +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
 
         yield CapnProto.Pointer.Struct._new(
+          @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
+        )
+      )
+    )
+
+:struct CapnProto.Pointer.StructList.Builder
+  :let _segments CapnProto.Segments
+  :let _segment CapnProto.Segment
+  :let _byte_offset U32
+  :let _list_count U32
+  :let _data_word_count U16
+  :let _pointers_count U16
+  :new _new(
+    @_segments
+    @_segment
+    @_byte_offset
+    @_list_count
+    @_data_word_count
+    @_pointers_count
+  )
+
+  :new empty(@_segments, @_segment)
+    @_byte_offset = 0
+    @_list_count = 0
+    @_data_word_count = 0
+    @_pointers_count = 0
+
+  :fun non from_segments!(
+    segments CapnProto.Segments
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    _ParseStructListPointer(CapnProto.Pointer.StructList.Builder)._parse!(
+      segments, segment, start_offset.u32, value
+    )
+
+  :fun ref "[]"(n U32)
+    try (
+      error! unless (n < @_list_count)
+
+      byte_offset = @_byte_offset
+        +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
+
+      CapnProto.Pointer.Struct.Builder._new(
+        @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
+      )
+    |
+      CapnProto.Pointer.Struct.Builder.empty(@_segments, @_segment)
+    )
+
+  :fun ref each
+    @_list_count.times -> (n |
+      try (
+        byte_offset = @_byte_offset
+          +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
+
+        yield CapnProto.Pointer.Struct.Builder._new(
           @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
         )
       )
