@@ -1,0 +1,28 @@
+:trait _MessageBuilderRoot
+  :new from_pointer(p CapnProto.Pointer.Struct.Builder)
+
+  :const capn_proto_data_word_count U16: 0
+  :const capn_proto_pointer_count U16: 0
+
+:struct CapnProto.Message.Builder(A _MessageBuilderRoot)
+  :let root A
+
+  :new (initial_size USize)
+    alloc_byte_size = (
+      A.capn_proto_data_word_count.usize +
+      A.capn_proto_pointer_count.usize
+    ) * 8 + 8
+    initial_size = initial_size.at_least(alloc_byte_size)
+
+    segment = CapnProto.Segment.new(initial_size)
+    segments = CapnProto.Segments.new([segment])
+    pointer = CapnProto.Pointer.Struct.Builder._new(
+      segments, segment, 8
+      A.capn_proto_data_word_count, A.capn_proto_pointer_count
+    )
+    try segment._set_u64!(
+      segment._allocate_pointer(alloc_byte_size.u32)
+      _WriteStructPointer._encode_with_zero_relative_offset(pointer)
+    )
+
+    @root = A.from_pointer(pointer)

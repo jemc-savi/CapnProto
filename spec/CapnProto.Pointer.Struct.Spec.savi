@@ -3,7 +3,7 @@
   :const describes: "CapnProto.Pointer.Struct"
 
   :fun from_segment(bytes Bytes, byte_offset USize = 0)
-    segment = CapnProto.Segment.new(bytes.clone)
+    segment = CapnProto.Segment.new_from_bytes(bytes.clone)
     segments = CapnProto.Segments.new([segment])
     pointer = CapnProto.Pointer.Struct.empty(segments, segment)
     assert no_error: (
@@ -14,9 +14,9 @@
   :fun from_segments(chunks Array(Bytes), byte_offset USize = 0)
     segments = CapnProto.Segments.new([])
     chunks.each -> (chunk |
-      segments._list.push(CapnProto.Segment.new(chunk.clone))
+      segments._list.push(CapnProto.Segment.new_from_bytes(chunk.clone))
     )
-    segment = try (segments._list[0]! | CapnProto.Segment.new(b"".clone))
+    segment = try (segments._list[0]! | CapnProto.Segment.new_from_bytes(b"".clone))
     pointer = CapnProto.Pointer.Struct.empty(segments, segment)
     assert no_error: (
       pointer = CapnProto.Pointer.Struct.from_segments!(segments, byte_offset)

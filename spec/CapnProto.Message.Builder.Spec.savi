@@ -1,0 +1,47 @@
+:struct _ExampleBuilder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+
+  :const capn_proto_data_word_count U16: 4
+  :fun some_u64: @_p.u64(0x0)
+  :fun some_i64: @_p.i64(0x8)
+  :fun some_u32: @_p.u32(0x10)
+  :fun some_i32: @_p.i32(0x14)
+  :fun some_u16: @_p.u16(0x18)
+  :fun some_i16: @_p.i16(0x1c)
+  :fun some_u8: @_p.u8(0x1e)
+  :fun some_i8: @_p.i8(0x1f)
+  :fun ref "some_u64="(new_value): @_p.set_u64(0x0, new_value)
+  :fun ref "some_i64="(new_value): @_p.set_i64(0x8, new_value)
+  :fun ref "some_u32="(new_value): @_p.set_u32(0x10, new_value)
+  :fun ref "some_i32="(new_value): @_p.set_i32(0x14, new_value)
+  :fun ref "some_u16="(new_value): @_p.set_u16(0x18, new_value)
+  :fun ref "some_i16="(new_value): @_p.set_i16(0x1c, new_value)
+  :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value)
+  :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value)
+
+  :const capn_proto_pointer_count U16: 2
+  :fun ref some_text: @_p.text(0)
+  :fun ref "some_text="(new_value): @_p.set_text(0, new_value)
+
+:class CapnProto.Message.Builder.Spec
+  :is Spec
+  :const describes: "CapnProto.Message.Builder"
+
+  :it "reads from and writes to fields of the root struct"
+    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    root = message.root
+    assert: root.some_u64 == 0, root.some_u64 = 35, assert: root.some_u64 == 35
+    assert: root.some_i64 == 0, root.some_i64 = 36, assert: root.some_i64 == 36
+    assert: root.some_u32 == 0, root.some_u32 = 37, assert: root.some_u32 == 37
+    assert: root.some_i32 == 0, root.some_i32 = 38, assert: root.some_i32 == 38
+    assert: root.some_u16 == 0, root.some_u16 = 39, assert: root.some_u16 == 39
+    assert: root.some_i16 == 0, root.some_i16 = 40, assert: root.some_i16 == 40
+    assert: root.some_u8  == 0, root.some_u8  = 41, assert: root.some_u8  == 41
+    assert: root.some_i8  == 0, root.some_i8  = 42, assert: root.some_i8  == 42
+
+    assert: "\(root.some_text)" == ""
+    root.some_text               = "foo"
+    assert: "\(root.some_text)" == "foo"
+    root.some_text               = "This is an example string"
+    assert: "\(root.some_text)" == "This is an example string"

@@ -106,7 +106,7 @@
       segment_id = @_segments._list.size
       segment_size = @_expected_segment_size(segment_id)
       try (
-        @_segments._list << CapnProto.Segment.new(
+        @_segments._list << CapnProto.Segment.new_from_bytes(
           stream.advance!(segment_size).extract_token
         )
       |

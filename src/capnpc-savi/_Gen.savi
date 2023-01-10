@@ -169,6 +169,18 @@
     if is_builder (@_out << ".Builder")
     @_out << "\n  :new from_pointer(@_p)"
 
+    // Emit protocol-level constant info.
+    try (
+      struct = node.struct!
+      @_out << "\n"
+      @_out << "\n  :const capn_proto_data_word_count U16: \(
+        struct.data_word_count
+      )"
+      @_out << "\n  :const capn_proto_pointer_count U16: \(
+        struct.pointer_count
+      )"
+    )
+
     // Emit constant values.
     node.nested_nodes.each -> (nest_info |
       try (
@@ -390,7 +402,7 @@
       )
     | type.is_list |
       // TODO: handle default list values
-      @_out << "\(@_type_name(type, is_builder)).new(@_p.list(\(offset)))"
+      @_out << "\(@_type_name(type, is_builder)).from_pointer(@_p.list(\(offset)))"
     | type.is_enum |
       @_out << "\(@_type_name(type, is_builder))._new("
       @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"

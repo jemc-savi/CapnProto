@@ -4,8 +4,7 @@
 
   :fun init_with_size(data_word_count U16, pointers_count U16)
     byte_size = (data_word_count + pointers_count).usize * 8
-    chunk = Bytes.new.fill_with_zeros(0, byte_size)
-    segment = CapnProto.Segment.new(chunk)
+    segment = CapnProto.Segment.new(byte_size)
     segments = CapnProto.Segments.new([segment])
     CapnProto.Pointer.Struct.Builder._new(
       segments, segment, 0, data_word_count, pointers_count

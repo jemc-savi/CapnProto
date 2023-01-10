@@ -60,6 +60,23 @@
 
     A._new(segments, segment, byte_offset, data_word_count, pointers_count)
 
+:module _WriteStructPointer
+  :fun _encode_with_zero_relative_offset(
+    pointer CapnProto.Pointer.Struct.Builder
+  )
+    // lsb                      struct pointer                       msb
+    // +-+-----------------------------+---------------+---------------+
+    // |A|             B               |       C       |       D       |
+    // +-+-----------------------------+---------------+---------------+
+    //
+    // A (2 bits) = 0, to indicate that this is a struct pointer.
+    // B (30 bits) = Offset, in words, from the end of the pointer to the
+    //     start of the struct's data section.  Signed.
+    // C (16 bits) = Size of the struct's data section, in words.
+    // D (16 bits) = Size of the struct's pointer section, in words.
+    pointer._data_word_count.u64.bit_shl(32)           // C
+      .bit_or(pointer._pointers_count.u64.bit_shl(48)) // D (A and B are zero)
+
 :struct CapnProto.Pointer.Struct
   :let _segments CapnProto.Segments
   :let _segment CapnProto.Segment
@@ -143,7 +160,9 @@
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref text(n): try (@_text!(n) | @_empty_text)
   :fun ref _empty_text
-    CapnProto.Text.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+    CapnProto.Text.from_pointer(
+      CapnProto.Pointer.U8List.empty(@_segments, @_segment)
+    )
   :fun ref _text!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Text._parse!(
@@ -207,39 +226,39 @@
     )
 
   :fun _ptr_byte_offset!(n U16)
-    // We don't need `@_pointers_count` bounds checking in Builder.
+    error! unless (@_pointers_count > n)
     @_byte_offset +! (@_data_word_count +! n).u32 * 8
 
   :fun _u8!(n U32)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._u8!(@_byte_offset +! n)
 
   :fun _u16!(n U32)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._u16!(@_byte_offset +! n)
 
   :fun _u32!(n U32)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._u32!(@_byte_offset +! n)
 
   :fun _u64!(n U32)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._u64!(@_byte_offset +! n)
 
   :fun ref _set_u8!(n U32, v U8)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._set_u8!(@_byte_offset +! n, v)
 
   :fun ref _set_u16!(n U32, v U16)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._set_u16!(@_byte_offset +! n, v)
 
   :fun ref _set_u32!(n U32, v U32)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._set_u32!(@_byte_offset +! n, v)
 
   :fun ref _set_u64!(n U32, v U64)
-    // We don't need `@_data_word_count` bounds checking in Builder.
+    error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._set_u64!(@_byte_offset +! n, v)
 
   :fun u8(n) U8: try (@_u8!(n) | 0)
@@ -284,12 +303,39 @@
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref text(n): try (@_text!(n) | @_empty_text)
   :fun ref _empty_text
-    CapnProto.Text.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+    CapnProto.Text.from_pointer(
+      CapnProto.Pointer.U8List.empty(@_segments, @_segment)
+    )
   :fun ref _text!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Text._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
+  :fun ref set_text(n, value String) CapnProto.Text
+    // We expect the byte offset to be within bounds - otherwise we can't do it,
+    // and we'll return an empty `CapnProto.Text` to signal this problem.
+    byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_text)
+
+    // If there's an existing text pointer, we can free it now.
+    try CapnProto.Text._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )._p._free
+
+    // Now we allocate the new one.
+    new_text = CapnProto.Text._new(@_segments, @_segment, value)
+
+    // We need to write the pointer to the buffer so it can be followed.
+    try (
+      @_segment._set_u64!(
+        byte_offset
+        _WriteU8ListPointer._encode(byte_offset, new_text._p)
+      )
+    |
+      new_text._p._free
+      return @_empty_text
+    )
+
+    new_text
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref data(n): try (@_data!(n) | @_empty_data)
