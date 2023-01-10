@@ -1,0 +1,35 @@
+:class CapnProto.Pointer.Struct.Builder.Spec
+  :is Spec
+  :const describes: "CapnProto.Pointer.Struct.Builder"
+
+  :fun init_with_size(data_word_count U16, pointers_count U16)
+    byte_size = (data_word_count + pointers_count).usize * 8
+    chunk = Bytes.new.fill_with_zeros(0, byte_size)
+    segment = CapnProto.Segment.new(chunk)
+    segments = CapnProto.Segments.new([segment])
+    CapnProto.Pointer.Struct.Builder._new(
+      segments, segment, 0, data_word_count, pointers_count
+    )
+
+  :it "writes and reads numeric values in the data region"
+    p = @init_with_size(0x10, 0)
+
+    assert: p.set_u64(0x0, 0xbeeedeeed000daaa) == 0xbeeedeeed000daaa
+    assert: p.set_u64(0x8, 0xb333d333d0ffdaff) == 0xb333d333d0ffdaff
+    assert: p.u64(0x0) == 0xbeeedeeed000daaa
+    assert: p.u64(0x8) == 0xb333d333d0ffdaff
+
+    assert: p.set_u32(0x0, 0xbaaafaaa) == 0xbaaafaaa
+    assert: p.set_u32(0x4, 0xb000f000) == 0xb000f000
+    assert: p.u64(0x0) == 0xb000f000baaafaaa
+
+    assert: p.set_u16(0x0, 0x1add) == 0x1add
+    assert: p.set_u16(0x2, 0xbadd) == 0xbadd
+    assert: p.u32(0x0) == 0xbadd1add
+
+    assert: p.set_u8(0x0, 0xbe) == 0xbe
+    assert: p.set_u8(0x1, 0xba) == 0xba
+    assert: p.u16(0x0) == 0xbabe
+
+    assert: p.u64(0x0) == 0xb000f000baddbabe
+    assert: p.u64(0x8) == 0xb333d333d0ffdaff
