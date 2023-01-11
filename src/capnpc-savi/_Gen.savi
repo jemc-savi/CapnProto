@@ -247,13 +247,12 @@
 
     slot = field.slot!
     // TODO: implement pointer setter as a deep copy, like C++ does
-    error! if (slot.type.is_void || @_is_pointer_type(slot.type))
+    error! if (
+      slot.type.is_void ||
+      (@_is_pointer_type(slot.type) && !slot.type.is_text && !slot.type.is_data)
+    )
 
-    @_out << "\n  :fun ref \"\(
-      _TextCase.Snake[field.name]
-    )=\"(new_value \(
-      @_type_name(slot.type, False)
-    )): "
+    @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
     @_emit_field_set_expr(field, "new_value")
 
   :fun ref _emit_field_check_union_method!(
@@ -444,101 +443,55 @@
       @_out << ")"
     | type.is_int8 |
       @_out << "@_p.set_i8(\(
-        (offset * 1).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.int8! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.int8!))"
-        )
-      )
-      @_out << ")"
+        (offset * 1).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.int8! | 0)))"
     | type.is_int16 |
       @_out << "@_p.set_i16(\(
-        (offset * 2).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.int16! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.int16!))"
-        )
-      )
-      @_out << ")"
+        (offset * 2).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.int16! | 0)))"
     | type.is_int32 |
       @_out << "@_p.set_i32(\(
-        (offset * 4).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.int32! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.int32!))"
-        )
-      )
-      @_out << ")"
+        (offset * 4).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.int32! | 0)))"
     | type.is_int64 |
       @_out << "@_p.set_i64(\(
-        (offset * 8).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.int64! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.int64!))"
-        )
-      )
-      @_out << ")"
+        (offset * 8).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.int64! | 0)))"
     | type.is_uint8 |
       @_out << "@_p.set_u8(\(
-        (offset * 1).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.uint8! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.uint8!))"
-        )
-      )
-      @_out << ")"
+        (offset * 1).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.uint8! | 0)))"
     | type.is_uint16 |
       @_out << "@_p.set_u16(\(
-        (offset * 2).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.uint16! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.uint16!))"
-        )
-      )
-      @_out << ")"
+        (offset * 2).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.uint16! | 0)))"
     | type.is_uint32 |
       @_out << "@_p.set_u32(\(
-        (offset * 4).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.uint32! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.uint32!))"
-        )
-      )
-      @_out << ")"
+        (offset * 4).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.uint32! | 0)))"
     | type.is_uint64 |
       @_out << "@_p.set_u64(\(
-        (offset * 8).format.hex.without_leading_zeros), \(input_name)"
-      try (
-        if (slot.default_value.uint64! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.uint64!))"
-        )
-      )
-      @_out << ")"
+        (offset * 8).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.uint64! | 0)))"
     | type.is_float32 |
       @_out << "@_p.set_f32(\(
-        (offset * 4).format.hex.without_leading_zeros), \(input_name))"
-      try (
-        if (slot.default_value.float32! != 0) (
-          @_out << " // UNHANDLED: default_value"
-        )
-      )
+        (offset * 4).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.float32! | 0)))"
     | type.is_float64 |
       @_out << "@_p.set_f64(\(
-        (offset * 8).format.hex.without_leading_zeros), \(input_name))"
-      try (
-        if (slot.default_value.float64! != 0) (
-          @_out << " // UNHANDLED: default_value"
-        )
-      )
+        (offset * 8).format.hex.without_leading_zeros), \(input_name), \(
+        try (slot.default_value.float64! | 0)))"
+    | type.is_text |
+      @_out << "@_p.set_text(\(offset), \(input_name), \"\(
+        try ("\(slot.default_value.text!)" | ""))\")"
+    | type.is_data |
+      @_out << "@_p.set_data(\(offset), \(input_name), b\"\(
+        try ("\(slot.default_value.data!)" | ""))\")"
     | type.is_enum |
       @_out << "@_p.set_u16(\(
-        (offset * 2).format.hex.without_leading_zeros), \(input_name).u16"
-      try (
-        if (slot.default_value.uint16! != 0) (
-          @_out << ".bit_xor(\(slot.default_value.uint16!))"
-        )
-      )
-      @_out << ")"
+        (offset * 2).format.hex.without_leading_zeros), \(
+        @_type_name(type, False))[\(input_name)].u16, \(
+        try (slot.default_value.uint16! | 0)))"
     |
       @_out << "NOT_IMPLEMENTED"
     )

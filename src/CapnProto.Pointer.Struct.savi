@@ -172,7 +172,7 @@
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref data(n): try (@_data!(n) | @_empty_data)
   :fun ref _empty_data
-    CapnProto.Data.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+    CapnProto.Data.from_pointer(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
   :fun ref _data!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Data._parse!(
@@ -276,24 +276,24 @@
 
   :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
 
-  :fun ref set_u8(n, v U8): try @_set_u8!(n, v), v
-  :fun ref set_u16(n, v U16): try @_set_u16!(n, v), v
-  :fun ref set_u32(n, v U32): try @_set_u32!(n, v), v
-  :fun ref set_u64(n, v U64): try @_set_u64!(n, v), v
+  :fun ref set_u8(n, v U8, d U8): try @_set_u8!(n, v.bit_xor(d)), v
+  :fun ref set_u16(n, v U16, d U16): try @_set_u16!(n, v.bit_xor(d)), v
+  :fun ref set_u32(n, v U32, d U32): try @_set_u32!(n, v.bit_xor(d)), v
+  :fun ref set_u64(n, v U64, d U64): try @_set_u64!(n, v.bit_xor(d)), v
 
-  :fun ref set_i8(n, v I8): @set_u8(n, v.u8), v
-  :fun ref set_i16(n, v I16): @set_u16(n, v.u16), v
-  :fun ref set_i32(n, v I32): @set_u32(n, v.u32), v
-  :fun ref set_i64(n, v I64): @set_u64(n, v.u64), v
+  :fun ref set_i8(n, v I8, d I8): @set_u8(n, v.u8, d.u8), v
+  :fun ref set_i16(n, v I16, d I16): @set_u16(n, v.u16, d.u16), v
+  :fun ref set_i32(n, v I32, d I32): @set_u32(n, v.u32, d.u32), v
+  :fun ref set_i64(n, v I64, d I64): @set_u64(n, v.u64, d.u64), v
 
-  :fun ref set_f32(n, v F32): @set_u32(n, v.u32), v
-  :fun ref set_f64(n, v F64): @set_u64(n, v.u64), v
+  :fun ref set_f32(n, v F32, d F32): @set_u32(n, v.u32, d.u32), v
+  :fun ref set_f64(n, v F64, d F64): @set_u64(n, v.u64, d.u64), v
 
   :fun ref set_bool(n, bit_mask, value Bool)
     if value (
-      @set_u8(n, @u8(n).bit_or(bit_mask))
+      @set_u8(n, @u8(n).bit_or(bit_mask), 0)
     |
-      @set_u8(n, @u8(n).bit_and(bit_mask.invert))
+      @set_u8(n, @u8(n).bit_and(bit_mask.invert), 0)
     )
     value
 
@@ -311,7 +311,10 @@
     CapnProto.Text._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
-  :fun ref set_text(n, value String) CapnProto.Text
+
+  :fun ref set_text(n, value String, default_value String) CapnProto.Text
+    // TODO: account for default_value
+
     // We expect the byte offset to be within bounds - otherwise we can't do it,
     // and we'll return an empty `CapnProto.Text` to signal this problem.
     byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_text)
@@ -321,18 +324,20 @@
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )._p._free
 
+    // If the requested value is empty, we won't allocate anything new.
+    // We'll just write zero bytes to that pointer's position and return.
+    if value.is_empty (
+      try @_segment._set_u64!(byte_offset, 0)
+      return @_empty_text
+    )
+
     // Now we allocate the new one.
     new_text = CapnProto.Text._new(@_segments, @_segment, value)
 
     // We need to write the pointer to the buffer so it can be followed.
-    try (
-      @_segment._set_u64!(
-        byte_offset
-        _WriteU8ListPointer._encode(byte_offset, new_text._p)
-      )
-    |
-      new_text._p._free
-      return @_empty_text
+    try @_segment._set_u64!(
+      byte_offset
+      _WriteU8ListPointer._encode(byte_offset, new_text._p)
     )
 
     new_text
@@ -340,12 +345,42 @@
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref data(n): try (@_data!(n) | @_empty_data)
   :fun ref _empty_data
-    CapnProto.Data.new(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
+    CapnProto.Data.from_pointer(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
   :fun ref _data!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Data._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
+
+  :fun ref set_data(n, value Bytes, default_value Bytes) CapnProto.Data
+    // TODO: account for default_value
+
+    // We expect the byte offset to be within bounds - otherwise we can't do it,
+    // and we'll return an empty `CapnProto.Data` to signal this problem.
+    byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_data)
+
+    // If there's an existing text pointer, we can free it now.
+    try CapnProto.Data._parse!(
+      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )._p._free
+
+    // If the requested value is empty, we won't allocate anything new.
+    // We'll just write zero bytes to that pointer's position and return.
+    if value.is_empty (
+      try @_segment._set_u64!(byte_offset, 0)
+      return @_empty_data
+    )
+
+    // Now we allocate the new one.
+    new_data = CapnProto.Data._new(@_segments, @_segment, value)
+
+    // We need to write the pointer to the buffer so it can be followed.
+    try @_segment._set_u64!(
+      byte_offset
+      _WriteU8ListPointer._encode(byte_offset, new_data._p)
+    )
+
+    new_data
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref struct(n): try (@_struct!(n) | @_empty_struct)

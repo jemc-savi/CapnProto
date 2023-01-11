@@ -1,10 +1,32 @@
 :struct CapnProto.Data
   :let _p CapnProto.Pointer.U8List
-  :new (@_p)
+  :new from_pointer(@_p)
+
+  :new _new(segments, segment, value Bytes)
+    byte_offset = segment._allocate_and_write_bytes(value)
+    @_p = CapnProto.Pointer.U8List._new(
+      segments, segment, byte_offset, value.size.u32
+    )
 
   :fun non _parse!(segments, segment, current_offset, value)
-    @new(
+    @from_pointer(
       CapnProto.Pointer.U8List._parse!(segments, segment, current_offset, value)
     )
 
   :fun size: @_p._byte_count.usize
+
+  :is IntoString
+  :fun into_string_space: @size
+  :fun into_string(out String'iso) String'iso
+    // TODO: Do a more efficient copy here.
+    @_p.each(0, @size) -> (byte | out.push_byte(byte))
+    --out
+
+  :fun each_byte_with_index(
+    from USize = 0
+    to = USize.max_value
+    stride USize = 1
+  )
+    @_p.each_with_index(from, to.min(@size), stride) -> (byte, index |
+      yield (byte, index)
+    )
