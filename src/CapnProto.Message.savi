@@ -14,8 +14,8 @@
     ) * 8 + 8
     initial_size = initial_size.at_least(alloc_byte_size)
 
-    segment = CapnProto.Segment.new(initial_size)
-    segments = CapnProto.Segments.new([segment])
+    segments = CapnProto.Segments.new
+    segment = CapnProto.Segment.new(segments, initial_size)
     pointer = CapnProto.Pointer.Struct.Builder._new(
       segments, segment, 8
       A.capn_proto_data_word_count, A.capn_proto_pointer_count

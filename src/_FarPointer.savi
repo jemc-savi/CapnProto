@@ -1,11 +1,9 @@
-:struct CapnProto.Pointer.Far
-  :let _segments CapnProto.Segments
-  :let _segment CapnProto.Segment
+:struct _FarPointer
+  :let _segment CapnProto.Segment'box
   :let _byte_offset U32
   :let _override_byte_offset U32
   :let _pointer_value U64
   :new _new(
-    @_segments
     @_segment
     @_byte_offset
     @_override_byte_offset
@@ -13,8 +11,7 @@
   )
 
   :fun non _parse!(
-    segments CapnProto.Segments
-    current_segment CapnProto.Segment
+    segments CapnProto.Segments'box
     current_offset U32
     value U64
   )
@@ -49,8 +46,8 @@
 
     // The upper 32-bits of the value (D), represent the segment ID, as an
     // index into the list of segments to point to the target segment.
-    segment_id = value.bit_shr(32).u32
-    segment = segments._list[segment_id.usize]!
+    segment_index = value.bit_shr(32).u32.usize
+    segment = segments._list[segment_index]!
 
     // The pointer value pointed to by the far pointer is retrieved from that
     // particular byte offset within the target segment.
@@ -74,11 +71,11 @@
       tag_pointer_value = segment._u64!(byte_offset +! 8)
 
       // We follow the second far pointer to the second target segment.
-      segment_id = pointer_value.bit_shr(32).u32
-      segment = segments._list[segment_id.usize]!
+      segment_index = pointer_value.bit_shr(32).u32.usize
+      segment = segments._list[segment_index]!
 
       // And we treat the tag pointer value as the one that describes the data.
       pointer_value = tag_pointer_value
     )
 
-    @_new(segments, segment, byte_offset, override_byte_offset, pointer_value)
+    @_new(segment, byte_offset, override_byte_offset, pointer_value)

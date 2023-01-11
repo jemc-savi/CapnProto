@@ -1,16 +1,12 @@
 :struct CapnProto.Data
-  :let _p CapnProto.Pointer.U8List
+  :let _p CapnProto.Pointer.U8List'box
   :new from_pointer(@_p)
+  :new box read_from_pointer(p CapnProto.Pointer.U8List'box): @_p = p
 
-  :new _new(segments, segment, value Bytes)
+  :new _new(segments, segment CapnProto.Segment, value Bytes)
     byte_offset = segment._allocate_and_write_bytes(value)
-    @_p = CapnProto.Pointer.U8List._new(
+    @_p = CapnProto.Pointer.U8List._new_read(
       segments, segment, byte_offset, value.size.u32
-    )
-
-  :fun non _parse!(segments, segment, current_offset, value)
-    @from_pointer(
-      CapnProto.Pointer.U8List._parse!(segments, segment, current_offset, value)
     )
 
   :fun size: @_p._byte_count.usize
