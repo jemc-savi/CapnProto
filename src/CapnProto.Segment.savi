@@ -28,11 +28,17 @@
     alloc_count = try (byte_count +! 1 | return U32.max_value)
     byte_offset = @_allocate_pointer(alloc_count)
 
-    // If the value is already null-terminated in its native buffer,
-    // we can do this all in one copy. Otherwise we'll do a copy for
-    // the content then set the terminator byte separately.
+    // Do a copy for the content then set the terminator byte separately.
     @_bytes.copy_from(value.as_bytes, 0, byte_count.usize, byte_offset.usize)
     try (@_bytes[(byte_offset + byte_count).usize]! = 0)
+
+    byte_offset
+
+  :fun ref _allocate_and_write_bytes(value Bytes) U32
+    byte_count = value.size.u32
+    byte_offset = @_allocate_pointer(byte_count)
+
+    @_bytes.copy_from(value, 0, byte_count.usize, byte_offset.usize)
 
     byte_offset
 

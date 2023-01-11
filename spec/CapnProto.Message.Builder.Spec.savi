@@ -11,18 +11,20 @@
   :fun some_i16: @_p.i16(0x1c)
   :fun some_u8: @_p.u8(0x1e)
   :fun some_i8: @_p.i8(0x1f)
-  :fun ref "some_u64="(new_value): @_p.set_u64(0x0, new_value)
-  :fun ref "some_i64="(new_value): @_p.set_i64(0x8, new_value)
-  :fun ref "some_u32="(new_value): @_p.set_u32(0x10, new_value)
-  :fun ref "some_i32="(new_value): @_p.set_i32(0x14, new_value)
-  :fun ref "some_u16="(new_value): @_p.set_u16(0x18, new_value)
-  :fun ref "some_i16="(new_value): @_p.set_i16(0x1c, new_value)
-  :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value)
-  :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value)
+  :fun ref "some_u64="(new_value): @_p.set_u64(0x0, new_value, 0)
+  :fun ref "some_i64="(new_value): @_p.set_i64(0x8, new_value, 0)
+  :fun ref "some_u32="(new_value): @_p.set_u32(0x10, new_value, 0)
+  :fun ref "some_i32="(new_value): @_p.set_i32(0x14, new_value, 0)
+  :fun ref "some_u16="(new_value): @_p.set_u16(0x18, new_value, 0)
+  :fun ref "some_i16="(new_value): @_p.set_i16(0x1c, new_value, 0)
+  :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value, 0)
+  :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value, 0)
 
   :const capn_proto_pointer_count U16: 2
   :fun ref some_text: @_p.text(0)
-  :fun ref "some_text="(new_value): @_p.set_text(0, new_value)
+  :fun ref some_data: @_p.data(1)
+  :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
+  :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
 
 :class CapnProto.Message.Builder.Spec
   :is Spec
@@ -45,3 +47,13 @@
     assert: "\(root.some_text)" == "foo"
     root.some_text               = "This is an example string"
     assert: "\(root.some_text)" == "This is an example string"
+    root.some_text               = ""
+    assert: "\(root.some_text)" == ""
+
+    assert: "\(root.some_data)" == ""
+    root.some_data              = b"bar"
+    assert: "\(root.some_data)" == "bar"
+    root.some_data              = b"This is some example data"
+    assert: "\(root.some_data)" == "This is some example data"
+    root.some_data              = b""
+    assert: "\(root.some_data)" == ""
