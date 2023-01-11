@@ -136,17 +136,13 @@
     )
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref "[]"(n U32)
-    try (
-      error! unless (n < @_list_count)
+  :fun ref "[]!"(n U32)
+    error! unless (n < @_list_count)
 
-      byte_offset = @_byte_offset +! @_element_byte_size *! n
+    byte_offset = @_byte_offset +! @_element_byte_size *! n
 
-      CapnProto.Pointer.Struct._new(
-        @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
-      )
-    |
-      CapnProto.Pointer.Struct.empty(@_segments, @_segment)
+    CapnProto.Pointer.Struct._new(
+      @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
     )
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
@@ -217,18 +213,14 @@
       segments, segment, start_offset.u32, value
     )
 
-  :fun ref "[]"(n U32)
-    try (
-      error! unless (n < @_list_count)
+  :fun ref "[]!"(n U32)
+    error! unless (n < @_list_count)
 
-      byte_offset = @_byte_offset
-        +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
+    byte_offset = @_byte_offset
+      +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
 
-      CapnProto.Pointer.Struct.Builder._new(
-        @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
-      )
-    |
-      CapnProto.Pointer.Struct.Builder.empty(@_segments, @_segment)
+    CapnProto.Pointer.Struct.Builder._new(
+      @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
     )
 
   :fun ref each

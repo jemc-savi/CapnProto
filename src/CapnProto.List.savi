@@ -6,7 +6,7 @@
   :new from_pointer(@_p)
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref "[]"(n): A.from_pointer(@_p[n])
+  :fun ref "[]!"(n): A.from_pointer(@_p[n]!)
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref each
@@ -21,7 +21,7 @@
   :new from_pointer(@_p)
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref "[]"(n): A.from_pointer(@_p[n])
+  :fun ref "[]!"(n): A.from_pointer(@_p[n]!)
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref each
