@@ -122,6 +122,8 @@
     @_data_word_count = 0
     @_pointers_count = 0
 
+  :fun _element_byte_size: (@_data_word_count.u32 + @_pointers_count.u32) * 8
+
   :fun non from_segments!(
     segments CapnProto.Segments
     start_offset USize = 0
@@ -138,8 +140,7 @@
     try (
       error! unless (n < @_list_count)
 
-      byte_offset = @_byte_offset
-        +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
+      byte_offset = @_byte_offset +! @_element_byte_size *! n
 
       CapnProto.Pointer.Struct._new(
         @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
@@ -152,8 +153,7 @@
   :fun ref each
     @_list_count.times -> (n |
       try (
-        byte_offset = @_byte_offset
-          +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
+        byte_offset = @_byte_offset +! @_element_byte_size *! n
 
         yield CapnProto.Pointer.Struct._new(
           @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
@@ -182,6 +182,29 @@
     @_list_count = 0
     @_data_word_count = 0
     @_pointers_count = 0
+
+  :fun _element_byte_size: (@_data_word_count.u32 + @_pointers_count.u32) * 8
+
+  :fun ref _reallocate(new_count U32)
+    try (
+      element_byte_size = @_element_byte_size
+      new_byte_size = element_byte_size *! new_count
+      old_byte_size = element_byte_size *! @_list_count
+      new_byte_offset = @_segment
+        ._reallocate_pointer(@_byte_offset, old_byte_size, new_byte_size)
+
+      @_new(
+        @_segments
+        @_segment
+        new_byte_offset
+        new_count
+        @_data_word_count
+        @_pointers_count
+      )
+    |
+      // If the new list size is out of bounds for U32, don't resize at all.
+      @
+    )
 
   :fun non from_segments!(
     segments CapnProto.Segments

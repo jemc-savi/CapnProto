@@ -3,7 +3,7 @@
   :const describes: "CapnProto.Pointer.U8List"
 
   :fun from_segment(bytes Bytes, byte_offset USize = 0)
-    segment = CapnProto.Segment.new(bytes.clone)
+    segment = CapnProto.Segment.new_from_bytes(bytes.clone)
     segments = CapnProto.Segments.new([segment])
     pointer = CapnProto.Pointer.U8List.empty(segments, segment)
     assert no_error: (
@@ -14,9 +14,9 @@
   :fun from_segments(chunks Array(Bytes), byte_offset USize = 0)
     segments = CapnProto.Segments.new([])
     chunks.each -> (chunk |
-      segments._list.push(CapnProto.Segment.new(chunk.clone))
+      segments._list.push(CapnProto.Segment.new_from_bytes(chunk.clone))
     )
-    segment = try (segments._list[0]! | CapnProto.Segment.new(b"".clone))
+    segment = try (segments._list[0]! | CapnProto.Segment.new_from_bytes(b"".clone))
     pointer = CapnProto.Pointer.U8List.empty(segments, segment)
     assert no_error: (
       pointer = CapnProto.Pointer.U8List.from_segments!(segments, byte_offset)
@@ -30,7 +30,8 @@
       \xde\xad\xbe\xef\xde\xad\xbe\xef\
     ")
 
-    assert: "\(CapnProto.Text.new(p))" == "Here's some text with length 31"
+    assert: "\(CapnProto.Text.from_pointer(p))"
+      == "Here's some text with length 31"
 
   :it "can point to a prior byte region"
     p = @from_segment(b"\
@@ -41,7 +42,8 @@
       \xde\xad\xbe\xef\xde\xad\xbe\xef\
     ", 0x20)
 
-    assert: "\(CapnProto.Text.new(p))" == "Here is a text!"
+    assert: "\(CapnProto.Text.from_pointer(p))"
+      == "Here is a text!"
 
   :it "can point to a byte region via a far pointer"
     p = @from_segments([b"\
@@ -57,7 +59,8 @@
       \xde\xad\xbe\xef\xde\xad\xbe\xef\
     "])
 
-    assert: "\(CapnProto.Text.new(p))" == "Here's some text with length 31"
+    assert: "\(CapnProto.Text.from_pointer(p))"
+      == "Here's some text with length 31"
 
   :it "can point to a byte region via a double-far pointer"
     p = @from_segments([b"\
@@ -78,4 +81,5 @@
       \xde\xad\xbe\xef\xde\xad\xbe\xef\
     "])
 
-    assert: "\(CapnProto.Text.new(p))" == "Here's some text with length 31"
+    assert: "\(CapnProto.Text.from_pointer(p))"
+      == "Here's some text with length 31"

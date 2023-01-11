@@ -1,3 +1,36 @@
+:module _WriteU8ListPointer
+  :fun _encode(
+    write_offset U32
+    pointer CapnProto.Pointer.U8List
+  )
+    // lsb                       list pointer                        msb
+    // +-+-----------------------------+--+----------------------------+
+    // |A|             B               |C |             D              |
+    // +-+-----------------------------+--+----------------------------+
+
+    // A (2 bits) = 1, to indicate that this is a list pointer.
+    // B (30 bits) = Offset, in words, from the end of the pointer to the
+    //     start of the first element of the list.  Signed.
+    // C (3 bits) = Size of each element:
+    //     0 = 0 (e.g. List(Void))
+    //     1 = 1 bit
+    //     2 = 1 byte
+    //     3 = 2 bytes
+    //     4 = 4 bytes
+    //     5 = 8 bytes (non-pointer)
+    //     6 = 8 bytes (pointer)
+    //     7 = composite (see below)
+    // D (29 bits) = Size of the list:
+    //     when C <> 7: Number of elements in the list.
+    //     when C = 7: Number of words in the list, not counting the tag word
+    //     (see below).
+
+    relative_words = (pointer._byte_offset / 8).i32 - (write_offset / 8).i32 - 1
+
+    pointer._byte_count.at_most(0x1FFFFFFF).u64.bit_shl(35) // D
+      .bit_or(relative_words.u64.bit_shl(2))                // B
+      .bit_or(0x0000000200000001)                           // A and C
+
 :struct CapnProto.Pointer.U8List
   :let _segments CapnProto.Segments
   :let _segment CapnProto.Segment
@@ -8,6 +41,8 @@
   :new empty(@_segments, @_segment)
     @_byte_offset = 0
     @_byte_count = 0
+
+  :fun ref _free: @_segment._free_pointer(@_byte_offset, @_byte_count), @
 
   :fun non from_segments!(
     segments CapnProto.Segments

@@ -3,7 +3,7 @@
 
 :struct CapnProto.List(A _FromStructPointer)
   :let _p CapnProto.Pointer.StructList
-  :new (@_p)
+  :new from_pointer(@_p)
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref "[]"(n): A.from_pointer(@_p[n])
@@ -18,7 +18,7 @@
 
 :struct CapnProto.List.Builder(A _FromStructPointerBuilder)
   :let _p CapnProto.Pointer.StructList.Builder
-  :new (@_p)
+  :new from_pointer(@_p)
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref "[]"(n): A.from_pointer(@_p[n])
