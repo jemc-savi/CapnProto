@@ -115,6 +115,9 @@
     final_hole_head.u32
 
   :fun ref _free_pointer(free_head U32, free_size U32)
+    // Round up the requested size to the nearest multiple of 8.
+    free_size = (free_size + 7).bit_and(-8)
+
     free_tail = free_head + free_size
 
     // First, fill the range with zeros to ensure it won't leak data.
