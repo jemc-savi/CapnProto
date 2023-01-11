@@ -606,8 +606,10 @@
   :fun ref "scope_id="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun ref nested_nodes: CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.list(1))
+  :fun ref init_nested_nodes(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(2))
+  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, new_count))
 
   :fun is_file: @_p.check_union(0xc, 0)
   :fun file!: @_p.assert_union!(0xc, 0), None
@@ -628,6 +630,7 @@
   :fun ref annotation!: @_p.assert_union!(0xc, 5), CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
 
   :fun ref parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(5))
+  :fun ref init_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
   :fun ref "is_generic="(new_value): @_p.set_bool(0x24, 0b00000001, new_value)
@@ -658,6 +661,7 @@
   :fun ref "discriminant_offset="(new_value): @_p.set_u32(0x20, new_value, 0)
 
   :fun ref fields: CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.list(3))
+  :fun ref init_fields(new_count): CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, new_count))
 
 :struct CapnProto.Meta.Node.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -667,6 +671,7 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref enumerants: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list(3))
+  :fun ref init_enumerants(new_count): CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, new_count))
 
 :struct CapnProto.Meta.Node.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -676,8 +681,10 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref methods: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list(3))
+  :fun ref init_methods(new_count): CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, new_count))
 
   :fun ref superclasses: CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.list(4))
+  :fun ref init_superclasses(new_count): CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, new_count))
 
 :struct CapnProto.Meta.Node.AS_const.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -774,6 +781,7 @@
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
+  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
   :fun discriminant_value: @_p.u16(0x2).bit_xor(65535)
   :fun ref "discriminant_value="(new_value): @_p.set_u16(0x2, new_value, 65535)
@@ -840,6 +848,7 @@
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
+  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
 :struct CapnProto.Meta.Superclass.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -873,12 +882,14 @@
   :fun ref "result_struct_type="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
+  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
   :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2))
 
   :fun ref result_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(3))
 
   :fun ref implicit_parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(4))
+  :fun ref init_implicit_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
 
 :struct CapnProto.Meta.Type.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1055,6 +1066,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun ref scopes: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list(0))
+  :fun ref init_scopes(new_count): CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, new_count))
 
 :struct CapnProto.Meta.Brand.Scope.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1171,8 +1183,10 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun ref nodes: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list(0))
+  :fun ref init_nodes(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, new_count))
 
   :fun ref requested_files: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.list(1))
+  :fun ref init_requested_files(new_count): CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1188,6 +1202,7 @@
   :fun ref "filename="(new_value): @_p.set_text(0, new_value, "")
 
   :fun ref imports: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.list(1))
+  :fun ref init_imports(new_count): CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder
   :let _p CapnProto.Pointer.Struct.Builder
