@@ -204,9 +204,6 @@
       if is_builder (
         try @_emit_field_setter!(node, field)
       )
-      if is_builder (
-        try @_emit_field_initter!(node, field)
-      )
     )
 
     // Emit other type definitions that act as groups for this struct.
@@ -257,32 +254,6 @@
 
     @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
     @_emit_field_set_expr(field, "new_value")
-
-  :fun ref _emit_field_initter!(
-    node CapnProto.Meta.Node
-    field CapnProto.Meta.Field
-  )
-    is_union = field.discriminant_value != field.no_discriminant
-    error! if is_union
-
-    slot = field.slot!
-    type = slot.type
-
-    // TODO: implement struct init, not just struct list init
-    struct_type = type.list!.element_type.struct!
-    struct = @_find_node!(struct_type.type_id).struct!
-
-    @_out << "\n  :fun ref init_\(
-      _TextCase.Snake[field.name]
-    )(new_count): \(
-      @_type_name(type, True)
-    ).from_pointer(@_p.init_list(\(
-      slot.offset
-    ), \(
-      struct.data_word_count
-    ), \(
-      struct.pointer_count
-    ), new_count))"
 
   :fun ref _emit_field_check_union_method!(
     node CapnProto.Meta.Node

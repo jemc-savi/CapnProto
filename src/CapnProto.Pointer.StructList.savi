@@ -6,11 +6,11 @@
     byte_offset U32
     list_count U32
     data_word_count U16
-    pointer_count U16
+    pointers_count U16
   )
 
 :module _ParseStructListPointer(A _ParsedStructListPointer)
-  :fun non _parse!(segments, segment, current_offset U32, value U64) A
+  :fun non _parse!(segments, segment, current_offset U32, value U64)
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
     try (
@@ -89,7 +89,7 @@
     error! unless (tag_value.u8.bit_and(0b11) == 0)
     list_count = tag_value.u32.bit_shr(2)
     data_word_count = tag_value.bit_shr(32).u16
-    pointer_count = tag_value.bit_shr(48).u16
+    pointers_count = tag_value.bit_shr(48).u16
 
     A._new(
       segments
@@ -97,48 +97,8 @@
       byte_offset
       list_count
       data_word_count
-      pointer_count
+      pointers_count
     )
-
-:module _WriteStructListPointer
-  :fun _encode(write_offset U32, pointer CapnProto.Pointer.StructList.Builder)
-    // lsb                       list pointer                        msb
-    // +-+-----------------------------+--+----------------------------+
-    // |A|             B               |C |             D              |
-    // +-+-----------------------------+--+----------------------------+
-
-    // A (2 bits) = 1, to indicate that this is a list pointer.
-    // B (30 bits) = Offset, in words, from the end of the pointer to the
-    //     start of the first element of the list.  Signed.
-    // C (3 bits) = Size of each element:
-    //     0 = 0 (e.g. List(Void))
-    //     1 = 1 bit
-    //     2 = 1 byte
-    //     3 = 2 bytes
-    //     4 = 4 bytes
-    //     5 = 8 bytes (non-pointer)
-    //     6 = 8 bytes (pointer)
-    //     7 = composite (see below)
-    // D (29 bits) = Size of the list:
-    //     when C <> 7: Number of elements in the list.
-    //     when C = 7: Number of words in the list, not counting the tag word
-    //     (see below).
-
-    // Note that for relative words, we subtract 2 instead of 1 because
-    // the tag word is an extra landing pad.
-    relative_words = (pointer._byte_offset / 8).i32 - (write_offset / 8).i32 - 2
-
-    per_struct_words = pointer._data_word_count.u32 + pointer._pointer_count.u32
-    total_list_words = per_struct_words.saturating_multiply(pointer._list_count)
-
-    total_list_words.at_most(0x1FFFFFFF).u64.bit_shl(35) // D
-      .bit_or(relative_words.u64.bit_shl(2))             // B
-      .bit_or(0x0000000700000001)                        // A and C
-
-  :fun _encode_tag(pointer CapnProto.Pointer.StructList.Builder)
-    pointer._list_count.at_most(0x3fffffff).u64.bit_shl(2) // B
-      .bit_or(pointer._data_word_count.u64.bit_shl(32))    // C
-      .bit_or(pointer._pointer_count.u64.bit_shl(48))      // D (A is zero)
 
 :struct CapnProto.Pointer.StructList
   :let _segments CapnProto.Segments
@@ -146,23 +106,23 @@
   :let _byte_offset U32
   :let _list_count U32
   :let _data_word_count U16
-  :let _pointer_count U16
+  :let _pointers_count U16
   :new _new(
     @_segments
     @_segment
     @_byte_offset
     @_list_count
     @_data_word_count
-    @_pointer_count
+    @_pointers_count
   )
 
   :new empty(@_segments, @_segment)
     @_byte_offset = 0
     @_list_count = 0
     @_data_word_count = 0
-    @_pointer_count = 0
+    @_pointers_count = 0
 
-  :fun _element_byte_size: (@_data_word_count.u32 + @_pointer_count.u32) * 8
+  :fun _element_byte_size: (@_data_word_count.u32 + @_pointers_count.u32) * 8
 
   :fun non from_segments!(
     segments CapnProto.Segments
@@ -182,7 +142,7 @@
     byte_offset = @_byte_offset +! @_element_byte_size *! n
 
     CapnProto.Pointer.Struct._new(
-      @_segments, @_segment, byte_offset, @_data_word_count, @_pointer_count
+      @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
     )
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
@@ -192,7 +152,7 @@
         byte_offset = @_byte_offset +! @_element_byte_size *! n
 
         yield CapnProto.Pointer.Struct._new(
-          @_segments, @_segment, byte_offset, @_data_word_count, @_pointer_count
+          @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
         )
       )
     )
@@ -203,38 +163,23 @@
   :let _byte_offset U32
   :let _list_count U32
   :let _data_word_count U16
-  :let _pointer_count U16
+  :let _pointers_count U16
   :new _new(
     @_segments
     @_segment
     @_byte_offset
     @_list_count
     @_data_word_count
-    @_pointer_count
+    @_pointers_count
   )
 
   :new empty(@_segments, @_segment)
     @_byte_offset = 0
     @_list_count = 0
     @_data_word_count = 0
-    @_pointer_count = 0
+    @_pointers_count = 0
 
-  :fun _element_byte_size: (@_data_word_count.u32 + @_pointer_count.u32) * 8
-  :fun _total_byte_size
-    try (@_element_byte_size *! @_list_count | U32.max_value)
-
-  :fun ref _free: @_segment._free_pointer(@_byte_offset, @_total_byte_size), @
-
-  :new _allocate(
-    @_segments
-    @_segment
-    @_list_count
-    @_data_word_count
-    @_pointer_count
-  )
-    byte_offset = @_segment._allocate_pointer(@_total_byte_size + 8)
-    @_byte_offset = byte_offset + 8
-    try @_segment._set_u64!(byte_offset, _WriteStructListPointer._encode_tag(@))
+  :fun _element_byte_size: (@_data_word_count.u32 + @_pointers_count.u32) * 8
 
   :fun ref _reallocate(new_count U32)
     try (
@@ -250,7 +195,7 @@
         new_byte_offset
         new_count
         @_data_word_count
-        @_pointer_count
+        @_pointers_count
       )
     |
       // If the new list size is out of bounds for U32, don't resize at all.
@@ -272,20 +217,20 @@
     error! unless (n < @_list_count)
 
     byte_offset = @_byte_offset
-      +! (@_data_word_count.u32 +! @_pointer_count.u32) *! n *! 8
+      +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
 
     CapnProto.Pointer.Struct.Builder._new(
-      @_segments, @_segment, byte_offset, @_data_word_count, @_pointer_count
+      @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
     )
 
   :fun ref each
     @_list_count.times -> (n |
       try (
         byte_offset = @_byte_offset
-          +! (@_data_word_count.u32 +! @_pointer_count.u32) *! n *! 8
+          +! (@_data_word_count.u32 +! @_pointers_count.u32) *! n *! 8
 
         yield CapnProto.Pointer.Struct.Builder._new(
-          @_segments, @_segment, byte_offset, @_data_word_count, @_pointer_count
+          @_segments, @_segment, byte_offset, @_data_word_count, @_pointers_count
         )
       )
     )

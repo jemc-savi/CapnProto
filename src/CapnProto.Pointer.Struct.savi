@@ -4,7 +4,7 @@
     segment CapnProto.Segment
     byte_offset U32
     data_word_count U16
-    pointer_count U16
+    pointers_count U16
   )
 
 :module _ParseStructPointer(A _ParsedStructPointer)
@@ -56,9 +56,9 @@
     // of the struct's data section and its pointers section, in 8-byte words.
     // These allow us to calculate the pointers section offset and end offset.
     data_word_count = value.bit_shr(32).u16
-    pointer_count = value.bit_shr(48).u16
+    pointers_count = value.bit_shr(48).u16
 
-    A._new(segments, segment, byte_offset, data_word_count, pointer_count)
+    A._new(segments, segment, byte_offset, data_word_count, pointers_count)
 
 :module _WriteStructPointer
   :fun _encode_with_zero_relative_offset(
@@ -75,22 +75,22 @@
     // C (16 bits) = Size of the struct's data section, in words.
     // D (16 bits) = Size of the struct's pointer section, in words.
     pointer._data_word_count.u64.bit_shl(32)           // C
-      .bit_or(pointer._pointer_count.u64.bit_shl(48)) // D (A and B are zero)
+      .bit_or(pointer._pointers_count.u64.bit_shl(48)) // D (A and B are zero)
 
 :struct CapnProto.Pointer.Struct
   :let _segments CapnProto.Segments
   :let _segment CapnProto.Segment
   :let _byte_offset U32
   :let _data_word_count U16
-  :let _pointer_count U16
+  :let _pointers_count U16
   :new _new(
-    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointer_count
+    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointers_count
   )
 
   :new empty(@_segments, @_segment)
     @_byte_offset = 0
     @_data_word_count = 0
-    @_pointer_count = 0
+    @_pointers_count = 0
 
   :fun non from_segments!(
     segments CapnProto.Segments
@@ -104,7 +104,7 @@
     )
 
   :fun _ptr_byte_offset!(n U16)
-    error! unless (@_pointer_count > n)
+    error! unless (@_pointers_count > n)
     @_byte_offset +! (@_data_word_count +! n).u32 * 8
 
   :fun _u8!(n U32)
@@ -204,15 +204,15 @@
   :let _segment CapnProto.Segment
   :let _byte_offset U32
   :let _data_word_count U16
-  :let _pointer_count U16
+  :let _pointers_count U16
   :new _new(
-    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointer_count
+    @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointers_count
   )
 
   :new empty(@_segments, @_segment)
     @_byte_offset = 0
     @_data_word_count = 0
-    @_pointer_count = 0
+    @_pointers_count = 0
 
   :fun non from_segments!(
     segments CapnProto.Segments
@@ -226,7 +226,7 @@
     )
 
   :fun _ptr_byte_offset!(n U16)
-    error! unless (@_pointer_count > n)
+    error! unless (@_pointers_count > n)
     @_byte_offset +! (@_data_word_count +! n).u32 * 8
 
   :fun _u8!(n U32)
@@ -359,7 +359,7 @@
     // and we'll return an empty `CapnProto.Data` to signal this problem.
     byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_data)
 
-    // If there's an existing data pointer, we can free it now.
+    // If there's an existing text pointer, we can free it now.
     try CapnProto.Data._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )._p._free
@@ -401,39 +401,3 @@
     _ParseStructListPointer(CapnProto.Pointer.StructList.Builder)._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
-
-  :fun ref init_list(
-    n U16
-    data_word_count U16
-    pointer_count U16
-    new_list_count U32
-  ) CapnProto.Pointer.StructList.Builder
-    // We expect the byte offset to be within bounds - otherwise we can't do it,
-    // and we'll return an empty `CapnProto.Data` to signal this problem.
-    byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_list)
-
-    // If there's an existing list pointer, we can free it now.
-    try _ParseStructListPointer(CapnProto.Pointer.StructList.Builder)._parse!(
-      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
-    )._free
-
-    // If the requested count is empty, we won't allocate anything new.
-    // We'll just write zero bytes to that pointer's position and return.
-    if new_list_count.is_zero (
-      try @_segment._set_u64!(byte_offset, 0)
-      return @_empty_list
-    )
-
-    // Now we allocate the new one.
-    new_pointer = CapnProto.Pointer.StructList.Builder._allocate(
-      @_segments, @_segment
-      new_list_count, data_word_count, pointer_count
-    )
-
-    // We need to write the pointer to the buffer so it can be followed.
-    try @_segment._set_u64!(
-      byte_offset
-      _WriteStructListPointer._encode(byte_offset, new_pointer)
-    )
-
-    new_pointer

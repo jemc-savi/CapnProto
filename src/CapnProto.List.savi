@@ -5,8 +5,6 @@
   :let _p CapnProto.Pointer.StructList
   :new from_pointer(@_p)
 
-  :fun size: @_p._list_count.usize
-
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref "[]!"(n): A.from_pointer(@_p[n]!)
 
@@ -21,8 +19,6 @@
 :struct CapnProto.List.Builder(A _FromStructPointerBuilder)
   :let _p CapnProto.Pointer.StructList.Builder
   :new from_pointer(@_p)
-
-  :fun size: @_p._list_count.usize
 
   // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref "[]!"(n): A.from_pointer(@_p[n]!)

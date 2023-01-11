@@ -20,28 +20,11 @@
   :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value, 0)
   :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value, 0)
 
-  :const capn_proto_pointer_count U16: 3
+  :const capn_proto_pointer_count U16: 2
   :fun ref some_text: @_p.text(0)
   :fun ref some_data: @_p.data(1)
   :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
   :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
-
-  :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(2))
-  :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(2, 2, 1, new_count))
-
-:struct _ExampleChildBuilder
-  :let _p CapnProto.Pointer.Struct.Builder
-  :new from_pointer(@_p)
-
-  :const capn_proto_data_word_count U16: 2
-  :fun a: @_p.u64(0x0)
-  :fun b: @_p.u64(0x8)
-  :fun ref "a="(new_value): @_p.set_u64(0x0, new_value, 0)
-  :fun ref "b="(new_value): @_p.set_u64(0x8, new_value, 0)
-
-  :const capn_proto_pointer_count U16: 1
-  :fun ref name: @_p.text(0)
-  :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
 
 :class CapnProto.Message.Builder.Spec
   :is Spec
@@ -74,39 +57,3 @@
     assert: "\(root.some_data)" == "This is some example data"
     root.some_data              = b""
     assert: "\(root.some_data)" == ""
-
-  :it "reads from and writes to fields of the list children structs"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
-    root = message.root
-
-    assert: root.children.size == 0
-    assert error: root.children[0]!
-
-    assert: root.init_children(3).size == 3
-    assert: root.children[0]!.a == 0
-    assert: root.children[0]!.b == 0
-    assert: "\(root.children[0]!.name)" == ""
-    assert: root.children[2]!.a == 0
-    assert: root.children[2]!.b == 0
-    assert: "\(root.children[2]!.name)" == ""
-    assert error: root.children[3]!
-
-    children = root.children
-    assert: (children[0]!.a = 11, children[0]!.a == 11)
-    assert: (children[0]!.b = 22, children[0]!.b == 22)
-    assert: (children[0]!.name = "foo", "\(children[0]!.name)" == "foo")
-    assert: (children[1]!.a = 33, children[1]!.a == 33)
-    assert: (children[1]!.b = 44, children[1]!.b == 44)
-    assert: (children[1]!.name = "bar", "\(children[1]!.name)" == "bar")
-    assert: (children[2]!.a = 55, children[2]!.a == 55)
-    assert: (children[2]!.b = 66, children[2]!.b == 66)
-    assert: (children[2]!.name = "baz", "\(children[2]!.name)" == "baz")
-
-    assert: root.init_children(1000).size == 1000
-    assert: root.children[0]!.a == 0
-    assert: root.children[0]!.b == 0
-    assert: "\(root.children[0]!.name)" == ""
-    assert: root.children[999]!.a == 0
-    assert: root.children[999]!.b == 0
-    assert: "\(root.children[999]!.name)" == ""
-    assert error: root.children[1000]!
