@@ -45,27 +45,25 @@
       Lonely D\
     ")
 
-    assert: p[0].u64(0x0) == 0x1111111111111111
-    assert: p[0].u64(0x8) == 0x2222222222222222
-    assert: p[0].u64(0x10) == 0 // outside the data region
-    assert: "\(p[0].text(0))" == "Hello A"
-    assert: "\(p[0].text(1))" == "" // outside the pointers region
+    assert: p[0]!.u64(0x0) == 0x1111111111111111
+    assert: p[0]!.u64(0x8) == 0x2222222222222222
+    assert: p[0]!.u64(0x10) == 0 // outside the data region
+    assert: "\(p[0]!.text(0))" == "Hello A"
+    assert: "\(p[0]!.text(1))" == "" // outside the pointers region
 
-    assert: p[1].u64(0x0) == 0x3333333333333333
-    assert: p[1].u64(0x8) == 0x4444444444444444
-    assert: p[1].u64(0x10) == 0 // outside the data region
-    assert: "\(p[1].text(0))" == "Hello B"
-    assert: "\(p[1].text(1))" == "" // outside the pointers region
+    assert: p[1]!.u64(0x0) == 0x3333333333333333
+    assert: p[1]!.u64(0x8) == 0x4444444444444444
+    assert: p[1]!.u64(0x10) == 0 // outside the data region
+    assert: "\(p[1]!.text(0))" == "Hello B"
+    assert: "\(p[1]!.text(1))" == "" // outside the pointers region
 
-    assert: p[2].u64(0x0) == 0x5555555555555555
-    assert: p[2].u64(0x8) == 0x6666666666666666
-    assert: p[2].u64(0x10) == 0 // outside the data region
-    assert: "\(p[2].text(0))" == "Hello C"
-    assert: "\(p[2].text(1))" == "" // outside the pointers region
+    assert: p[2]!.u64(0x0) == 0x5555555555555555
+    assert: p[2]!.u64(0x8) == 0x6666666666666666
+    assert: p[2]!.u64(0x10) == 0 // outside the data region
+    assert: "\(p[2]!.text(0))" == "Hello C"
+    assert: "\(p[2]!.text(1))" == "" // outside the pointers region
 
-    assert: p[3].u64(0x0) == 0 // outside the list region
-    assert: p[3].u64(0x8) == 0 // outside the list region
-    assert: "\(p[3].text(0))" == "" // outside the list region
+    assert error: p[3]! // outside the list region
 
     first_words Array(U64) = []
     p.each -> (struct | first_words << struct.u64(0x0))
@@ -94,12 +92,12 @@
       \xde\xad\xbe\xef\xde\xad\xbe\xef\
     "])
 
-    assert: p[0].u64(0x0) == 0x1111111111111111
-    assert: p[0].u64(0x8) == 0x2222222222222222
-    assert: p[0].u64(0x10) == 0 // outside the data region
-    assert: p[1].u64(0x0) == 0x3333333333333333
-    assert: p[1].u64(0x8) == 0x4444444444444444
-    assert: p[1].u64(0x10) == 0 // outside the data region
+    assert: p[0]!.u64(0x0) == 0x1111111111111111
+    assert: p[0]!.u64(0x8) == 0x2222222222222222
+    assert: p[0]!.u64(0x10) == 0 // outside the data region
+    assert: p[1]!.u64(0x0) == 0x3333333333333333
+    assert: p[1]!.u64(0x8) == 0x4444444444444444
+    assert: p[1]!.u64(0x10) == 0 // outside the data region
 
   :it "can point to a struct list region via a double-far pointer"
     p = @from_segments([b"\
@@ -125,9 +123,9 @@
       \xde\xad\xbe\xef\xde\xad\xbe\xef\
     "])
 
-    assert: p[0].u64(0x0) == 0x1111111111111111
-    assert: p[0].u64(0x8) == 0x2222222222222222
-    assert: p[0].u64(0x10) == 0 // outside the data region
-    assert: p[1].u64(0x0) == 0x3333333333333333
-    assert: p[1].u64(0x8) == 0x4444444444444444
-    assert: p[1].u64(0x10) == 0 // outside the data region
+    assert: p[0]!.u64(0x0) == 0x1111111111111111
+    assert: p[0]!.u64(0x8) == 0x2222222222222222
+    assert: p[0]!.u64(0x10) == 0 // outside the data region
+    assert: p[1]!.u64(0x0) == 0x3333333333333333
+    assert: p[1]!.u64(0x8) == 0x4444444444444444
+    assert: p[1]!.u64(0x10) == 0 // outside the data region
