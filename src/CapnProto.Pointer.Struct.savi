@@ -1,18 +1,9 @@
-:trait _ParsedStructPointer
-  :new _new(
-    segments CapnProto.Segments
-    segment CapnProto.Segment
-    byte_offset U32
-    data_word_count U16
-    pointer_count U16
-  )
-
-:module _ParseStructPointer(A _ParsedStructPointer)
+:module _ParseStructPointer
   :fun _parse!(segments, segment, current_offset U32, value U64)
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
     try (
-      far = CapnProto.Pointer.Far._parse!(segments, segment, current_offset, value)
+      far = _FarPointer._parse!(segments, current_offset, value)
       segment = far._segment
       current_offset = far._byte_offset
       override_byte_offset = far._override_byte_offset
@@ -58,7 +49,20 @@
     data_word_count = value.bit_shr(32).u16
     pointer_count = value.bit_shr(48).u16
 
-    A._new(segments, segment, byte_offset, data_word_count, pointer_count)
+    CapnProto.Pointer.Struct._new(
+      segments, segment, byte_offset, data_word_count, pointer_count
+    )
+
+  :fun _parse_builder!(segments, segment, current_offset, value)
+    read_ptr = @_parse!(segments, segment, current_offset, value)
+    if (read_ptr._segment !== segment) (
+      try (segment = segments._list[segment._index]!)
+    )
+    CapnProto.Pointer.Struct.Builder._new(
+      segments, segment
+      read_ptr._byte_offset
+      read_ptr._data_word_count, read_ptr._pointer_count
+    )
 
 :module _WriteStructPointer
   :fun _encode_with_zero_relative_offset(
@@ -77,17 +81,17 @@
     pointer._data_word_count.u64.bit_shl(32)           // C
       .bit_or(pointer._pointer_count.u64.bit_shl(48)) // D (A and B are zero)
 
-:struct CapnProto.Pointer.Struct
-  :let _segments CapnProto.Segments
-  :let _segment CapnProto.Segment
+:struct box CapnProto.Pointer.Struct
+  :let _segments CapnProto.Segments'box
+  :let _segment CapnProto.Segment'box
   :let _byte_offset U32
   :let _data_word_count U16
   :let _pointer_count U16
-  :new _new(
+  :new box _new(
     @_segments, @_segment, @_byte_offset, @_data_word_count, @_pointer_count
   )
 
-  :new empty(@_segments, @_segment)
+  :new box empty(@_segments, @_segment)
     @_byte_offset = 0
     @_data_word_count = 0
     @_pointer_count = 0
@@ -99,7 +103,7 @@
   )
     segment = segments._list[segment_index]!
     value = segment._u64!(start_offset.u32)
-    _ParseStructPointer(CapnProto.Pointer.Struct)._parse!(
+    _ParseStructPointer._parse!(
       segments, segment, start_offset.u32, value
     )
 
@@ -123,22 +127,6 @@
     error! unless (@_data_word_count.u32 * 8 > n)
     @_segment._u64!(@_byte_offset +! n)
 
-  :fun ref _set_u8!(n U32, v U8)
-    error! unless (@_data_word_count.u32 * 8 > n)
-    @_segment._set_u8!(@_byte_offset +! n, v)
-
-  :fun ref _set_u16!(n U32, v U16)
-    error! unless (@_data_word_count.u32 * 8 > n)
-    @_segment._set_u16!(@_byte_offset +! n, v)
-
-  :fun ref _set_u32!(n U32, v U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
-    @_segment._set_u32!(@_byte_offset +! n, v)
-
-  :fun ref _set_u64!(n U32, v U64)
-    error! unless (@_data_word_count.u32 * 8 > n)
-    @_segment._set_u64!(@_byte_offset +! n, v)
-
   :fun u8(n) U8: try (@_u8!(n) | 0)
   :fun u16(n) U16: try (@_u16!(n) | 0)
   :fun u32(n) U32: try (@_u32!(n) | 0)
@@ -157,45 +145,45 @@
   :fun assert_union!(n, value): error! if (@u16(n) != value)
   :fun check_union(n, value): @u16(n) == value
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref text(n): try (@_text!(n) | @_empty_text)
-  :fun ref _empty_text
-    CapnProto.Text.from_pointer(
+  :fun text(n): try (@_text!(n) | @_empty_text)
+  :fun _empty_text
+    CapnProto.Text.read_from_pointer(
       CapnProto.Pointer.U8List.empty(@_segments, @_segment)
     )
-  :fun ref _text!(n)
+  :fun _text!(n)
     byte_offset = @_ptr_byte_offset!(n)
-    CapnProto.Text._parse!(
-      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    CapnProto.Text.read_from_pointer(
+      _ParseU8ListPointer._parse!(
+        @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+      )
     )
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref data(n): try (@_data!(n) | @_empty_data)
-  :fun ref _empty_data
+  :fun data(n): try (@_data!(n) | @_empty_data)
+  :fun _empty_data
     CapnProto.Data.from_pointer(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
-  :fun ref _data!(n)
+  :fun _data!(n)
     byte_offset = @_ptr_byte_offset!(n)
-    CapnProto.Data._parse!(
-      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    CapnProto.Data.read_from_pointer(
+      _ParseU8ListPointer._parse!(
+        @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+      )
     )
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
-  :fun ref _empty_struct
+  :fun struct(n): try (@_struct!(n) | @_empty_struct)
+  :fun _empty_struct
     CapnProto.Pointer.Struct.empty(@_segments, @_segment)
-  :fun ref _struct!(n):
+  :fun _struct!(n):
     byte_offset = @_ptr_byte_offset!(n)
-    _ParseStructPointer(CapnProto.Pointer.Struct)._parse!(
+    _ParseStructPointer._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
-  :fun ref list(n): try (@_list!(n) | @_empty_list)
-  :fun ref _empty_list
+  :fun list(n): try (@_list!(n) | @_empty_list)
+  :fun _empty_list
     CapnProto.Pointer.StructList.empty(@_segments, @_segment)
-  :fun ref _list!(n):
+  :fun _list!(n):
     byte_offset = @_ptr_byte_offset!(n)
-    _ParseStructListPointer(CapnProto.Pointer.StructList)._parse!(
+    _ParseStructListPointer._parse!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
 
@@ -221,7 +209,7 @@
   )
     segment = segments._list[segment_index]!
     value = segment._u64!(start_offset.u32)
-    _ParseStructPointer(CapnProto.Pointer.Struct)._parse!(
+    _ParseStructPointer._parse!(
       segments, segment, start_offset.u32, value
     )
 
@@ -300,7 +288,6 @@
   :fun assert_union!(n, value): error! if (@u16(n) != value)
   :fun check_union(n, value): @u16(n) == value
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref text(n): try (@_text!(n) | @_empty_text)
   :fun ref _empty_text
     CapnProto.Text.from_pointer(
@@ -308,8 +295,10 @@
     )
   :fun ref _text!(n)
     byte_offset = @_ptr_byte_offset!(n)
-    CapnProto.Text._parse!(
-      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    CapnProto.Text.from_pointer(
+      _ParseU8ListPointer._parse_builder!(
+        @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+      )
     )
 
   :fun ref set_text(n, value String, default_value String) CapnProto.Text
@@ -319,10 +308,10 @@
     // and we'll return an empty `CapnProto.Text` to signal this problem.
     byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_text)
 
-    // If there's an existing text pointer, we can free it now.
-    try CapnProto.Text._parse!(
+    // If there's an existing pointer, we can free it now.
+    try _ParseU8ListPointer._parse_builder!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
-    )._p._free
+    )._free(@_segment)
 
     // If the requested value is empty, we won't allocate anything new.
     // We'll just write zero bytes to that pointer's position and return.
@@ -342,14 +331,15 @@
 
     new_text
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref data(n): try (@_data!(n) | @_empty_data)
   :fun ref _empty_data
     CapnProto.Data.from_pointer(CapnProto.Pointer.U8List.empty(@_segments, @_segment))
   :fun ref _data!(n)
     byte_offset = @_ptr_byte_offset!(n)
-    CapnProto.Data._parse!(
-      @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+    CapnProto.Data.from_pointer(
+      _ParseU8ListPointer._parse_builder!(
+        @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
+      )
     )
 
   :fun ref set_data(n, value Bytes, default_value Bytes) CapnProto.Data
@@ -359,10 +349,10 @@
     // and we'll return an empty `CapnProto.Data` to signal this problem.
     byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_data)
 
-    // If there's an existing data pointer, we can free it now.
-    try CapnProto.Data._parse!(
+    // If there's an existing pointer, we can free it now.
+    try _ParseU8ListPointer._parse_builder!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
-    )._p._free
+    )._free(@_segment)
 
     // If the requested value is empty, we won't allocate anything new.
     // We'll just write zero bytes to that pointer's position and return.
@@ -382,23 +372,21 @@
 
     new_data
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
   :fun ref _empty_struct
     CapnProto.Pointer.Struct.Builder.empty(@_segments, @_segment)
   :fun ref _struct!(n):
     byte_offset = @_ptr_byte_offset!(n)
-    _ParseStructPointer(CapnProto.Pointer.Struct.Builder)._parse!(
+    _ParseStructPointer._parse_builder!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
 
-  // TODO: Deal with the ref/val/box possibilities here instead of assuming ref
   :fun ref list(n): try (@_list!(n) | @_empty_list)
   :fun ref _empty_list
     CapnProto.Pointer.StructList.Builder.empty(@_segments, @_segment)
   :fun ref _list!(n):
     byte_offset = @_ptr_byte_offset!(n)
-    _ParseStructListPointer(CapnProto.Pointer.StructList.Builder)._parse!(
+    _ParseStructListPointer._parse_builder!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
 
@@ -413,7 +401,7 @@
     byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_list)
 
     // If there's an existing list pointer, we can free it now.
-    try _ParseStructListPointer(CapnProto.Pointer.StructList.Builder)._parse!(
+    try _ParseStructListPointer._parse_builder!(
       @_segments, @_segment, byte_offset, @_segment._u64!(byte_offset)
     )._free
 

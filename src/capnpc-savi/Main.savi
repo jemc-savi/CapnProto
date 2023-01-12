@@ -22,7 +22,7 @@
     try (
       segments = @_reader.take_segments
       pointer = CapnProto.Pointer.Struct.from_segments!(segments)
-      req = CapnProto.Meta.CodeGeneratorRequest.from_pointer(pointer)
+      req = CapnProto.Meta.CodeGeneratorRequest.read_from_pointer(pointer)
       @_generate(req)
     |
       @env.err.print("Failed to parse the root of the capnpc data")

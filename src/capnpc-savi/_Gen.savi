@@ -6,23 +6,20 @@
 
   :fun ref take_string: @_out <<= String.new_iso
 
-  // TODO: not `:fun ref`
-  :fun ref _find_node!(id U64) CapnProto.Meta.Node
+  :fun _find_node!(id U64) CapnProto.Meta.Node
     @req.nodes.each -> (node |
       return node if (node.id == id)
     )
     error!
 
-  // TODO: not `:fun ref`
-  :fun ref _find_node_scoped_name(id U64) String
+  :fun _find_node_scoped_name(id U64) String
     try (
       @_node_scoped_name(@_find_node!(id))
     |
       "UNKNOWN_ID"
     )
 
-  // TODO: not `:fun ref`
-  :fun ref _node_scoped_name(node CapnProto.Meta.Node) String
+  :fun _node_scoped_name(node CapnProto.Meta.Node) String
     try (
       case (
       | node.is_file |
@@ -36,8 +33,7 @@
       "UNKNOWN_NAME"
     )
 
-  // TODO: not `:fun ref`
-  :fun ref _node_scoped_name_of_group!(node CapnProto.Meta.Node) String
+  :fun _node_scoped_name_of_group!(node CapnProto.Meta.Node) String
     scope_node = @_find_node!(node.scope_id)
     scope_node.struct!.fields.each -> (field |
       try (
@@ -48,8 +44,7 @@
     )
     error!
 
-  // TODO: not `:fun ref`
-  :fun ref _node_scoped_name_of_typedecl!(node CapnProto.Meta.Node) String
+  :fun _node_scoped_name_of_typedecl!(node CapnProto.Meta.Node) String
     scope_node = @_find_node!(node.scope_id)
     scope_node.nested_nodes.each -> (nested |
       if (nested.id == node.id) (
@@ -58,13 +53,11 @@
     )
     error!
 
-  // TODO: not `:fun ref`
-  :fun ref _is_pointer_type(type CapnProto.Meta.Type)
+  :fun _is_pointer_type(type CapnProto.Meta.Type)
     type.is_text || type.is_data || type.is_list
     || type.is_struct || type.is_interface || type.is_any_pointer
 
-  // TODO: not `:fun ref`
-  :fun ref _type_name(t CapnProto.Meta.Type, is_builder Bool)
+  :fun _type_name(t CapnProto.Meta.Type, is_builder Bool)
     case (
     | t.is_void | "None"
     | t.is_bool | "Bool"
@@ -98,8 +91,7 @@
     | "NOT_IMPLEMENTED"
     )
 
-  // TODO: not `:fun ref`
-  :fun ref _show_value(value CapnProto.Meta.Value) String
+  :fun _show_value(value CapnProto.Meta.Value) String
     return "None" if value.is_void
     try (string = "\(value.bool!)",    return --string) // TODO: this local variable shouldn't be needed
     try (string = "\(value.int8!)",    return --string) // TODO: this local variable shouldn't be needed
@@ -163,11 +155,19 @@
     @_out << "\n    )"
 
   :fun ref _emit_struct(node CapnProto.Meta.Node, is_builder Bool)
-    @_out << "\n\n:struct \(@_node_scoped_name(node))"
-    if is_builder (@_out << ".Builder")
-    @_out << "\n  :let _p CapnProto.Pointer.Struct"
-    if is_builder (@_out << ".Builder")
-    @_out << "\n  :new from_pointer(@_p)"
+    @_out << "\n\n:struct \(
+      if !is_builder "box "
+    )\(
+      @_node_scoped_name(node)
+    )\(
+      if is_builder ".Builder"
+    )"
+    @_out << "\n  :let _p CapnProto.Pointer.Struct\(
+      if is_builder ".Builder"
+    )"
+    @_out << "\n  :new \(
+      if !is_builder "box read_"
+    )from_pointer(@_p)"
 
     // Emit protocol-level constant info.
     try (
@@ -229,9 +229,9 @@
     is_builder Bool
   )
     is_union = field.discriminant_value != field.no_discriminant
-    needs_ref = try (@_is_pointer_type(field.slot!.type) | True)
+    needs_ref = is_builder && try (@_is_pointer_type(field.slot!.type) | True)
     @_out << "\n  :fun\(
-      if needs_ref " ref" // TODO: remove this `ref`
+      if needs_ref " ref"
     ) \(_TextCase.Snake[field.name])\(
       if is_union "!"
     ): "
@@ -317,8 +317,8 @@
       @_out << "\(
         @_find_node_scoped_name(type_id)
       )\(
-        if is_builder (".Builder" | "")
-      ).from_pointer(@_p)"
+        if is_builder (".Builder.from_pointer" | ".read_from_pointer")
+      )(@_p)"
       return
     )
 
@@ -423,14 +423,17 @@
       )
     | type.is_data |
       @_out << "@_p.data(\(offset))"
-      try (
-        if (slot.default_value.data!.size > 0) (
-          @_out << " // UNHANDLED: default_value"
-        )
-      )
+    //   TODO: Handle default value:
+    //   try (
+    //     if (slot.default_value.data!.size > 0) (
+    //       @_out << " // UNHANDLED: default_value"
+    //     )
+    //   )
     | type.is_list |
       // TODO: handle default list values
-      @_out << "\(@_type_name(type, is_builder)).from_pointer(@_p.list(\(offset)))"
+      @_out << "\(@_type_name(type, is_builder)).\(
+        if is_builder ("" | "read_")
+      )from_pointer(@_p.list(\(offset)))"
     | type.is_enum |
       @_out << "\(@_type_name(type, is_builder))._new("
       @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"
@@ -442,7 +445,9 @@
       @_out << ")"
     | type.is_struct |
       // TODO: handle default list values
-      @_out << "\(@_type_name(type, is_builder)).from_pointer(@_p.struct(\(offset)))"
+      @_out << "\(@_type_name(type, is_builder)).\(
+        if is_builder ("" | "read_")
+      )from_pointer(@_p.struct(\(offset)))"
     | type.is_interface |
       @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
     | type.is_any_pointer |

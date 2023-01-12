@@ -1,6 +1,6 @@
 // TODO: Move this utility to more generally available library?
 :struct _TextCase.Snake
-  :let _text CapnProto.Text // TODO: make this work on a more general interface
+  :let _text CapnProto.Text'box // TODO: make this work on a more general interface
   :new (@_text)
   :fun non "[]"(text): @new(text) // convenience constructor
 
@@ -20,7 +20,7 @@
 
 // TODO: Move this utility to more generally available library?
 :struct _TextCase.Pascal
-  :let _text CapnProto.Text // TODO: make this work on a more general interface
+  :let _text CapnProto.Text'box // TODO: make this work on a more general interface
   :new (@_text)
   :fun non "[]"(text): @new(text) // convenience constructor
 

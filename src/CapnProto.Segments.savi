@@ -1,12 +1,12 @@
 :struct CapnProto.Segments
   :let _list Array(CapnProto.Segment)'ref
-  :new (@_list)
+  :new: @_list = []
 
 :class CapnProto.Segments.Reader
   :var _header: b""
-  :var _segments: CapnProto.Segments.new([]) // TODO: iso
+  :var _segments: CapnProto.Segments.new // TODO: iso
 
-  :fun ref take_segments: @_segments <<= CapnProto.Segments.new([])
+  :fun ref take_segments: @_segments <<= CapnProto.Segments.new
 
   :: The maximum total size that the segment buffers are allowed to allocate.
   ::
@@ -106,7 +106,8 @@
       segment_id = @_segments._list.size
       segment_size = @_expected_segment_size(segment_id)
       try (
-        @_segments._list << CapnProto.Segment.new_from_bytes(
+        CapnProto.Segment.new_from_bytes(
+          @_segments
           stream.advance!(segment_size).extract_token
         )
       |
