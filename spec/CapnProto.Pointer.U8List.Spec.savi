@@ -5,9 +5,10 @@
   :fun from_segment(bytes Bytes, byte_offset USize = 0)
     segments = CapnProto.Segments.new
     segment = CapnProto.Segment.new_from_bytes(segments, bytes.clone)
-    pointer = CapnProto.Pointer.U8List.empty(segments, segment)
+    pointer = CapnProto.Pointer.U8List.empty(segment)
     assert no_error: (
-      pointer = CapnProto.Pointer.U8List.from_segments!(segments, byte_offset)
+      ptr_value = segment._u64!(byte_offset.u32)
+      pointer = _ParseU8ListPointer._parse!(segment, byte_offset.u32, ptr_value)
     )
     pointer
 
@@ -17,9 +18,10 @@
       CapnProto.Segment.new_from_bytes(segments, chunk.clone)
     )
     segment = try (segments._list[0]! | CapnProto.Segment.new_from_bytes(segments, b"".clone))
-    pointer = CapnProto.Pointer.U8List.empty(segments, segment)
+    pointer = CapnProto.Pointer.U8List.empty(segment)
     assert no_error: (
-      pointer = CapnProto.Pointer.U8List.from_segments!(segments, byte_offset)
+      ptr_value = segment._u64!(byte_offset.u32)
+      pointer = _ParseU8ListPointer._parse!(segment, byte_offset.u32, ptr_value)
     )
     pointer
 

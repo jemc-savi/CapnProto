@@ -1,3 +1,20 @@
+:trait box _MessageRoot
+  :new box read_from_pointer(p CapnProto.Pointer.Struct)
+
+:struct box CapnProto.Message(A _MessageRoot)
+  :let root A
+  :new box (@root)
+
+  :fun non from_segments!(
+    segments CapnProto.Segments
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    pointer = _ParseStructPointer._parse!(segment, start_offset.u32, value)
+    @new(A.read_from_pointer(pointer))
+
 :trait _MessageBuilderRoot
   :new from_pointer(p CapnProto.Pointer.Struct.Builder)
 
@@ -17,8 +34,7 @@
     segments = CapnProto.Segments.new
     segment = CapnProto.Segment.new(segments, initial_size)
     pointer = CapnProto.Pointer.Struct.Builder._new(
-      segments, segment, 8
-      A.capn_proto_data_word_count, A.capn_proto_pointer_count
+      segment, 8, A.capn_proto_data_word_count, A.capn_proto_pointer_count
     )
     try segment._set_u64!(
       segment._allocate_pointer(alloc_byte_size.u32)

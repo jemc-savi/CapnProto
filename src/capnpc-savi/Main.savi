@@ -20,10 +20,9 @@
 
   :fun ref _handle_segments
     try (
-      segments = @_reader.take_segments
-      pointer = CapnProto.Pointer.Struct.from_segments!(segments)
-      req = CapnProto.Meta.CodeGeneratorRequest.read_from_pointer(pointer)
-      @_generate(req)
+      message = CapnProto.Message(CapnProto.Meta.CodeGeneratorRequest)
+        .from_segments!(@_reader.take_segments)
+      @_generate(message.root)
     |
       @env.err.print("Failed to parse the root of the capnpc data")
     )

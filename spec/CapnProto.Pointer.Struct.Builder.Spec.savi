@@ -7,7 +7,7 @@
     segments = CapnProto.Segments.new
     segment = CapnProto.Segment.new(segments, byte_size)
     CapnProto.Pointer.Struct.Builder._new(
-      segments, segment, 0, data_word_count, pointer_count
+      segment, 0, data_word_count, pointer_count
     )
 
   :it "writes and reads numeric values in the data region"
