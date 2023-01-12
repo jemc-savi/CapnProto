@@ -1,9 +1,9 @@
 :module _ParseU8ListPointer
-  :fun non _parse!(segments, segment, current_offset U32, value U64)
+  :fun non _parse!(segment CapnProto.Segment'box, current_offset U32, value U64)
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
     try (
-      far = _FarPointer._parse!(segments, current_offset, value)
+      far = _FarPointer._parse!(segment._segments, current_offset, value)
       segment = far._segment
       current_offset = far._byte_offset
       override_byte_offset = far._override_byte_offset
@@ -69,22 +69,15 @@
     // the number of bytes in the list, because this list is of the byte class.
     byte_count = upper_32.bit_shr(3).u32
 
-    CapnProto.Pointer.U8List._new_read(
-      segments, segment, byte_offset, byte_count
-    )
+    CapnProto.Pointer.U8List._new_read(segment, byte_offset, byte_count)
 
-  :fun _parse_builder!(
-    segments CapnProto.Segments
-    segment CapnProto.Segment
-    current_offset, value
-  )
-    read_ptr = @_parse!(segments, segment, current_offset, value)
+  :fun _parse_builder!(segment CapnProto.Segment, current_offset, value)
+    read_ptr = @_parse!(segment, current_offset, value)
     if (read_ptr._segment !== segment) (
-      try (segment = segments._list[segment._index]!)
+      try (segment = segment._segments._list[read_ptr._segment._index]!)
     )
     CapnProto.Pointer.U8List._new_read(
-      segments, segment
-      read_ptr._byte_offset, read_ptr._byte_count
+      segment, read_ptr._byte_offset, read_ptr._byte_count
     )
 
 :module _WriteU8ListPointer
@@ -121,13 +114,12 @@
       .bit_or(0x0000000200000001)                           // A and C
 
 :struct CapnProto.Pointer.U8List
-  :let _segments CapnProto.Segments'box
   :let _segment CapnProto.Segment'box
   :let _byte_offset U32
   :let _byte_count U32
-  :new box _new_read(@_segments, @_segment, @_byte_offset, @_byte_count)
+  :new box _new_read(@_segment, @_byte_offset, @_byte_count)
 
-  :new box empty(@_segments, @_segment)
+  :new box empty(@_segment)
     @_byte_offset = 0
     @_byte_count = 0
 
@@ -135,15 +127,6 @@
     if (segment === @_segment) (
       segment._free_pointer(@_byte_offset, @_byte_count), @
     )
-
-  :fun non from_segments!(
-    segments CapnProto.Segments
-    start_offset USize = 0
-    segment_index USize = 0
-  )
-    segment = segments._list[segment_index]!
-    value = segment._u64!(start_offset.u32)
-    _ParseU8ListPointer._parse!(segments, segment, start_offset.u32, value)
 
   :is Indexable(U8)
 

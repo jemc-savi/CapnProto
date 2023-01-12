@@ -3,10 +3,10 @@
   :new from_pointer(@_p)
   :new box read_from_pointer(p CapnProto.Pointer.U8List'box): @_p = p
 
-  :new _new(segments, segment CapnProto.Segment, value String)
+  :new _new(segment CapnProto.Segment, value String)
     byte_offset = segment._allocate_and_write_string(value)
     @_p = CapnProto.Pointer.U8List._new_read(
-      segments, segment, byte_offset, (value.size + 1).u32
+      segment, byte_offset, (value.size + 1).u32
     )
 
   :fun size: @_p._byte_count.usize.saturating_subtract(1) // trimming off the null terminator
