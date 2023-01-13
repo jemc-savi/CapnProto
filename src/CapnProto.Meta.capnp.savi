@@ -733,9 +733,9 @@
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
 
-  :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3))
+  :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
 
-  :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(4))
+  :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(4, 2, 1))
 
 :struct CapnProto.Meta.Node.AS_annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -744,7 +744,7 @@
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
 
-  :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3))
+  :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
 
   :fun targets_file: @_p.bool(0xe, 0b00000001)
   :fun ref "targets_file="(new_value): @_p.set_bool(0xe, 0b00000001, new_value)
@@ -855,9 +855,9 @@
   :fun offset: @_p.u32(0x4)
   :fun ref "offset="(new_value): @_p.set_u32(0x4, new_value, 0)
 
-  :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(2))
+  :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(2, 3, 1))
 
-  :fun ref default_value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(3))
+  :fun ref default_value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(3, 2, 1))
 
   :fun had_explicit_default: @_p.bool(0x10, 0b00000001)
   :fun ref "had_explicit_default="(new_value): @_p.set_bool(0x10, 0b00000001, new_value)
@@ -911,7 +911,7 @@
   :fun id: @_p.u64(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
-  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0))
+  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
 
 :struct CapnProto.Meta.Method.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -935,9 +935,9 @@
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
   :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
-  :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2))
+  :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2, 0, 1))
 
-  :fun ref result_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(3))
+  :fun ref result_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(3, 0, 1))
 
   :fun ref implicit_parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(4))
   :fun ref init_implicit_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
@@ -1035,7 +1035,7 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
 
-  :fun ref element_type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0))
+  :fun ref element_type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
 
 :struct CapnProto.Meta.Type.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1047,7 +1047,7 @@
   :fun type_id: @_p.u64(0x8)
   :fun ref "type_id="(new_value): @_p.set_u64(0x8, new_value, 0)
 
-  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0))
+  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
 
 :struct CapnProto.Meta.Type.AS_struct.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1059,7 +1059,7 @@
   :fun type_id: @_p.u64(0x8)
   :fun ref "type_id="(new_value): @_p.set_u64(0x8, new_value, 0)
 
-  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0))
+  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
 
 :struct CapnProto.Meta.Type.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1071,7 +1071,7 @@
   :fun type_id: @_p.u64(0x8)
   :fun ref "type_id="(new_value): @_p.set_u64(0x8, new_value, 0)
 
-  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0))
+  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
 
 :struct CapnProto.Meta.Type.AS_anyPointer.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1184,7 +1184,7 @@
   :fun unbound!: @_p.assert_union!(0x0, 0), None
 
   :fun is_type: @_p.check_union(0x0, 1)
-  :fun ref type!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0))
+  :fun ref type!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
 
 :struct CapnProto.Meta.Value.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1260,9 +1260,9 @@
   :fun id: @_p.u64(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
-  :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(0))
+  :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(0, 2, 1))
 
-  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(1))
+  :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(1, 0, 1))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.Builder
   :let _p CapnProto.Pointer.Struct.Builder

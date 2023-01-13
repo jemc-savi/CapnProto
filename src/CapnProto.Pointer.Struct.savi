@@ -1,5 +1,8 @@
 :module _ParseStructPointer
   :fun _parse!(segment CapnProto.Segment'box, current_offset U32, value U64)
+    // Quick error path for null pointers.
+    error! if value.is_zero
+
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
     try (
@@ -64,9 +67,7 @@
     )
 
 :module _WriteStructPointer
-  :fun _encode_with_zero_relative_offset(
-    pointer CapnProto.Pointer.Struct.Builder
-  )
+  :fun _encode(write_offset U32, pointer CapnProto.Pointer.Struct.Builder)
     // lsb                      struct pointer                       msb
     // +-+-----------------------------+---------------+---------------+
     // |A|             B               |       C       |       D       |
@@ -77,8 +78,18 @@
     //     start of the struct's data section.  Signed.
     // C (16 bits) = Size of the struct's data section, in words.
     // D (16 bits) = Size of the struct's pointer section, in words.
-    pointer._data_word_count.u64.bit_shl(32)           // C
-      .bit_or(pointer._pointer_count.u64.bit_shl(48)) // D (A and B are zero)
+
+    relative_words = (pointer._byte_offset / 8).i32 - (write_offset / 8).i32 - 1
+
+    relative_words.u64.bit_shl(2)                       // B (A is zero)
+      .bit_or(pointer._data_word_count.u64.bit_shl(32)) // C
+      .bit_or(pointer._pointer_count.u64.bit_shl(48))   // D
+
+  :fun _encode_with_zero_relative_offset(
+    pointer CapnProto.Pointer.Struct.Builder
+  )
+    pointer._data_word_count.u64.bit_shl(32)          // C (A and B are zero)
+      .bit_or(pointer._pointer_count.u64.bit_shl(48)) // D
 
 :struct box CapnProto.Pointer.Struct
   :let _segment CapnProto.Segment'box
@@ -189,6 +200,18 @@
     @_byte_offset = 0
     @_data_word_count = 0
     @_pointer_count = 0
+
+  :fun _total_byte_size: (@_data_word_count.u32 + @_pointer_count.u32) * 8
+
+  :new _allocate(
+    @_segment
+    @_data_word_count
+    @_pointer_count
+  )
+    byte_offset = @_segment._allocate_pointer(@_total_byte_size)
+    @_byte_offset = byte_offset
+
+  :fun ref _free: @_segment._free_pointer(@_byte_offset, @_total_byte_size), @
 
   :fun _ptr_byte_offset!(n U16)
     error! unless (@_pointer_count > n)
@@ -359,14 +382,38 @@
 
     new_data
 
-  :fun ref struct(n): try (@_struct!(n) | @_empty_struct)
   :fun ref _empty_struct
     CapnProto.Pointer.Struct.Builder.empty(@_segment)
-  :fun ref _struct!(n):
-    byte_offset = @_ptr_byte_offset!(n)
-    _ParseStructPointer._parse_builder!(
-      @_segment, byte_offset, @_segment._u64!(byte_offset)
+
+  :fun ref struct(
+    n U16
+    data_word_count U16
+    pointer_count U16
+  ) CapnProto.Pointer.Struct.Builder
+    // We expect the byte offset to be within bounds - otherwise we can't do it,
+    // and we'll return an empty struct to signal this problem.
+    byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_struct)
+
+    // If there's an existing struct pointer, we can return it now.
+    try (
+      existing_pointer = _ParseStructPointer._parse_builder!(
+        @_segment, byte_offset, @_segment._u64!(byte_offset)
+      )
+      return existing_pointer
     )
+
+    // Otherwise we need to allocate a new one.
+    new_pointer = CapnProto.Pointer.Struct.Builder._allocate(
+      @_segment, data_word_count, pointer_count
+    )
+
+    // We need to write the pointer to the buffer so it can be followed.
+    try @_segment._set_u64!(
+      byte_offset
+      _WriteStructPointer._encode(byte_offset, new_pointer)
+    )
+
+    new_pointer
 
   :fun ref list(n): try (@_list!(n) | @_empty_list)
   :fun ref _empty_list
@@ -384,7 +431,7 @@
     new_list_count U32
   ) CapnProto.Pointer.StructList.Builder
     // We expect the byte offset to be within bounds - otherwise we can't do it,
-    // and we'll return an empty `CapnProto.Data` to signal this problem.
+    // and we'll return an empty list builder to signal this problem.
     byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_list)
 
     // If there's an existing list pointer, we can free it now.

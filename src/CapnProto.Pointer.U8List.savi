@@ -1,5 +1,8 @@
 :module _ParseU8ListPointer
   :fun non _parse!(segment CapnProto.Segment'box, current_offset U32, value U64)
+    // Quick error path for null pointers.
+    error! if value.is_zero
+
     // Handle the case that this may be a far pointer, pointing to the pointer.
     override_byte_offset U32 = -1
     try (
