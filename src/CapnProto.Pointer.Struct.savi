@@ -428,7 +428,7 @@
     n U16
     data_word_count U16
     pointer_count U16
-    new_list_count U32
+    new_list_count USize
   ) CapnProto.Pointer.StructList.Builder
     // We expect the byte offset to be within bounds - otherwise we can't do it,
     // and we'll return an empty list builder to signal this problem.
@@ -448,7 +448,7 @@
 
     // Now we allocate the new one.
     new_pointer = CapnProto.Pointer.StructList.Builder._allocate(
-      @_segment, new_list_count, data_word_count, pointer_count
+      @_segment, new_list_count.u32, data_word_count, pointer_count
     )
 
     // We need to write the pointer to the buffer so it can be followed.
