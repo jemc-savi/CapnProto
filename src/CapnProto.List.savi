@@ -7,7 +7,7 @@
 
   :fun size: @_p._list_count.usize
 
-  :fun "[]!"(n): A.read_from_pointer(@_p[n]!)
+  :fun "[]!"(n USize): A.read_from_pointer(@_p[n.u32!]!)
 
   :fun each
     :yields A
@@ -22,7 +22,7 @@
 
   :fun size: @_p._list_count.usize
 
-  :fun ref "[]!"(n): A.from_pointer(@_p[n]!)
+  :fun ref "[]!"(n USize): A.from_pointer(@_p[n.u32!]!)
 
   :fun ref each
     :yields A
