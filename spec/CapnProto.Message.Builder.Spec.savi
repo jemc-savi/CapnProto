@@ -1,8 +1,10 @@
+// TODO: Generate the following test structs via capnpc-savi
+
 :struct _ExampleBuilder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
 
-  :const capn_proto_data_word_count U16: 4
+  :const capn_proto_data_word_count U16: 7
   :fun some_u64: @_p.u64(0x0)
   :fun some_i64: @_p.i64(0x8)
   :fun some_u32: @_p.u32(0x10)
@@ -20,7 +22,7 @@
   :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value, 0)
   :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value, 0)
 
-  :const capn_proto_pointer_count U16: 3
+  :const capn_proto_pointer_count U16: 4
   :fun ref some_text: @_p.text(0)
   :fun ref some_data: @_p.data(1)
   :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
@@ -28,6 +30,24 @@
 
   :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(2))
   :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(2, 2, 1, new_count))
+
+  :fun is_foo: @_p.check_union(0x30, 0)
+  :fun ref foo!: @_p.assert_union!(0x30, 0), _ExampleAsFooBuilder.from_pointer(@_p)
+  :fun ref init_foo
+    @_p.clear_64(0x20)
+    @_p.clear_32(0x28)
+    @_p.clear_pointer(3)
+    @_p.mark_union(0x30, 0)
+    _ExampleAsFooBuilder.from_pointer(@_p)
+
+  :fun is_bar: @_p.check_union(0x30, 1)
+  :fun ref bar!: @_p.assert_union!(0x30, 1), _ExampleAsBarBuilder.from_pointer(@_p)
+  :fun ref init_bar
+    @_p.clear_64(0x20)
+    @_p.clear_32(0x28)
+    @_p.clear_pointer(3)
+    @_p.mark_union(0x30, 1)
+    _ExampleAsBarBuilder.from_pointer(@_p)
 
 :struct _ExampleChildBuilder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -42,6 +62,34 @@
   :const capn_proto_pointer_count U16: 1
   :fun ref name: @_p.text(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
+
+:struct _ExampleAsFooBuilder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+
+  :const capn_proto_data_word_count U16: 7
+  :fun some_u64: @_p.u64(0x20)
+  :fun some_u32: @_p.u64(0x28)
+  :fun ref "some_u64="(new_value): @_p.set_u64(0x20, new_value, 0)
+  :fun ref "some_u32="(new_value): @_p.set_u32(0x28, new_value, 0)
+
+  :const capn_proto_pointer_count U16: 4
+  :fun ref txt: @_p.text(3)
+  :fun ref "txt="(new_value): @_p.set_text(3, new_value, "")
+
+:struct _ExampleAsBarBuilder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+
+  :const capn_proto_data_word_count U16: 7
+  :fun some_f64: @_p.f64(0x20)
+  :fun some_f32: @_p.f64(0x28)
+  :fun ref "some_f64="(new_value): @_p.set_f64(0x20, new_value, 0)
+  :fun ref "some_f32="(new_value): @_p.set_f32(0x28, new_value, 0)
+
+  :const capn_proto_pointer_count U16: 4
+  :fun ref blob: @_p.data(3)
+  :fun ref "blob="(new_value): @_p.set_data(3, new_value, b"")
 
 :class CapnProto.Message.Builder.Spec
   :is Spec
@@ -110,3 +158,27 @@
     assert: root.children[999]!.b == 0
     assert: "\(root.children[999]!.name)" == ""
     assert error: root.children[1000]!
+
+  :it "marks union group membership and reads from and writes to union fields"
+    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    root = message.root
+
+    foo = root.init_foo
+    assert: root.foo! === foo
+    assert error: root.bar!
+    assert: root.is_foo.is_true
+    assert: root.is_bar.is_false
+
+    assert: foo.some_u64 == 0, foo.some_u64 = 40, assert: foo.some_u64 == 40
+    assert: foo.some_u32 == 0, foo.some_u32 = 41, assert: foo.some_u32 == 41
+    assert: "\(foo.txt)" == "", foo.txt = "foo", assert: "\(foo.txt)" == "foo"
+
+    bar = root.init_bar
+    assert error: root.foo!
+    assert: root.bar! === bar
+    assert: root.is_foo.is_false
+    assert: root.is_bar.is_true
+
+    assert: bar.some_f64 == 0, bar.some_f64 = 42, assert: bar.some_f64 == 42
+    assert: bar.some_f32 == 0, bar.some_f32 = 43, assert: bar.some_f32 == 43
+    assert: "\(bar.blob)" == "", bar.blob = b"!!", assert: "\(bar.blob)" == "!!"

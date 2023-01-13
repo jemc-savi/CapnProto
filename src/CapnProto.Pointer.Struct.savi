@@ -262,8 +262,18 @@
     )
     value
 
+  :fun ref clear_8(n): try @_set_u8!(n, 0), @
+  :fun ref clear_16(n): try @_set_u16!(n, 0), @
+  :fun ref clear_32(n): try @_set_u32!(n, 0), @
+  :fun ref clear_64(n): try @_set_u64!(n, 0), @
+
+  :fun ref clear_pointer(n)
+    try @_segment._set_u64!(@_ptr_byte_offset!(n), 0)
+    @
+
   :fun assert_union!(n, value): error! if (@u16(n) != value)
   :fun check_union(n, value): @u16(n) == value
+  :fun ref mark_union(n, value): try @_set_u16!(n, value), @
 
   :fun ref text(n): try (@_text!(n) | @_empty_text)
   :fun ref _empty_text

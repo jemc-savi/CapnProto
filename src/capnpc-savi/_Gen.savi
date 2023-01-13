@@ -205,7 +205,10 @@
         try @_emit_field_setter!(node, field)
       )
       if is_builder (
-        try @_emit_field_initter!(node, field)
+        try @_emit_field_list_initter!(node, field)
+      )
+      if is_builder (
+        try @_emit_field_union_initter!(node, field)
       )
     )
 
@@ -258,7 +261,7 @@
     @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
     @_emit_field_set_expr(field, "new_value")
 
-  :fun ref _emit_field_initter!(
+  :fun ref _emit_field_list_initter!(
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
   )
@@ -283,6 +286,33 @@
     ), \(
       struct.pointer_count
     ), new_count))"
+
+  :fun ref _emit_field_union_initter!(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+  )
+    is_union = field.discriminant_value != field.no_discriminant
+    error! unless is_union
+
+    struct = node.struct!
+    error! unless (struct.discriminant_count > 1)
+
+    group_struct = @_find_node!(field.group!.type_id).struct!
+
+    @_out << "\n  :fun ref init_\(_TextCase.Snake[field.name])"
+
+    group_struct.fields.each -> (field |
+      @_emit_field_clear_line(field)
+    )
+
+    @_out << "\n    @_p.mark_union(\(
+      (struct.discriminant_offset * 2).format.hex.without_leading_zeros
+    ), \(
+      field.discriminant_value
+    ))"
+
+    @_out << "\n    "
+    @_emit_field_get_expr(field, True)
 
   :fun ref _emit_field_check_union_method!(
     node CapnProto.Meta.Node
@@ -529,3 +559,34 @@
     |
       @_out << "NOT_IMPLEMENTED"
     )
+
+  :fun ref _emit_field_clear_line(field CapnProto.Meta.Field)
+    slot = try (field.slot! | return)
+
+    @_out << "\n    "
+
+    type = slot.type
+    offset = slot.offset
+    case (
+    | type.is_bool |
+      @_out << "@_p.set_bool(\(
+        (offset / 8).format.hex.without_leading_zeros
+      ), \(
+        U8[1].bit_shl((offset % 8).u8).format.binary
+      ), False)"
+    | type.is_uint8 || type.is_int8 |
+      @_out << "@_p.clear_8(\((offset * 1).format.hex.without_leading_zeros))"
+    | type.is_uint16 || type.is_int16 || type.is_enum |
+      @_out << "@_p.clear_16(\((offset * 2).format.hex.without_leading_zeros))"
+    | type.is_uint32 || type.is_int32 || type.is_float32 |
+      @_out << "@_p.clear_32(\((offset * 4).format.hex.without_leading_zeros))"
+    | type.is_uint64 || type.is_int64 || type.is_float64 |
+      @_out << "@_p.clear_64(\((offset * 8).format.hex.without_leading_zeros))"
+    | @_is_pointer_type(type) |
+      @_out << "@_p.clear_pointer(\(offset))"
+    |
+      @_out << "// NOT_IMPLEMENTED: \(_TextCase.Snake[field.name])"
+      return
+    )
+
+    @_out << " // \(_TextCase.Snake[field.name])"

@@ -616,18 +616,58 @@
 
   :fun is_struct: @_p.check_union(0xc, 1)
   :fun ref struct!: @_p.assert_union!(0xc, 1), CapnProto.Meta.Node.AS_struct.Builder.from_pointer(@_p)
+  :fun ref init_struct
+    @_p.clear_16(0xe) // data_word_count
+    @_p.clear_16(0x18) // pointer_count
+    @_p.clear_16(0x1a) // preferred_list_encoding
+    @_p.set_bool(0x1c, 0b00000001, False) // is_group
+    @_p.clear_16(0x1e) // discriminant_count
+    @_p.clear_32(0x20) // discriminant_offset
+    @_p.clear_pointer(3) // fields
+    @_p.mark_union(0xc, 1)
+    CapnProto.Meta.Node.AS_struct.Builder.from_pointer(@_p)
 
   :fun is_enum: @_p.check_union(0xc, 2)
   :fun ref enum!: @_p.assert_union!(0xc, 2), CapnProto.Meta.Node.AS_enum.Builder.from_pointer(@_p)
+  :fun ref init_enum
+    @_p.clear_pointer(3) // enumerants
+    @_p.mark_union(0xc, 2)
+    CapnProto.Meta.Node.AS_enum.Builder.from_pointer(@_p)
 
   :fun is_interface: @_p.check_union(0xc, 3)
   :fun ref interface!: @_p.assert_union!(0xc, 3), CapnProto.Meta.Node.AS_interface.Builder.from_pointer(@_p)
+  :fun ref init_interface
+    @_p.clear_pointer(3) // methods
+    @_p.clear_pointer(4) // superclasses
+    @_p.mark_union(0xc, 3)
+    CapnProto.Meta.Node.AS_interface.Builder.from_pointer(@_p)
 
   :fun is_const: @_p.check_union(0xc, 4)
   :fun ref const!: @_p.assert_union!(0xc, 4), CapnProto.Meta.Node.AS_const.Builder.from_pointer(@_p)
+  :fun ref init_const
+    @_p.clear_pointer(3) // type
+    @_p.clear_pointer(4) // value
+    @_p.mark_union(0xc, 4)
+    CapnProto.Meta.Node.AS_const.Builder.from_pointer(@_p)
 
   :fun is_annotation: @_p.check_union(0xc, 5)
   :fun ref annotation!: @_p.assert_union!(0xc, 5), CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
+  :fun ref init_annotation
+    @_p.clear_pointer(3) // type
+    @_p.set_bool(0xe, 0b00000001, False) // targets_file
+    @_p.set_bool(0xe, 0b00000010, False) // targets_const
+    @_p.set_bool(0xe, 0b00000100, False) // targets_enum
+    @_p.set_bool(0xe, 0b00001000, False) // targets_enumerant
+    @_p.set_bool(0xe, 0b00010000, False) // targets_struct
+    @_p.set_bool(0xe, 0b00100000, False) // targets_field
+    @_p.set_bool(0xe, 0b01000000, False) // targets_union
+    @_p.set_bool(0xe, 0b10000000, False) // targets_group
+    @_p.set_bool(0xf, 0b00000001, False) // targets_interface
+    @_p.set_bool(0xf, 0b00000010, False) // targets_method
+    @_p.set_bool(0xf, 0b00000100, False) // targets_param
+    @_p.set_bool(0xf, 0b00001000, False) // targets_annotation
+    @_p.mark_union(0xc, 5)
+    CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
 
   :fun ref parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(5))
   :fun ref init_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
@@ -788,9 +828,20 @@
 
   :fun is_slot: @_p.check_union(0x8, 0)
   :fun ref slot!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.Builder.from_pointer(@_p)
+  :fun ref init_slot
+    @_p.clear_32(0x4) // offset
+    @_p.clear_pointer(2) // type
+    @_p.clear_pointer(3) // default_value
+    @_p.set_bool(0x10, 0b00000001, False) // had_explicit_default
+    @_p.mark_union(0x8, 0)
+    CapnProto.Meta.Field.AS_slot.Builder.from_pointer(@_p)
 
   :fun is_group: @_p.check_union(0x8, 1)
   :fun ref group!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Field.AS_group.Builder.from_pointer(@_p)
+  :fun ref init_group
+    @_p.clear_64(0x10) // type_id
+    @_p.mark_union(0x8, 1)
+    CapnProto.Meta.Field.AS_group.Builder.from_pointer(@_p)
 
   :fun ref ordinal: CapnProto.Meta.Field.AS_ordinal.Builder.from_pointer(@_p)
 
@@ -942,18 +993,40 @@
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun ref list!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.Builder.from_pointer(@_p)
+  :fun ref init_list
+    @_p.clear_pointer(0) // element_type
+    @_p.mark_union(0x0, 14)
+    CapnProto.Meta.Type.AS_list.Builder.from_pointer(@_p)
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun ref enum!: @_p.assert_union!(0x0, 15), CapnProto.Meta.Type.AS_enum.Builder.from_pointer(@_p)
+  :fun ref init_enum
+    @_p.clear_64(0x8) // type_id
+    @_p.clear_pointer(0) // brand
+    @_p.mark_union(0x0, 15)
+    CapnProto.Meta.Type.AS_enum.Builder.from_pointer(@_p)
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun ref struct!: @_p.assert_union!(0x0, 16), CapnProto.Meta.Type.AS_struct.Builder.from_pointer(@_p)
+  :fun ref init_struct
+    @_p.clear_64(0x8) // type_id
+    @_p.clear_pointer(0) // brand
+    @_p.mark_union(0x0, 16)
+    CapnProto.Meta.Type.AS_struct.Builder.from_pointer(@_p)
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun ref interface!: @_p.assert_union!(0x0, 17), CapnProto.Meta.Type.AS_interface.Builder.from_pointer(@_p)
+  :fun ref init_interface
+    @_p.clear_64(0x8) // type_id
+    @_p.clear_pointer(0) // brand
+    @_p.mark_union(0x0, 17)
+    CapnProto.Meta.Type.AS_interface.Builder.from_pointer(@_p)
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun ref any_pointer!: @_p.assert_union!(0x0, 18), CapnProto.Meta.Type.AS_anyPointer.Builder.from_pointer(@_p)
+  :fun ref init_any_pointer
+    @_p.mark_union(0x0, 18)
+    CapnProto.Meta.Type.AS_anyPointer.Builder.from_pointer(@_p)
 
 :struct CapnProto.Meta.Type.AS_list.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1009,12 +1082,28 @@
 
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun ref unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
+  :fun ref init_unconstrained
+    // NOT_IMPLEMENTED: any_kind
+    // NOT_IMPLEMENTED: struct
+    // NOT_IMPLEMENTED: list
+    // NOT_IMPLEMENTED: capability
+    @_p.mark_union(0x8, 0)
+    CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
 
   :fun is_parameter: @_p.check_union(0x8, 1)
   :fun ref parameter!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Type.AS_anyPointer.AS_parameter.Builder.from_pointer(@_p)
+  :fun ref init_parameter
+    @_p.clear_64(0x10) // scope_id
+    @_p.clear_16(0xa) // parameter_index
+    @_p.mark_union(0x8, 1)
+    CapnProto.Meta.Type.AS_anyPointer.AS_parameter.Builder.from_pointer(@_p)
 
   :fun is_implicit_method_parameter: @_p.check_union(0x8, 2)
   :fun ref implicit_method_parameter!: @_p.assert_union!(0x8, 2), CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.Builder.from_pointer(@_p)
+  :fun ref init_implicit_method_parameter
+    @_p.clear_16(0xa) // parameter_index
+    @_p.mark_union(0x8, 2)
+    CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.Builder.from_pointer(@_p)
 
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder
   :let _p CapnProto.Pointer.Struct.Builder
