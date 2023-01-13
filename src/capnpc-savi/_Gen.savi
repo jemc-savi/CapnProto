@@ -474,10 +474,16 @@
       )
       @_out << ")"
     | type.is_struct |
-      // TODO: handle default list values
-      @_out << "\(@_type_name(type, is_builder)).\(
-        if is_builder ("" | "read_")
-      )from_pointer(@_p.struct(\(offset)))"
+      // TODO: handle default struct values
+      try (
+        struct = @_find_node!(type.struct!.type_id).struct!
+
+        @_out << "\(@_type_name(type, is_builder)).\(
+          if is_builder ("" | "read_")
+        )from_pointer(@_p.struct(\(offset)\(
+          if is_builder ", \(struct.data_word_count), \(struct.pointer_count)"
+        )))"
+      )
     | type.is_interface |
       @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
     | type.is_any_pointer |

@@ -22,21 +22,23 @@
   :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value, 0)
   :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value, 0)
 
-  :const capn_proto_pointer_count U16: 4
+  :const capn_proto_pointer_count U16: 5
   :fun ref some_text: @_p.text(0)
   :fun ref some_data: @_p.data(1)
   :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
   :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
 
-  :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(2))
-  :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(2, 2, 1, new_count))
+  :fun ref child: _ExampleChildBuilder.from_pointer(@_p.struct(2, 2, 1))
+
+  :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(3))
+  :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(3, 2, 1, new_count))
 
   :fun is_foo: @_p.check_union(0x30, 0)
   :fun ref foo!: @_p.assert_union!(0x30, 0), _ExampleAsFooBuilder.from_pointer(@_p)
   :fun ref init_foo
     @_p.clear_64(0x20)
     @_p.clear_32(0x28)
-    @_p.clear_pointer(3)
+    @_p.clear_pointer(4)
     @_p.mark_union(0x30, 0)
     _ExampleAsFooBuilder.from_pointer(@_p)
 
@@ -45,7 +47,7 @@
   :fun ref init_bar
     @_p.clear_64(0x20)
     @_p.clear_32(0x28)
-    @_p.clear_pointer(3)
+    @_p.clear_pointer(4)
     @_p.mark_union(0x30, 1)
     _ExampleAsBarBuilder.from_pointer(@_p)
 
@@ -73,9 +75,9 @@
   :fun ref "some_u64="(new_value): @_p.set_u64(0x20, new_value, 0)
   :fun ref "some_u32="(new_value): @_p.set_u32(0x28, new_value, 0)
 
-  :const capn_proto_pointer_count U16: 4
-  :fun ref txt: @_p.text(3)
-  :fun ref "txt="(new_value): @_p.set_text(3, new_value, "")
+  :const capn_proto_pointer_count U16: 5
+  :fun ref txt: @_p.text(4)
+  :fun ref "txt="(new_value): @_p.set_text(4, new_value, "")
 
 :struct _ExampleAsBarBuilder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -87,9 +89,9 @@
   :fun ref "some_f64="(new_value): @_p.set_f64(0x20, new_value, 0)
   :fun ref "some_f32="(new_value): @_p.set_f32(0x28, new_value, 0)
 
-  :const capn_proto_pointer_count U16: 4
-  :fun ref blob: @_p.data(3)
-  :fun ref "blob="(new_value): @_p.set_data(3, new_value, b"")
+  :const capn_proto_pointer_count U16: 5
+  :fun ref blob: @_p.data(4)
+  :fun ref "blob="(new_value): @_p.set_data(4, new_value, b"")
 
 :class CapnProto.Message.Builder.Spec
   :is Spec
@@ -122,6 +124,16 @@
     assert: "\(root.some_data)" == "This is some example data"
     root.some_data              = b""
     assert: "\(root.some_data)" == ""
+
+  :it "reads from and writes to fields of the child struct"
+    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    root = message.root
+    assert: root.child.a == 0, root.child.a = 77, assert: root.child.a == 77
+    assert: root.child.b == 0, root.child.b = 88, assert: root.child.b == 88
+
+    assert: "\(root.child.name)" == ""
+    root.child.name = "Alice"
+    assert: "\(root.child.name)" == "Alice"
 
   :it "reads from and writes to fields of the list children structs"
     message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)

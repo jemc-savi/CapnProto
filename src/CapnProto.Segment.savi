@@ -58,6 +58,9 @@
     new_offset
 
   :fun ref _allocate_pointer(need_size U32) U32
+    // TODO: Allocate an extra 8 bytes to use for reference counting,
+    // and then add incref and decref logic to allow sharing pointers.
+
     // Round up the requested size to the nearest multiple of 8.
     need_size = (need_size + 7).bit_and(-8)
 
