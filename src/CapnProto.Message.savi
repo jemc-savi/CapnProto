@@ -22,23 +22,32 @@
   :const capn_proto_pointer_count U16: 0
 
 :struct CapnProto.Message.Builder(A _MessageBuilderRoot)
-  :let root A
+  :let _initial_size USize
+  :let _segments CapnProto.Segments
 
   :new (initial_size USize)
     alloc_byte_size = (
       A.capn_proto_data_word_count.usize +
       A.capn_proto_pointer_count.usize
     ) * 8 + 8
-    initial_size = initial_size.at_least(alloc_byte_size)
+    @_initial_size = initial_size.at_least(alloc_byte_size)
+    @_segments = CapnProto.Segments.new
 
-    segments = CapnProto.Segments.new
-    segment = CapnProto.Segment.new(segments, initial_size)
+  :fun ref take_val_buffers: @_segments.take_val_buffers
+
+  :fun ref root
+    segment = try (
+      @_segments._list[0]!
+    |
+      CapnProto.Segment.new(@_segments, @_initial_size)
+    )
+
     pointer = CapnProto.Pointer.Struct.Builder._new(
       segment, 8, A.capn_proto_data_word_count, A.capn_proto_pointer_count
     )
     try segment._set_u64!(
-      segment._allocate_pointer(alloc_byte_size.u32)
+      segment._allocate_pointer(pointer._total_byte_size + 8)
       _WriteStructPointer._encode_with_zero_relative_offset(pointer)
     )
 
-    @root = A.from_pointer(pointer)
+    A.from_pointer(pointer)

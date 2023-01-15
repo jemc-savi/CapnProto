@@ -2,6 +2,12 @@
   :let _list Array(CapnProto.Segment)'ref
   :new: @_list = []
 
+  :fun ref take_val_buffers Array(Bytes)'val
+    out Array(Bytes)'iso = []
+    @_list.each -> (segment | out << segment._take_buffer)
+    @_list.clear
+    --out
+
 :class CapnProto.Segments.Reader
   :var _header: b""
   :var _segments: CapnProto.Segments.new // TODO: iso
