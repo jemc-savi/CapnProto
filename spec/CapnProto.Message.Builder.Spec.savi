@@ -194,3 +194,23 @@
     assert: bar.some_f64 == 0, bar.some_f64 = 42, assert: bar.some_f64 == 42
     assert: bar.some_f32 == 0, bar.some_f32 = 43, assert: bar.some_f32 == 43
     assert: "\(bar.blob)" == "", bar.blob = b"!!", assert: "\(bar.blob)" == "!!"
+
+  :it "lets you take the resulting byte buffers"
+    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    buffers = message.take_val_buffers
+
+    assert: buffers.size == 0
+
+    message.root.init_children(999) // allocate the root struct and 999 children
+
+    buffers = message.take_val_buffers
+    assert: buffers.size == 1
+    assert: buffers[0]!.size == 0x5E18
+    assert: buffers[0]!.space == 0x8000
+
+    message.root // allocate just the root struct
+
+    buffers = message.take_val_buffers
+    assert: buffers.size == 1
+    assert: buffers[0]!.size == 0x68
+    assert: buffers[0]!.space == 0x4000

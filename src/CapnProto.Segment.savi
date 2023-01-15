@@ -99,7 +99,8 @@
     // Expand the byte buffer to a size greater than or equal to the needed size
     // (in practice, the next power of 2 size, due to how `Bytes` works),
     // and fill the newly allocated bytes with zeros.
-    @_bytes.reserve(@_bytes.size + need_size.usize - final_hole_size.usize)
+    occupied_size = @_bytes.size + need_size.usize - final_hole_size.usize
+    @_bytes.reserve(occupied_size)
     @_bytes.fill_with_zeros(
       (final_hole_head + final_hole_size).usize
       @_bytes.space
@@ -107,8 +108,7 @@
 
     // Do the internal bookkeeping needed to ensure our remaining final hole
     // is properly accounted for, as necessary.
-    remaining_final_hole_size = @_bytes.space.u32 - @_bytes.size.u32
-    remaining_final_hole = Pair(U32).new(@_bytes.size.u32, @_bytes.space.u32)
+    remaining_final_hole = Pair(U32).new(occupied_size.u32, @_bytes.space.u32)
     if (remaining_final_hole.tail > remaining_final_hole.head) (
       if (final_hole_size > 0) (
         try (@_holes.last! = remaining_final_hole)
@@ -156,3 +156,11 @@
     // Otherwise, add it as a new hole at the end.
     @_holes << Pair(U32).new(free_head, free_tail)
     @
+
+  :fun ref _take_buffer Bytes'iso
+    buffer = @_bytes.take_buffer
+
+    try buffer.truncate(@_holes.last!.head.usize)
+    @_holes.clear
+
+    --buffer
