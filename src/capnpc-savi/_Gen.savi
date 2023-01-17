@@ -507,7 +507,7 @@
         (offset / 8).format.hex.without_leading_zeros
       ), \(
         U8[1].bit_shl((offset % 8).u8).format.binary
-      ), \(input_name)"
+      ), Bool[\(input_name)]"
       try (
         if slot.default_value.bool! (
           @_out << ".not"
