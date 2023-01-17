@@ -676,7 +676,7 @@
   :fun ref init_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
-  :fun ref "is_generic="(new_value): @_p.set_bool(0x24, 0b00000001, new_value)
+  :fun ref "is_generic="(new_value): @_p.set_bool(0x24, 0b00000001, Bool[new_value])
 
 :struct CapnProto.Meta.Node.AS_struct.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -695,7 +695,7 @@
   :fun ref "preferred_list_encoding="(new_value): @_p.set_u16(0x1a, CapnProto.Meta.ElementSize[new_value].u16, 0)
 
   :fun is_group: @_p.bool(0x1c, 0b00000001)
-  :fun ref "is_group="(new_value): @_p.set_bool(0x1c, 0b00000001, new_value)
+  :fun ref "is_group="(new_value): @_p.set_bool(0x1c, 0b00000001, Bool[new_value])
 
   :fun discriminant_count: @_p.u16(0x1e)
   :fun ref "discriminant_count="(new_value): @_p.set_u16(0x1e, new_value, 0)
@@ -750,40 +750,40 @@
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
 
   :fun targets_file: @_p.bool(0xe, 0b00000001)
-  :fun ref "targets_file="(new_value): @_p.set_bool(0xe, 0b00000001, new_value)
+  :fun ref "targets_file="(new_value): @_p.set_bool(0xe, 0b00000001, Bool[new_value])
 
   :fun targets_const: @_p.bool(0xe, 0b00000010)
-  :fun ref "targets_const="(new_value): @_p.set_bool(0xe, 0b00000010, new_value)
+  :fun ref "targets_const="(new_value): @_p.set_bool(0xe, 0b00000010, Bool[new_value])
 
   :fun targets_enum: @_p.bool(0xe, 0b00000100)
-  :fun ref "targets_enum="(new_value): @_p.set_bool(0xe, 0b00000100, new_value)
+  :fun ref "targets_enum="(new_value): @_p.set_bool(0xe, 0b00000100, Bool[new_value])
 
   :fun targets_enumerant: @_p.bool(0xe, 0b00001000)
-  :fun ref "targets_enumerant="(new_value): @_p.set_bool(0xe, 0b00001000, new_value)
+  :fun ref "targets_enumerant="(new_value): @_p.set_bool(0xe, 0b00001000, Bool[new_value])
 
   :fun targets_struct: @_p.bool(0xe, 0b00010000)
-  :fun ref "targets_struct="(new_value): @_p.set_bool(0xe, 0b00010000, new_value)
+  :fun ref "targets_struct="(new_value): @_p.set_bool(0xe, 0b00010000, Bool[new_value])
 
   :fun targets_field: @_p.bool(0xe, 0b00100000)
-  :fun ref "targets_field="(new_value): @_p.set_bool(0xe, 0b00100000, new_value)
+  :fun ref "targets_field="(new_value): @_p.set_bool(0xe, 0b00100000, Bool[new_value])
 
   :fun targets_union: @_p.bool(0xe, 0b01000000)
-  :fun ref "targets_union="(new_value): @_p.set_bool(0xe, 0b01000000, new_value)
+  :fun ref "targets_union="(new_value): @_p.set_bool(0xe, 0b01000000, Bool[new_value])
 
   :fun targets_group: @_p.bool(0xe, 0b10000000)
-  :fun ref "targets_group="(new_value): @_p.set_bool(0xe, 0b10000000, new_value)
+  :fun ref "targets_group="(new_value): @_p.set_bool(0xe, 0b10000000, Bool[new_value])
 
   :fun targets_interface: @_p.bool(0xf, 0b00000001)
-  :fun ref "targets_interface="(new_value): @_p.set_bool(0xf, 0b00000001, new_value)
+  :fun ref "targets_interface="(new_value): @_p.set_bool(0xf, 0b00000001, Bool[new_value])
 
   :fun targets_method: @_p.bool(0xf, 0b00000010)
-  :fun ref "targets_method="(new_value): @_p.set_bool(0xf, 0b00000010, new_value)
+  :fun ref "targets_method="(new_value): @_p.set_bool(0xf, 0b00000010, Bool[new_value])
 
   :fun targets_param: @_p.bool(0xf, 0b00000100)
-  :fun ref "targets_param="(new_value): @_p.set_bool(0xf, 0b00000100, new_value)
+  :fun ref "targets_param="(new_value): @_p.set_bool(0xf, 0b00000100, Bool[new_value])
 
   :fun targets_annotation: @_p.bool(0xf, 0b00001000)
-  :fun ref "targets_annotation="(new_value): @_p.set_bool(0xf, 0b00001000, new_value)
+  :fun ref "targets_annotation="(new_value): @_p.set_bool(0xf, 0b00001000, Bool[new_value])
 
 :struct CapnProto.Meta.Node.Parameter.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -863,7 +863,7 @@
   :fun ref default_value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(3, 2, 1))
 
   :fun had_explicit_default: @_p.bool(0x10, 0b00000001)
-  :fun ref "had_explicit_default="(new_value): @_p.set_bool(0x10, 0b00000001, new_value)
+  :fun ref "had_explicit_default="(new_value): @_p.set_bool(0x10, 0b00000001, Bool[new_value])
 
 :struct CapnProto.Meta.Field.AS_group.Builder
   :let _p CapnProto.Pointer.Struct.Builder
