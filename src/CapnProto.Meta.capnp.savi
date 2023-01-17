@@ -613,6 +613,9 @@
 
   :fun is_file: @_p.check_union(0xc, 0)
   :fun file!: @_p.assert_union!(0xc, 0), None
+  :fun ref init_file
+    @_p.mark_union(0xc, 0)
+    None
 
   :fun is_struct: @_p.check_union(0xc, 1)
   :fun ref struct!: @_p.assert_union!(0xc, 1), CapnProto.Meta.Node.AS_struct.Builder.from_pointer(@_p)
@@ -881,9 +884,16 @@
 
   :fun is_implicit: @_p.check_union(0xa, 0)
   :fun implicit!: @_p.assert_union!(0xa, 0), None
+  :fun ref init_implicit
+    @_p.mark_union(0xa, 0)
+    None
 
   :fun is_explicit: @_p.check_union(0xa, 1)
   :fun explicit!: @_p.assert_union!(0xa, 1), @_p.u16(0xc)
+  :fun ref init_explicit
+    @_p.clear_16(0xc) // explicit
+    @_p.mark_union(0xa, 1)
+    @_p.u16(0xc)
 
 :struct CapnProto.Meta.Enumerant.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -951,45 +961,87 @@
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
+  :fun ref init_void
+    @_p.mark_union(0x0, 0)
+    None
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), None
+  :fun ref init_bool
+    @_p.mark_union(0x0, 1)
+    None
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), None
+  :fun ref init_int8
+    @_p.mark_union(0x0, 2)
+    None
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), None
+  :fun ref init_int16
+    @_p.mark_union(0x0, 3)
+    None
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), None
+  :fun ref init_int32
+    @_p.mark_union(0x0, 4)
+    None
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), None
+  :fun ref init_int64
+    @_p.mark_union(0x0, 5)
+    None
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), None
+  :fun ref init_uint8
+    @_p.mark_union(0x0, 6)
+    None
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), None
+  :fun ref init_uint16
+    @_p.mark_union(0x0, 7)
+    None
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), None
+  :fun ref init_uint32
+    @_p.mark_union(0x0, 8)
+    None
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), None
+  :fun ref init_uint64
+    @_p.mark_union(0x0, 9)
+    None
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), None
+  :fun ref init_float32
+    @_p.mark_union(0x0, 10)
+    None
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), None
+  :fun ref init_float64
+    @_p.mark_union(0x0, 11)
+    None
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun text!: @_p.assert_union!(0x0, 12), None
+  :fun ref init_text
+    @_p.mark_union(0x0, 12)
+    None
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun data!: @_p.assert_union!(0x0, 13), None
+  :fun ref init_data
+    @_p.mark_union(0x0, 13)
+    None
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun ref list!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.Builder.from_pointer(@_p)
@@ -1083,10 +1135,6 @@
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun ref unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
   :fun ref init_unconstrained
-    // NOT_IMPLEMENTED: any_kind
-    // NOT_IMPLEMENTED: struct
-    // NOT_IMPLEMENTED: list
-    // NOT_IMPLEMENTED: capability
     @_p.mark_union(0x8, 0)
     CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
 
@@ -1114,15 +1162,27 @@
 
   :fun is_any_kind: @_p.check_union(0xa, 0)
   :fun any_kind!: @_p.assert_union!(0xa, 0), None
+  :fun ref init_any_kind
+    @_p.mark_union(0xa, 0)
+    None
 
   :fun is_struct: @_p.check_union(0xa, 1)
   :fun struct!: @_p.assert_union!(0xa, 1), None
+  :fun ref init_struct
+    @_p.mark_union(0xa, 1)
+    None
 
   :fun is_list: @_p.check_union(0xa, 2)
   :fun list!: @_p.assert_union!(0xa, 2), None
+  :fun ref init_list
+    @_p.mark_union(0xa, 2)
+    None
 
   :fun is_capability: @_p.check_union(0xa, 3)
   :fun capability!: @_p.assert_union!(0xa, 3), None
+  :fun ref init_capability
+    @_p.mark_union(0xa, 3)
+    None
 
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_parameter.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1169,9 +1229,16 @@
 
   :fun is_bind: @_p.check_union(0x8, 0)
   :fun ref bind!: @_p.assert_union!(0x8, 0), CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.list(0))
+  :fun ref init_bind
+    @_p.clear_pointer(0) // bind
+    @_p.mark_union(0x8, 0)
+    CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.list(0))
 
   :fun is_inherit: @_p.check_union(0x8, 1)
   :fun inherit!: @_p.assert_union!(0x8, 1), None
+  :fun ref init_inherit
+    @_p.mark_union(0x8, 1)
+    None
 
 :struct CapnProto.Meta.Brand.Binding.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1182,9 +1249,16 @@
 
   :fun is_unbound: @_p.check_union(0x0, 0)
   :fun unbound!: @_p.assert_union!(0x0, 0), None
+  :fun ref init_unbound
+    @_p.mark_union(0x0, 0)
+    None
 
   :fun is_type: @_p.check_union(0x0, 1)
   :fun ref type!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
+  :fun ref init_type
+    @_p.clear_pointer(0) // type
+    @_p.mark_union(0x0, 1)
+    CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
 
 :struct CapnProto.Meta.Value.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1195,60 +1269,134 @@
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
+  :fun ref init_void
+    @_p.mark_union(0x0, 0)
+    None
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), @_p.bool(0x2, 0b00000001)
+  :fun ref init_bool
+    @_p.set_bool(0x2, 0b00000001, False) // bool
+    @_p.mark_union(0x0, 1)
+    @_p.bool(0x2, 0b00000001)
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), @_p.i8(0x2)
+  :fun ref init_int8
+    @_p.clear_8(0x2) // int8
+    @_p.mark_union(0x0, 2)
+    @_p.i8(0x2)
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), @_p.i16(0x2)
+  :fun ref init_int16
+    @_p.clear_16(0x2) // int16
+    @_p.mark_union(0x0, 3)
+    @_p.i16(0x2)
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), @_p.i32(0x4)
+  :fun ref init_int32
+    @_p.clear_32(0x4) // int32
+    @_p.mark_union(0x0, 4)
+    @_p.i32(0x4)
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), @_p.i64(0x8)
+  :fun ref init_int64
+    @_p.clear_64(0x8) // int64
+    @_p.mark_union(0x0, 5)
+    @_p.i64(0x8)
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), @_p.u8(0x2)
+  :fun ref init_uint8
+    @_p.clear_8(0x2) // uint8
+    @_p.mark_union(0x0, 6)
+    @_p.u8(0x2)
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), @_p.u16(0x2)
+  :fun ref init_uint16
+    @_p.clear_16(0x2) // uint16
+    @_p.mark_union(0x0, 7)
+    @_p.u16(0x2)
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), @_p.u32(0x4)
+  :fun ref init_uint32
+    @_p.clear_32(0x4) // uint32
+    @_p.mark_union(0x0, 8)
+    @_p.u32(0x4)
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), @_p.u64(0x8)
+  :fun ref init_uint64
+    @_p.clear_64(0x8) // uint64
+    @_p.mark_union(0x0, 9)
+    @_p.u64(0x8)
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), @_p.f32(0x4)
+  :fun ref init_float32
+    @_p.clear_32(0x4) // float32
+    @_p.mark_union(0x0, 10)
+    @_p.f32(0x4)
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), @_p.f64(0x8)
+  :fun ref init_float64
+    @_p.clear_64(0x8) // float64
+    @_p.mark_union(0x0, 11)
+    @_p.f64(0x8)
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun ref text!: @_p.assert_union!(0x0, 12), @_p.text(0)
+  :fun ref init_text
+    @_p.clear_pointer(0) // text
+    @_p.mark_union(0x0, 12)
+    @_p.text(0)
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun ref data!: @_p.assert_union!(0x0, 13), @_p.data(0)
+  :fun ref init_data
+    @_p.clear_pointer(0) // data
+    @_p.mark_union(0x0, 13)
+    @_p.data(0)
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun ref list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
+  :fun ref init_list
+    @_p.clear_pointer(0) // list
+    @_p.mark_union(0x0, 14)
+    None // UNHANDLED: anyPointer
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), @_p.u16(0x2)
+  :fun ref init_enum
+    @_p.clear_16(0x2) // enum
+    @_p.mark_union(0x0, 15)
+    @_p.u16(0x2)
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun ref struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
+  :fun ref init_struct
+    @_p.clear_pointer(0) // struct
+    @_p.mark_union(0x0, 16)
+    None // UNHANDLED: anyPointer
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun interface!: @_p.assert_union!(0x0, 17), None
+  :fun ref init_interface
+    @_p.mark_union(0x0, 17)
+    None
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun ref any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
+  :fun ref init_any_pointer
+    @_p.clear_pointer(0) // any_pointer
+    @_p.mark_union(0x0, 18)
+    None // UNHANDLED: anyPointer
 
 :struct CapnProto.Meta.Annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder

@@ -297,11 +297,14 @@
     struct = node.struct!
     error! unless (struct.discriminant_count > 1)
 
-    group_struct = @_find_node!(field.group!.type_id).struct!
-
     @_out << "\n  :fun ref init_\(_TextCase.Snake[field.name])"
 
-    group_struct.fields.each -> (field |
+    try (
+      group_struct = @_find_node!(field.group!.type_id).struct!
+      group_struct.fields.each -> (group_field |
+        @_emit_field_clear_line(group_field)
+      )
+    |
       @_emit_field_clear_line(field)
     )
 
@@ -568,11 +571,13 @@
 
   :fun ref _emit_field_clear_line(field CapnProto.Meta.Field)
     slot = try (field.slot! | return)
+    type = slot.type
+    offset = slot.offset
+
+    return if type.is_void
 
     @_out << "\n    "
 
-    type = slot.type
-    offset = slot.offset
     case (
     | type.is_bool |
       @_out << "@_p.set_bool(\(
