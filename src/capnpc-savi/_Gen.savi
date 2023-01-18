@@ -23,7 +23,14 @@
     try (
       case (
       | node.is_file |
-        "CapnProto.Meta" // TODO: not hard-coded here
+        node.annotations.each -> (annotation |
+          // The namespace of the file can be dictated by the `namespace`
+          // annotation in `CapnProto.Savi.Meta.capnp`, whose id is well-known.
+          if (annotation.id == 0x9c3f4a6aa35d6820) (
+            return "\(try annotation.value.text!)"
+          )
+        )
+        "_"
       | node.is_struct && node.struct!.is_group |
         @_node_scoped_name_of_group!(node)
       |
@@ -46,9 +53,14 @@
 
   :fun _node_scoped_name_of_typedecl!(node CapnProto.Meta.Node) String
     scope_node = @_find_node!(node.scope_id)
+    scope_node_name = @_node_scoped_name(scope_node)
     scope_node.nested_nodes.each -> (nested |
       if (nested.id == node.id) (
-        return "\(@_node_scoped_name(scope_node)).\(nested.name)"
+        if (scope_node_name == "_") (
+          return "_\(nested.name)"
+        |
+          return "\(scope_node_name).\(nested.name)"
+        )
       )
     )
     error!
