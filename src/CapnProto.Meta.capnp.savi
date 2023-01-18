@@ -606,10 +606,12 @@
   :fun ref "scope_id="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun ref nested_nodes: CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.list(1))
-  :fun ref init_nested_nodes(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
+  :fun ref init_nested_nodes(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(2))
-  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, new_count))
+  :fun ref init_annotations(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, new_count))
 
   :fun is_file: @_p.check_union(0xc, 0)
   :fun file!: @_p.assert_union!(0xc, 0), None
@@ -673,7 +675,8 @@
     CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
 
   :fun ref parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(5))
-  :fun ref init_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
+  :fun ref init_parameters(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
   :fun ref "is_generic="(new_value): @_p.set_bool(0x24, 0b00000001, Bool[new_value])
@@ -704,7 +707,8 @@
   :fun ref "discriminant_offset="(new_value): @_p.set_u32(0x20, new_value, 0)
 
   :fun ref fields: CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.list(3))
-  :fun ref init_fields(new_count): CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, new_count))
+  :fun ref init_fields(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, new_count))
 
 :struct CapnProto.Meta.Node.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -714,7 +718,8 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref enumerants: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list(3))
-  :fun ref init_enumerants(new_count): CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, new_count))
+  :fun ref init_enumerants(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, new_count))
 
 :struct CapnProto.Meta.Node.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -724,10 +729,12 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref methods: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list(3))
-  :fun ref init_methods(new_count): CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, new_count))
+  :fun ref init_methods(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, new_count))
 
   :fun ref superclasses: CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.list(4))
-  :fun ref init_superclasses(new_count): CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, new_count))
+  :fun ref init_superclasses(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, new_count))
 
 :struct CapnProto.Meta.Node.AS_const.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -824,7 +831,8 @@
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
-  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref init_annotations(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
   :fun discriminant_value: @_p.u16(0x2).bit_xor(65535)
   :fun ref "discriminant_value="(new_value): @_p.set_u16(0x2, new_value, 65535)
@@ -890,8 +898,8 @@
 
   :fun is_explicit: @_p.check_union(0xa, 1)
   :fun explicit!: @_p.assert_union!(0xa, 1), @_p.u16(0xc)
-  :fun ref init_explicit
-    @_p.clear_16(0xc) // explicit
+  :fun ref init_explicit(new_value)
+    @_p.set_u16(0xc, new_value, 0)
     @_p.mark_union(0xa, 1)
     @_p.u16(0xc)
 
@@ -909,7 +917,8 @@
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
-  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref init_annotations(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
 :struct CapnProto.Meta.Superclass.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -943,14 +952,16 @@
   :fun ref "result_struct_type="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
-  :fun ref init_annotations(new_count): CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref init_annotations(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
   :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2, 0, 1))
 
   :fun ref result_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(3, 0, 1))
 
   :fun ref implicit_parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(4))
-  :fun ref init_implicit_parameters(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
+  :fun ref init_implicit_parameters(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
 
 :struct CapnProto.Meta.Type.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1215,7 +1226,8 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun ref scopes: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list(0))
-  :fun ref init_scopes(new_count): CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, new_count))
+  :fun ref init_scopes(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, new_count))
 
 :struct CapnProto.Meta.Brand.Scope.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1229,10 +1241,9 @@
 
   :fun is_bind: @_p.check_union(0x8, 0)
   :fun ref bind!: @_p.assert_union!(0x8, 0), CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.list(0))
-  :fun ref init_bind
-    @_p.clear_pointer(0) // bind
+  :fun ref init_bind(new_count)
     @_p.mark_union(0x8, 0)
-    CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.list(0))
+    CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.init_list(0, 1, 1, new_count))
 
   :fun is_inherit: @_p.check_union(0x8, 1)
   :fun inherit!: @_p.assert_union!(0x8, 1), None
@@ -1275,113 +1286,111 @@
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), @_p.bool(0x2, 0b00000001)
-  :fun ref init_bool
-    @_p.set_bool(0x2, 0b00000001, False) // bool
+  :fun ref init_bool(new_value)
+    @_p.set_bool(0x2, 0b00000001, Bool[new_value])
     @_p.mark_union(0x0, 1)
     @_p.bool(0x2, 0b00000001)
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), @_p.i8(0x2)
-  :fun ref init_int8
-    @_p.clear_8(0x2) // int8
+  :fun ref init_int8(new_value)
+    @_p.set_i8(0x2, new_value, 0)
     @_p.mark_union(0x0, 2)
     @_p.i8(0x2)
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), @_p.i16(0x2)
-  :fun ref init_int16
-    @_p.clear_16(0x2) // int16
+  :fun ref init_int16(new_value)
+    @_p.set_i16(0x2, new_value, 0)
     @_p.mark_union(0x0, 3)
     @_p.i16(0x2)
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), @_p.i32(0x4)
-  :fun ref init_int32
-    @_p.clear_32(0x4) // int32
+  :fun ref init_int32(new_value)
+    @_p.set_i32(0x4, new_value, 0)
     @_p.mark_union(0x0, 4)
     @_p.i32(0x4)
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), @_p.i64(0x8)
-  :fun ref init_int64
-    @_p.clear_64(0x8) // int64
+  :fun ref init_int64(new_value)
+    @_p.set_i64(0x8, new_value, 0)
     @_p.mark_union(0x0, 5)
     @_p.i64(0x8)
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), @_p.u8(0x2)
-  :fun ref init_uint8
-    @_p.clear_8(0x2) // uint8
+  :fun ref init_uint8(new_value)
+    @_p.set_u8(0x2, new_value, 0)
     @_p.mark_union(0x0, 6)
     @_p.u8(0x2)
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), @_p.u16(0x2)
-  :fun ref init_uint16
-    @_p.clear_16(0x2) // uint16
+  :fun ref init_uint16(new_value)
+    @_p.set_u16(0x2, new_value, 0)
     @_p.mark_union(0x0, 7)
     @_p.u16(0x2)
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), @_p.u32(0x4)
-  :fun ref init_uint32
-    @_p.clear_32(0x4) // uint32
+  :fun ref init_uint32(new_value)
+    @_p.set_u32(0x4, new_value, 0)
     @_p.mark_union(0x0, 8)
     @_p.u32(0x4)
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), @_p.u64(0x8)
-  :fun ref init_uint64
-    @_p.clear_64(0x8) // uint64
+  :fun ref init_uint64(new_value)
+    @_p.set_u64(0x8, new_value, 0)
     @_p.mark_union(0x0, 9)
     @_p.u64(0x8)
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), @_p.f32(0x4)
-  :fun ref init_float32
-    @_p.clear_32(0x4) // float32
+  :fun ref init_float32(new_value)
+    @_p.set_f32(0x4, new_value, 0.0)
     @_p.mark_union(0x0, 10)
     @_p.f32(0x4)
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), @_p.f64(0x8)
-  :fun ref init_float64
-    @_p.clear_64(0x8) // float64
+  :fun ref init_float64(new_value)
+    @_p.set_f64(0x8, new_value, 0.0)
     @_p.mark_union(0x0, 11)
     @_p.f64(0x8)
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun ref text!: @_p.assert_union!(0x0, 12), @_p.text(0)
-  :fun ref init_text
-    @_p.clear_pointer(0) // text
+  :fun ref init_text(new_value)
+    @_p.set_text(0, new_value, "")
     @_p.mark_union(0x0, 12)
     @_p.text(0)
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun ref data!: @_p.assert_union!(0x0, 13), @_p.data(0)
-  :fun ref init_data
-    @_p.clear_pointer(0) // data
+  :fun ref init_data(new_value)
+    @_p.set_data(0, new_value, b"")
     @_p.mark_union(0x0, 13)
     @_p.data(0)
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun ref list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
-  :fun ref init_list
-    @_p.clear_pointer(0) // list
+  :fun ref init_list(new_value None)
     @_p.mark_union(0x0, 14)
     None // UNHANDLED: anyPointer
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), @_p.u16(0x2)
-  :fun ref init_enum
-    @_p.clear_16(0x2) // enum
+  :fun ref init_enum(new_value)
+    @_p.set_u16(0x2, new_value, 0)
     @_p.mark_union(0x0, 15)
     @_p.u16(0x2)
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun ref struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
-  :fun ref init_struct
-    @_p.clear_pointer(0) // struct
+  :fun ref init_struct(new_value None)
     @_p.mark_union(0x0, 16)
     None // UNHANDLED: anyPointer
 
@@ -1393,8 +1402,7 @@
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun ref any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
-  :fun ref init_any_pointer
-    @_p.clear_pointer(0) // any_pointer
+  :fun ref init_any_pointer(new_value None)
     @_p.mark_union(0x0, 18)
     None // UNHANDLED: anyPointer
 
@@ -1420,10 +1428,12 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun ref nodes: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list(0))
-  :fun ref init_nodes(new_count): CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, new_count))
+  :fun ref init_nodes(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, new_count))
 
   :fun ref requested_files: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.list(1))
-  :fun ref init_requested_files(new_count): CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref init_requested_files(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1439,7 +1449,8 @@
   :fun ref "filename="(new_value): @_p.set_text(0, new_value, "")
 
   :fun ref imports: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.list(1))
-  :fun ref init_imports(new_count): CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
+  :fun ref init_imports(new_count)
+    CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder
   :let _p CapnProto.Pointer.Struct.Builder
