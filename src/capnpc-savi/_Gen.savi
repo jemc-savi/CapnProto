@@ -277,19 +277,29 @@
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
   )
-    is_union = field.discriminant_value != field.no_discriminant
-    error! if is_union
-
     slot = field.slot!
     type = slot.type
 
-    // TODO: implement struct init, not just struct list init
     struct_type = type.list!.element_type.struct!
     struct = @_find_node!(struct_type.type_id).struct!
 
     @_out << "\n  :fun ref init_\(
       _TextCase.Snake[field.name]
-    )(new_count): \(
+    )(new_count)"
+
+    is_union = field.discriminant_value != field.no_discriminant
+    if is_union (
+      try (
+        discriminant_offset = node.struct!.discriminant_offset
+        @_out << "\n    @_p.mark_union(\(
+          (discriminant_offset * 2).format.hex.without_leading_zeros
+        ), \(
+          field.discriminant_value
+        ))"
+      )
+    )
+
+    @_out << "\n    \(
       @_type_name(type, True)
     ).from_pointer(@_p.init_list(\(
       slot.offset
@@ -309,6 +319,9 @@
     struct = node.struct!
     error! unless (struct.discriminant_count > 1)
 
+    // List init methods are handled in another place
+    try (return if field.slot!.type.is_list)
+
     @_out << "\n  :fun ref init_\(_TextCase.Snake[field.name])"
 
     try (
@@ -317,7 +330,21 @@
         @_emit_field_clear_line(group_field)
       )
     |
-      @_emit_field_clear_line(field)
+      try (
+        slot = field.slot!
+        case (
+        | slot.type.is_struct |
+          @_emit_field_clear_line(field)
+        | slot.type.is_void |
+          None // do nothing extra - void can't be cleared nor set
+        | slot.type.is_any_pointer |
+          @_out << "(new_value None)" // TODO: implement "any pointer"
+        |
+          @_out << "(new_value)"
+          @_out << "\n    "
+          @_emit_field_set_expr(field, "new_value")
+        )
+      )
     )
 
     @_out << "\n    @_p.mark_union(\(
