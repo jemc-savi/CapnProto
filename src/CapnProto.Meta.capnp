@@ -21,6 +21,10 @@
 
 @0xa93fc509624c72d9;
 
+using Savi = import "CapnProto.Savi.Meta.capnp";
+$Savi.namespace("CapnProto.Meta");
+
+
 using Id = UInt64;
 # The globally-unique ID of a file, type, or annotation.
 

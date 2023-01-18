@@ -28,8 +28,10 @@
     )
 
   :fun ref _generate(req CapnProto.Meta.CodeGeneratorRequest)
-    req.nodes.each -> (node |
-      if node.is_file (
-        @env.out.print(_Gen.new(req, node).take_string)
+    req.requested_files.each -> (file |
+      req.nodes.each -> (node |
+        if (node.id == file.id) (
+          @env.out.print(_Gen.new(req, node).take_string)
+        )
       )
     )
