@@ -6,7 +6,7 @@
 
   :is IntoString
   :fun into_string_space: @_text.size * 2 // TODO: less lazy, less conservative
-  :fun into_string(out String'iso) String'iso
+  :fun into_string(out String'ref) None
     // TODO: UTF8-aware per-codepoint instead of per-byte here:
     @_text.each_byte_with_index -> (byte, index |
       if (byte >= 'A' && byte <= 'Z') (
@@ -16,7 +16,6 @@
         out.push_byte(byte)
       )
     )
-    --out
 
 // TODO: Move this utility to more generally available library?
 :struct _TextCase.Pascal
@@ -26,7 +25,7 @@
 
   :is IntoString
   :fun into_string_space: @_text.size
-  :fun into_string(out String'iso) String'iso
+  :fun into_string(out String'ref) None
     should_capitalize_next_byte = True
     // TODO: UTF8-aware per-codepoint instead of per-byte here:
     @_text.each_byte_with_index -> (byte, index |
@@ -43,4 +42,3 @@
 
       should_capitalize_next_byte = False
     )
-    --out
