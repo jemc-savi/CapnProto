@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: savi-lang/action-install@v1.0.0
+      - uses: savi-lang/action-install@v1
       - run: savi deps update --for spec
       - uses: peter-evans/create-pull-request@v4
         with:
