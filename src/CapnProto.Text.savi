@@ -13,10 +13,9 @@
 
   :is IntoString
   :fun into_string_space: @size
-  :fun into_string(out String'iso) String'iso
+  :fun into_string(out String'ref) None
     // TODO: Do a more efficient copy here.
     @_p.each(0, @size) -> (byte | out.push_byte(byte))
-    --out
 
   :fun each_byte_with_index(
     from USize = 0
