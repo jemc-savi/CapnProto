@@ -141,15 +141,31 @@
 
   :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
 
+  :fun u8_if_set!(n)  U8:  value = @_u8!(n),  error! if value.is_zero, value
+  :fun u16_if_set!(n) U16: value = @_u16!(n), error! if value.is_zero, value
+  :fun u32_if_set!(n) U32: value = @_u32!(n), error! if value.is_zero, value
+  :fun u64_if_set!(n) U64: value = @_u64!(n), error! if value.is_zero, value
+
+  :fun i8_if_set!(n): @u8_if_set!(n).i8
+  :fun i16_if_set!(n): @u16_if_set!(n).i16
+  :fun i32_if_set!(n): @u32_if_set!(n).i32
+  :fun i64_if_set!(n): @u64_if_set!(n).i64
+
+  :fun f32_if_set!(n): @u32_if_set!(n).f32
+  :fun f64_if_set!(n): @u64_if_set!(n).f64
+
+  :fun bool_if_set!(n, bit_mask)
+    if (@_u8!(n).bit_and(bit_mask) != 0) (True | error!)
+
   :fun assert_union!(n, value): error! if (@u16(n) != value)
   :fun check_union(n, value): @u16(n) == value
 
-  :fun text(n): try (@_text!(n) | @_empty_text)
+  :fun text(n): try (@text_if_set!(n) | @_empty_text)
   :fun _empty_text
     CapnProto.Text.read_from_pointer(
       CapnProto.Pointer.U8List.empty(@_segment)
     )
-  :fun _text!(n)
+  :fun text_if_set!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Text.read_from_pointer(
       _ParseU8ListPointer._parse!(
@@ -157,10 +173,10 @@
       )
     )
 
-  :fun data(n): try (@_data!(n) | @_empty_data)
+  :fun data(n): try (@data_if_set!(n) | @_empty_data)
   :fun _empty_data
     CapnProto.Data.from_pointer(CapnProto.Pointer.U8List.empty(@_segment))
-  :fun _data!(n)
+  :fun data_if_set!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Data.read_from_pointer(
       _ParseU8ListPointer._parse!(
@@ -168,19 +184,19 @@
       )
     )
 
-  :fun struct(n): try (@_struct!(n) | @_empty_struct)
+  :fun struct(n): try (@struct_if_set!(n) | @_empty_struct)
   :fun _empty_struct
     CapnProto.Pointer.Struct.empty(@_segment)
-  :fun _struct!(n):
+  :fun struct_if_set!(n):
     byte_offset = @_ptr_byte_offset!(n)
     _ParseStructPointer._parse!(
       @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
 
-  :fun list(n): try (@_list!(n) | @_empty_list)
+  :fun list(n): try (@list_if_set!(n) | @_empty_list)
   :fun _empty_list
     CapnProto.Pointer.StructList.empty(@_segment)
-  :fun _list!(n):
+  :fun list_if_set!(n):
     byte_offset = @_ptr_byte_offset!(n)
     _ParseStructListPointer._parse!(
       @_segment, byte_offset, @_segment._u64!(byte_offset)
@@ -264,6 +280,22 @@
 
   :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
 
+  :fun u8_if_set!(n)  U8:  value = @_u8!(n),  error! if value.is_zero, value
+  :fun u16_if_set!(n) U16: value = @_u16!(n), error! if value.is_zero, value
+  :fun u32_if_set!(n) U32: value = @_u32!(n), error! if value.is_zero, value
+  :fun u64_if_set!(n) U64: value = @_u64!(n), error! if value.is_zero, value
+
+  :fun i8_if_set!(n): @u8_if_set!(n).i8
+  :fun i16_if_set!(n): @u16_if_set!(n).i16
+  :fun i32_if_set!(n): @u32_if_set!(n).i32
+  :fun i64_if_set!(n): @u64_if_set!(n).i64
+
+  :fun f32_if_set!(n): @u32_if_set!(n).f32
+  :fun f64_if_set!(n): @u64_if_set!(n).f64
+
+  :fun bool_if_set!(n, bit_mask)
+    if (@_u8!(n).bit_and(bit_mask) != 0) (True | error!)
+
   :fun ref set_u8(n, v U8, d U8): try @_set_u8!(n, v.bit_xor(d)), v
   :fun ref set_u16(n, v U16, d U16): try @_set_u16!(n, v.bit_xor(d)), v
   :fun ref set_u32(n, v U32, d U32): try @_set_u32!(n, v.bit_xor(d)), v
@@ -298,12 +330,12 @@
   :fun check_union(n, value): @u16(n) == value
   :fun ref mark_union(n, value): try @_set_u16!(n, value), @
 
-  :fun ref text(n): try (@_text!(n) | @_empty_text)
+  :fun ref text(n): try (@text_if_set!(n) | @_empty_text)
   :fun ref _empty_text
     CapnProto.Text.from_pointer(
       CapnProto.Pointer.U8List.empty(@_segment)
     )
-  :fun ref _text!(n)
+  :fun ref text_if_set!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Text.from_pointer(
       _ParseU8ListPointer._parse_builder!(
@@ -341,10 +373,10 @@
 
     new_text
 
-  :fun ref data(n): try (@_data!(n) | @_empty_data)
+  :fun ref data(n): try (@data_if_set!(n) | @_empty_data)
   :fun ref _empty_data
     CapnProto.Data.from_pointer(CapnProto.Pointer.U8List.empty(@_segment))
-  :fun ref _data!(n)
+  :fun ref data_if_set!(n)
     byte_offset = @_ptr_byte_offset!(n)
     CapnProto.Data.from_pointer(
       _ParseU8ListPointer._parse_builder!(
@@ -385,6 +417,16 @@
   :fun ref _empty_struct
     CapnProto.Pointer.Struct.Builder.empty(@_segment)
 
+  :fun ref struct_if_set!(
+    n U16
+    data_word_count U16
+    pointer_count U16
+  ) CapnProto.Pointer.Struct.Builder
+    byte_offset = @_ptr_byte_offset!(n)
+    _ParseStructPointer._parse_builder!(
+      @_segment, byte_offset, @_segment._u64!(byte_offset)
+    )
+
   :fun ref struct(
     n U16
     data_word_count U16
@@ -415,10 +457,10 @@
 
     new_pointer
 
-  :fun ref list(n): try (@_list!(n) | @_empty_list)
+  :fun ref list(n): try (@list_if_set!(n) | @_empty_list)
   :fun ref _empty_list
     CapnProto.Pointer.StructList.Builder.empty(@_segment)
-  :fun ref _list!(n):
+  :fun ref list_if_set!(n):
     byte_offset = @_ptr_byte_offset!(n)
     _ParseStructListPointer._parse_builder!(
       @_segment, byte_offset, @_segment._u64!(byte_offset)

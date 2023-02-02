@@ -10,38 +10,52 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
 
   :fun display_name: @_p.text(0)
+  :fun display_name_if_set!: @_p.text_if_set!(0)
 
   :fun display_name_prefix_length: @_p.u32(0x8)
+  :fun display_name_prefix_length_if_set!: @_p.u32_if_set!(0x8)
 
   :fun scope_id: @_p.u64(0x10)
+  :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
 
   :fun nested_nodes: CapnProto.List(CapnProto.Meta.Node.NestedNode).read_from_pointer(@_p.list(1))
+  :fun nested_nodes_if_set!: CapnProto.List(CapnProto.Meta.Node.NestedNode).read_from_pointer(@_p.list_if_set!(1))
 
   :fun annotations: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list(2))
+  :fun annotations_if_set!: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list_if_set!(2))
 
   :fun is_file: @_p.check_union(0xc, 0)
   :fun file!: @_p.assert_union!(0xc, 0), None
+  :fun file_if_set!: @_p.assert_union!(0xc, 0), None
 
   :fun is_struct: @_p.check_union(0xc, 1)
   :fun struct!: @_p.assert_union!(0xc, 1), CapnProto.Meta.Node.AS_struct.read_from_pointer(@_p)
+  :fun struct_if_set!: @_p.assert_union!(0xc, 1), CapnProto.Meta.Node.AS_struct.read_from_pointer(@_p)
 
   :fun is_enum: @_p.check_union(0xc, 2)
   :fun enum!: @_p.assert_union!(0xc, 2), CapnProto.Meta.Node.AS_enum.read_from_pointer(@_p)
+  :fun enum_if_set!: @_p.assert_union!(0xc, 2), CapnProto.Meta.Node.AS_enum.read_from_pointer(@_p)
 
   :fun is_interface: @_p.check_union(0xc, 3)
   :fun interface!: @_p.assert_union!(0xc, 3), CapnProto.Meta.Node.AS_interface.read_from_pointer(@_p)
+  :fun interface_if_set!: @_p.assert_union!(0xc, 3), CapnProto.Meta.Node.AS_interface.read_from_pointer(@_p)
 
   :fun is_const: @_p.check_union(0xc, 4)
   :fun const!: @_p.assert_union!(0xc, 4), CapnProto.Meta.Node.AS_const.read_from_pointer(@_p)
+  :fun const_if_set!: @_p.assert_union!(0xc, 4), CapnProto.Meta.Node.AS_const.read_from_pointer(@_p)
 
   :fun is_annotation: @_p.check_union(0xc, 5)
   :fun annotation!: @_p.assert_union!(0xc, 5), CapnProto.Meta.Node.AS_annotation.read_from_pointer(@_p)
+  :fun annotation_if_set!: @_p.assert_union!(0xc, 5), CapnProto.Meta.Node.AS_annotation.read_from_pointer(@_p)
 
   :fun parameters: CapnProto.List(CapnProto.Meta.Node.Parameter).read_from_pointer(@_p.list(5))
+  :fun parameters_if_set!: CapnProto.List(CapnProto.Meta.Node.Parameter).read_from_pointer(@_p.list_if_set!(5))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
+  :fun is_generic_if_set!: @_p.bool_if_set!(0x24, 0b00000001)
 
 :struct box CapnProto.Meta.Node.AS_struct
   :let _p CapnProto.Pointer.Struct
@@ -51,18 +65,25 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun data_word_count: @_p.u16(0xe)
+  :fun data_word_count_if_set!: @_p.u16_if_set!(0xe)
 
   :fun pointer_count: @_p.u16(0x18)
+  :fun pointer_count_if_set!: @_p.u16_if_set!(0x18)
 
   :fun preferred_list_encoding: CapnProto.Meta.ElementSize._new(@_p.u16(0x1a))
+  :fun preferred_list_encoding_if_set!: CapnProto.Meta.ElementSize._new(@_p.u16_if_set!(0x1a))
 
   :fun is_group: @_p.bool(0x1c, 0b00000001)
+  :fun is_group_if_set!: @_p.bool_if_set!(0x1c, 0b00000001)
 
   :fun discriminant_count: @_p.u16(0x1e)
+  :fun discriminant_count_if_set!: @_p.u16_if_set!(0x1e)
 
   :fun discriminant_offset: @_p.u32(0x20)
+  :fun discriminant_offset_if_set!: @_p.u32_if_set!(0x20)
 
   :fun fields: CapnProto.List(CapnProto.Meta.Field).read_from_pointer(@_p.list(3))
+  :fun fields_if_set!: CapnProto.List(CapnProto.Meta.Field).read_from_pointer(@_p.list_if_set!(3))
 
 :struct box CapnProto.Meta.Node.AS_enum
   :let _p CapnProto.Pointer.Struct
@@ -72,6 +93,7 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun enumerants: CapnProto.List(CapnProto.Meta.Enumerant).read_from_pointer(@_p.list(3))
+  :fun enumerants_if_set!: CapnProto.List(CapnProto.Meta.Enumerant).read_from_pointer(@_p.list_if_set!(3))
 
 :struct box CapnProto.Meta.Node.AS_interface
   :let _p CapnProto.Pointer.Struct
@@ -81,8 +103,10 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun methods: CapnProto.List(CapnProto.Meta.Method).read_from_pointer(@_p.list(3))
+  :fun methods_if_set!: CapnProto.List(CapnProto.Meta.Method).read_from_pointer(@_p.list_if_set!(3))
 
   :fun superclasses: CapnProto.List(CapnProto.Meta.Superclass).read_from_pointer(@_p.list(4))
+  :fun superclasses_if_set!: CapnProto.List(CapnProto.Meta.Superclass).read_from_pointer(@_p.list_if_set!(4))
 
 :struct box CapnProto.Meta.Node.AS_const
   :let _p CapnProto.Pointer.Struct
@@ -92,8 +116,10 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(3))
+  :fun type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(3))
 
   :fun value: CapnProto.Meta.Value.read_from_pointer(@_p.struct(4))
+  :fun value_if_set!: CapnProto.Meta.Value.read_from_pointer(@_p.struct_if_set!(4))
 
 :struct box CapnProto.Meta.Node.AS_annotation
   :let _p CapnProto.Pointer.Struct
@@ -103,30 +129,43 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(3))
+  :fun type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(3))
 
   :fun targets_file: @_p.bool(0xe, 0b00000001)
+  :fun targets_file_if_set!: @_p.bool_if_set!(0xe, 0b00000001)
 
   :fun targets_const: @_p.bool(0xe, 0b00000010)
+  :fun targets_const_if_set!: @_p.bool_if_set!(0xe, 0b00000010)
 
   :fun targets_enum: @_p.bool(0xe, 0b00000100)
+  :fun targets_enum_if_set!: @_p.bool_if_set!(0xe, 0b00000100)
 
   :fun targets_enumerant: @_p.bool(0xe, 0b00001000)
+  :fun targets_enumerant_if_set!: @_p.bool_if_set!(0xe, 0b00001000)
 
   :fun targets_struct: @_p.bool(0xe, 0b00010000)
+  :fun targets_struct_if_set!: @_p.bool_if_set!(0xe, 0b00010000)
 
   :fun targets_field: @_p.bool(0xe, 0b00100000)
+  :fun targets_field_if_set!: @_p.bool_if_set!(0xe, 0b00100000)
 
   :fun targets_union: @_p.bool(0xe, 0b01000000)
+  :fun targets_union_if_set!: @_p.bool_if_set!(0xe, 0b01000000)
 
   :fun targets_group: @_p.bool(0xe, 0b10000000)
+  :fun targets_group_if_set!: @_p.bool_if_set!(0xe, 0b10000000)
 
   :fun targets_interface: @_p.bool(0xf, 0b00000001)
+  :fun targets_interface_if_set!: @_p.bool_if_set!(0xf, 0b00000001)
 
   :fun targets_method: @_p.bool(0xf, 0b00000010)
+  :fun targets_method_if_set!: @_p.bool_if_set!(0xf, 0b00000010)
 
   :fun targets_param: @_p.bool(0xf, 0b00000100)
+  :fun targets_param_if_set!: @_p.bool_if_set!(0xf, 0b00000100)
 
   :fun targets_annotation: @_p.bool(0xf, 0b00001000)
+  :fun targets_annotation_if_set!: @_p.bool_if_set!(0xf, 0b00001000)
 
 :struct box CapnProto.Meta.Node.Parameter
   :let _p CapnProto.Pointer.Struct
@@ -136,6 +175,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
 
 :struct box CapnProto.Meta.Node.NestedNode
   :let _p CapnProto.Pointer.Struct
@@ -145,8 +185,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
 
 :struct box CapnProto.Meta.Field
   :let _p CapnProto.Pointer.Struct
@@ -158,20 +200,27 @@
   :const no_discriminant U16: 65535
 
   :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
 
   :fun code_order: @_p.u16(0x0)
+  :fun code_order_if_set!: @_p.u16_if_set!(0x0)
 
   :fun annotations: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list(1))
+  :fun annotations_if_set!: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list_if_set!(1))
 
   :fun discriminant_value: @_p.u16(0x2).bit_xor(65535)
+  :fun discriminant_value_if_set!: @_p.u16_if_set!(0x2).bit_xor(65535)
 
   :fun is_slot: @_p.check_union(0x8, 0)
   :fun slot!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.read_from_pointer(@_p)
+  :fun slot_if_set!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.read_from_pointer(@_p)
 
   :fun is_group: @_p.check_union(0x8, 1)
   :fun group!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Field.AS_group.read_from_pointer(@_p)
+  :fun group_if_set!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Field.AS_group.read_from_pointer(@_p)
 
   :fun ordinal: CapnProto.Meta.Field.AS_ordinal.read_from_pointer(@_p)
+  :fun ordinal_if_set!: CapnProto.Meta.Field.AS_ordinal.read_from_pointer(@_p)
 
 :struct box CapnProto.Meta.Field.AS_slot
   :let _p CapnProto.Pointer.Struct
@@ -181,12 +230,16 @@
   :const capn_proto_pointer_count U16: 4
 
   :fun offset: @_p.u32(0x4)
+  :fun offset_if_set!: @_p.u32_if_set!(0x4)
 
   :fun type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(2))
+  :fun type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(2))
 
   :fun default_value: CapnProto.Meta.Value.read_from_pointer(@_p.struct(3))
+  :fun default_value_if_set!: CapnProto.Meta.Value.read_from_pointer(@_p.struct_if_set!(3))
 
   :fun had_explicit_default: @_p.bool(0x10, 0b00000001)
+  :fun had_explicit_default_if_set!: @_p.bool_if_set!(0x10, 0b00000001)
 
 :struct box CapnProto.Meta.Field.AS_group
   :let _p CapnProto.Pointer.Struct
@@ -196,6 +249,7 @@
   :const capn_proto_pointer_count U16: 4
 
   :fun type_id: @_p.u64(0x10)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x10)
 
 :struct box CapnProto.Meta.Field.AS_ordinal
   :let _p CapnProto.Pointer.Struct
@@ -206,9 +260,11 @@
 
   :fun is_implicit: @_p.check_union(0xa, 0)
   :fun implicit!: @_p.assert_union!(0xa, 0), None
+  :fun implicit_if_set!: @_p.assert_union!(0xa, 0), None
 
   :fun is_explicit: @_p.check_union(0xa, 1)
   :fun explicit!: @_p.assert_union!(0xa, 1), @_p.u16(0xc)
+  :fun explicit_if_set!: @_p.assert_union!(0xa, 1), @_p.u16_if_set!(0xc)
 
 :struct box CapnProto.Meta.Enumerant
   :let _p CapnProto.Pointer.Struct
@@ -218,10 +274,13 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
 
   :fun code_order: @_p.u16(0x0)
+  :fun code_order_if_set!: @_p.u16_if_set!(0x0)
 
   :fun annotations: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list(1))
+  :fun annotations_if_set!: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list_if_set!(1))
 
 :struct box CapnProto.Meta.Superclass
   :let _p CapnProto.Pointer.Struct
@@ -231,8 +290,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
 
   :fun brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(0))
+  :fun brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(0))
 
 :struct box CapnProto.Meta.Method
   :let _p CapnProto.Pointer.Struct
@@ -242,20 +303,28 @@
   :const capn_proto_pointer_count U16: 5
 
   :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
 
   :fun code_order: @_p.u16(0x0)
+  :fun code_order_if_set!: @_p.u16_if_set!(0x0)
 
   :fun param_struct_type: @_p.u64(0x8)
+  :fun param_struct_type_if_set!: @_p.u64_if_set!(0x8)
 
   :fun result_struct_type: @_p.u64(0x10)
+  :fun result_struct_type_if_set!: @_p.u64_if_set!(0x10)
 
   :fun annotations: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list(1))
+  :fun annotations_if_set!: CapnProto.List(CapnProto.Meta.Annotation).read_from_pointer(@_p.list_if_set!(1))
 
   :fun param_brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(2))
+  :fun param_brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(2))
 
   :fun result_brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(3))
+  :fun result_brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(3))
 
   :fun implicit_parameters: CapnProto.List(CapnProto.Meta.Node.Parameter).read_from_pointer(@_p.list(4))
+  :fun implicit_parameters_if_set!: CapnProto.List(CapnProto.Meta.Node.Parameter).read_from_pointer(@_p.list_if_set!(4))
 
 :struct box CapnProto.Meta.Type
   :let _p CapnProto.Pointer.Struct
@@ -266,60 +335,79 @@
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
+  :fun void_if_set!: @_p.assert_union!(0x0, 0), None
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), None
+  :fun bool_if_set!: @_p.assert_union!(0x0, 1), None
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), None
+  :fun int8_if_set!: @_p.assert_union!(0x0, 2), None
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), None
+  :fun int16_if_set!: @_p.assert_union!(0x0, 3), None
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), None
+  :fun int32_if_set!: @_p.assert_union!(0x0, 4), None
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), None
+  :fun int64_if_set!: @_p.assert_union!(0x0, 5), None
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), None
+  :fun uint8_if_set!: @_p.assert_union!(0x0, 6), None
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), None
+  :fun uint16_if_set!: @_p.assert_union!(0x0, 7), None
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), None
+  :fun uint32_if_set!: @_p.assert_union!(0x0, 8), None
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), None
+  :fun uint64_if_set!: @_p.assert_union!(0x0, 9), None
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), None
+  :fun float32_if_set!: @_p.assert_union!(0x0, 10), None
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), None
+  :fun float64_if_set!: @_p.assert_union!(0x0, 11), None
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun text!: @_p.assert_union!(0x0, 12), None
+  :fun text_if_set!: @_p.assert_union!(0x0, 12), None
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun data!: @_p.assert_union!(0x0, 13), None
+  :fun data_if_set!: @_p.assert_union!(0x0, 13), None
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun list!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.read_from_pointer(@_p)
+  :fun list_if_set!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.read_from_pointer(@_p)
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), CapnProto.Meta.Type.AS_enum.read_from_pointer(@_p)
+  :fun enum_if_set!: @_p.assert_union!(0x0, 15), CapnProto.Meta.Type.AS_enum.read_from_pointer(@_p)
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun struct!: @_p.assert_union!(0x0, 16), CapnProto.Meta.Type.AS_struct.read_from_pointer(@_p)
+  :fun struct_if_set!: @_p.assert_union!(0x0, 16), CapnProto.Meta.Type.AS_struct.read_from_pointer(@_p)
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun interface!: @_p.assert_union!(0x0, 17), CapnProto.Meta.Type.AS_interface.read_from_pointer(@_p)
+  :fun interface_if_set!: @_p.assert_union!(0x0, 17), CapnProto.Meta.Type.AS_interface.read_from_pointer(@_p)
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun any_pointer!: @_p.assert_union!(0x0, 18), CapnProto.Meta.Type.AS_anyPointer.read_from_pointer(@_p)
+  :fun any_pointer_if_set!: @_p.assert_union!(0x0, 18), CapnProto.Meta.Type.AS_anyPointer.read_from_pointer(@_p)
 
 :struct box CapnProto.Meta.Type.AS_list
   :let _p CapnProto.Pointer.Struct
@@ -329,6 +417,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun element_type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(0))
+  :fun element_type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(0))
 
 :struct box CapnProto.Meta.Type.AS_enum
   :let _p CapnProto.Pointer.Struct
@@ -338,8 +427,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun type_id: @_p.u64(0x8)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x8)
 
   :fun brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(0))
+  :fun brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(0))
 
 :struct box CapnProto.Meta.Type.AS_struct
   :let _p CapnProto.Pointer.Struct
@@ -349,8 +440,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun type_id: @_p.u64(0x8)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x8)
 
   :fun brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(0))
+  :fun brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(0))
 
 :struct box CapnProto.Meta.Type.AS_interface
   :let _p CapnProto.Pointer.Struct
@@ -360,8 +453,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun type_id: @_p.u64(0x8)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x8)
 
   :fun brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(0))
+  :fun brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(0))
 
 :struct box CapnProto.Meta.Type.AS_anyPointer
   :let _p CapnProto.Pointer.Struct
@@ -372,12 +467,15 @@
 
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.read_from_pointer(@_p)
+  :fun unconstrained_if_set!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.read_from_pointer(@_p)
 
   :fun is_parameter: @_p.check_union(0x8, 1)
   :fun parameter!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Type.AS_anyPointer.AS_parameter.read_from_pointer(@_p)
+  :fun parameter_if_set!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Type.AS_anyPointer.AS_parameter.read_from_pointer(@_p)
 
   :fun is_implicit_method_parameter: @_p.check_union(0x8, 2)
   :fun implicit_method_parameter!: @_p.assert_union!(0x8, 2), CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.read_from_pointer(@_p)
+  :fun implicit_method_parameter_if_set!: @_p.assert_union!(0x8, 2), CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.read_from_pointer(@_p)
 
 :struct box CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained
   :let _p CapnProto.Pointer.Struct
@@ -388,15 +486,19 @@
 
   :fun is_any_kind: @_p.check_union(0xa, 0)
   :fun any_kind!: @_p.assert_union!(0xa, 0), None
+  :fun any_kind_if_set!: @_p.assert_union!(0xa, 0), None
 
   :fun is_struct: @_p.check_union(0xa, 1)
   :fun struct!: @_p.assert_union!(0xa, 1), None
+  :fun struct_if_set!: @_p.assert_union!(0xa, 1), None
 
   :fun is_list: @_p.check_union(0xa, 2)
   :fun list!: @_p.assert_union!(0xa, 2), None
+  :fun list_if_set!: @_p.assert_union!(0xa, 2), None
 
   :fun is_capability: @_p.check_union(0xa, 3)
   :fun capability!: @_p.assert_union!(0xa, 3), None
+  :fun capability_if_set!: @_p.assert_union!(0xa, 3), None
 
 :struct box CapnProto.Meta.Type.AS_anyPointer.AS_parameter
   :let _p CapnProto.Pointer.Struct
@@ -406,8 +508,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun scope_id: @_p.u64(0x10)
+  :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
 
   :fun parameter_index: @_p.u16(0xa)
+  :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
 
 :struct box CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter
   :let _p CapnProto.Pointer.Struct
@@ -417,6 +521,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun parameter_index: @_p.u16(0xa)
+  :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
 
 :struct box CapnProto.Meta.Brand
   :let _p CapnProto.Pointer.Struct
@@ -426,6 +531,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun scopes: CapnProto.List(CapnProto.Meta.Brand.Scope).read_from_pointer(@_p.list(0))
+  :fun scopes_if_set!: CapnProto.List(CapnProto.Meta.Brand.Scope).read_from_pointer(@_p.list_if_set!(0))
 
 :struct box CapnProto.Meta.Brand.Scope
   :let _p CapnProto.Pointer.Struct
@@ -435,12 +541,15 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun scope_id: @_p.u64(0x0)
+  :fun scope_id_if_set!: @_p.u64_if_set!(0x0)
 
   :fun is_bind: @_p.check_union(0x8, 0)
   :fun bind!: @_p.assert_union!(0x8, 0), CapnProto.List(CapnProto.Meta.Brand.Binding).read_from_pointer(@_p.list(0))
+  :fun bind_if_set!: @_p.assert_union!(0x8, 0), CapnProto.List(CapnProto.Meta.Brand.Binding).read_from_pointer(@_p.list_if_set!(0))
 
   :fun is_inherit: @_p.check_union(0x8, 1)
   :fun inherit!: @_p.assert_union!(0x8, 1), None
+  :fun inherit_if_set!: @_p.assert_union!(0x8, 1), None
 
 :struct box CapnProto.Meta.Brand.Binding
   :let _p CapnProto.Pointer.Struct
@@ -451,9 +560,11 @@
 
   :fun is_unbound: @_p.check_union(0x0, 0)
   :fun unbound!: @_p.assert_union!(0x0, 0), None
+  :fun unbound_if_set!: @_p.assert_union!(0x0, 0), None
 
   :fun is_type: @_p.check_union(0x0, 1)
   :fun type!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.read_from_pointer(@_p.struct(0))
+  :fun type_if_set!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(0))
 
 :struct box CapnProto.Meta.Value
   :let _p CapnProto.Pointer.Struct
@@ -464,60 +575,79 @@
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
+  :fun void_if_set!: @_p.assert_union!(0x0, 0), None
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), @_p.bool(0x2, 0b00000001)
+  :fun bool_if_set!: @_p.assert_union!(0x0, 1), @_p.bool_if_set!(0x2, 0b00000001)
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), @_p.i8(0x2)
+  :fun int8_if_set!: @_p.assert_union!(0x0, 2), @_p.i8_if_set!(0x2)
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), @_p.i16(0x2)
+  :fun int16_if_set!: @_p.assert_union!(0x0, 3), @_p.i16_if_set!(0x2)
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), @_p.i32(0x4)
+  :fun int32_if_set!: @_p.assert_union!(0x0, 4), @_p.i32_if_set!(0x4)
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), @_p.i64(0x8)
+  :fun int64_if_set!: @_p.assert_union!(0x0, 5), @_p.i64_if_set!(0x8)
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), @_p.u8(0x2)
+  :fun uint8_if_set!: @_p.assert_union!(0x0, 6), @_p.u8_if_set!(0x2)
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), @_p.u16(0x2)
+  :fun uint16_if_set!: @_p.assert_union!(0x0, 7), @_p.u16_if_set!(0x2)
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), @_p.u32(0x4)
+  :fun uint32_if_set!: @_p.assert_union!(0x0, 8), @_p.u32_if_set!(0x4)
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), @_p.u64(0x8)
+  :fun uint64_if_set!: @_p.assert_union!(0x0, 9), @_p.u64_if_set!(0x8)
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), @_p.f32(0x4)
+  :fun float32_if_set!: @_p.assert_union!(0x0, 10), @_p.f32_if_set!(0x4)
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), @_p.f64(0x8)
+  :fun float64_if_set!: @_p.assert_union!(0x0, 11), @_p.f64_if_set!(0x8)
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun text!: @_p.assert_union!(0x0, 12), @_p.text(0)
+  :fun text_if_set!: @_p.assert_union!(0x0, 12), @_p.text_if_set!(0)
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun data!: @_p.assert_union!(0x0, 13), @_p.data(0)
+  :fun data_if_set!: @_p.assert_union!(0x0, 13), @_p.data_if_set!(0)
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
+  :fun list_if_set!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), @_p.u16(0x2)
+  :fun enum_if_set!: @_p.assert_union!(0x0, 15), @_p.u16_if_set!(0x2)
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
+  :fun struct_if_set!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun interface!: @_p.assert_union!(0x0, 17), None
+  :fun interface_if_set!: @_p.assert_union!(0x0, 17), None
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
+  :fun any_pointer_if_set!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
 
 :struct box CapnProto.Meta.Annotation
   :let _p CapnProto.Pointer.Struct
@@ -527,10 +657,13 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
 
   :fun value: CapnProto.Meta.Value.read_from_pointer(@_p.struct(0))
+  :fun value_if_set!: CapnProto.Meta.Value.read_from_pointer(@_p.struct_if_set!(0))
 
   :fun brand: CapnProto.Meta.Brand.read_from_pointer(@_p.struct(1))
+  :fun brand_if_set!: CapnProto.Meta.Brand.read_from_pointer(@_p.struct_if_set!(1))
 
 :enum CapnProto.Meta.ElementSize
   :bit_width 16
@@ -559,8 +692,10 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun nodes: CapnProto.List(CapnProto.Meta.Node).read_from_pointer(@_p.list(0))
+  :fun nodes_if_set!: CapnProto.List(CapnProto.Meta.Node).read_from_pointer(@_p.list_if_set!(0))
 
   :fun requested_files: CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile).read_from_pointer(@_p.list(1))
+  :fun requested_files_if_set!: CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile).read_from_pointer(@_p.list_if_set!(1))
 
 :struct box CapnProto.Meta.CodeGeneratorRequest.RequestedFile
   :let _p CapnProto.Pointer.Struct
@@ -570,10 +705,13 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
 
   :fun filename: @_p.text(0)
+  :fun filename_if_set!: @_p.text_if_set!(0)
 
   :fun imports: CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import).read_from_pointer(@_p.list(1))
+  :fun imports_if_set!: CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import).read_from_pointer(@_p.list_if_set!(1))
 
 :struct box CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import
   :let _p CapnProto.Pointer.Struct
@@ -583,8 +721,10 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
 
   :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
 
 :struct CapnProto.Meta.Node.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -594,33 +734,41 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
   :fun ref display_name: @_p.text(0)
+  :fun ref display_name_if_set!: @_p.text_if_set!(0)
   :fun ref "display_name="(new_value): @_p.set_text(0, new_value, "")
 
   :fun display_name_prefix_length: @_p.u32(0x8)
+  :fun display_name_prefix_length_if_set!: @_p.u32_if_set!(0x8)
   :fun ref "display_name_prefix_length="(new_value): @_p.set_u32(0x8, new_value, 0)
 
   :fun scope_id: @_p.u64(0x10)
+  :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
   :fun ref "scope_id="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun ref nested_nodes: CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.list(1))
+  :fun ref nested_nodes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_nested_nodes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(2))
+  :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(2))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, new_count))
 
   :fun is_file: @_p.check_union(0xc, 0)
   :fun file!: @_p.assert_union!(0xc, 0), None
+  :fun file_if_set!: @_p.assert_union!(0xc, 0), None
   :fun ref init_file
     @_p.mark_union(0xc, 0)
     None
 
   :fun is_struct: @_p.check_union(0xc, 1)
   :fun ref struct!: @_p.assert_union!(0xc, 1), CapnProto.Meta.Node.AS_struct.Builder.from_pointer(@_p)
+  :fun ref struct_if_set!: @_p.assert_union!(0xc, 1), CapnProto.Meta.Node.AS_struct.Builder.from_pointer(@_p)
   :fun ref init_struct
     @_p.clear_16(0xe) // data_word_count
     @_p.clear_16(0x18) // pointer_count
@@ -634,6 +782,7 @@
 
   :fun is_enum: @_p.check_union(0xc, 2)
   :fun ref enum!: @_p.assert_union!(0xc, 2), CapnProto.Meta.Node.AS_enum.Builder.from_pointer(@_p)
+  :fun ref enum_if_set!: @_p.assert_union!(0xc, 2), CapnProto.Meta.Node.AS_enum.Builder.from_pointer(@_p)
   :fun ref init_enum
     @_p.clear_pointer(3) // enumerants
     @_p.mark_union(0xc, 2)
@@ -641,6 +790,7 @@
 
   :fun is_interface: @_p.check_union(0xc, 3)
   :fun ref interface!: @_p.assert_union!(0xc, 3), CapnProto.Meta.Node.AS_interface.Builder.from_pointer(@_p)
+  :fun ref interface_if_set!: @_p.assert_union!(0xc, 3), CapnProto.Meta.Node.AS_interface.Builder.from_pointer(@_p)
   :fun ref init_interface
     @_p.clear_pointer(3) // methods
     @_p.clear_pointer(4) // superclasses
@@ -649,6 +799,7 @@
 
   :fun is_const: @_p.check_union(0xc, 4)
   :fun ref const!: @_p.assert_union!(0xc, 4), CapnProto.Meta.Node.AS_const.Builder.from_pointer(@_p)
+  :fun ref const_if_set!: @_p.assert_union!(0xc, 4), CapnProto.Meta.Node.AS_const.Builder.from_pointer(@_p)
   :fun ref init_const
     @_p.clear_pointer(3) // type
     @_p.clear_pointer(4) // value
@@ -657,6 +808,7 @@
 
   :fun is_annotation: @_p.check_union(0xc, 5)
   :fun ref annotation!: @_p.assert_union!(0xc, 5), CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
+  :fun ref annotation_if_set!: @_p.assert_union!(0xc, 5), CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
   :fun ref init_annotation
     @_p.clear_pointer(3) // type
     @_p.set_bool(0xe, 0b00000001, False) // targets_file
@@ -675,10 +827,12 @@
     CapnProto.Meta.Node.AS_annotation.Builder.from_pointer(@_p)
 
   :fun ref parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(5))
+  :fun ref parameters_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list_if_set!(5))
   :fun ref init_parameters(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
+  :fun is_generic_if_set!: @_p.bool_if_set!(0x24, 0b00000001)
   :fun ref "is_generic="(new_value): @_p.set_bool(0x24, 0b00000001, Bool[new_value])
 
 :struct CapnProto.Meta.Node.AS_struct.Builder
@@ -689,24 +843,31 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun data_word_count: @_p.u16(0xe)
+  :fun data_word_count_if_set!: @_p.u16_if_set!(0xe)
   :fun ref "data_word_count="(new_value): @_p.set_u16(0xe, new_value, 0)
 
   :fun pointer_count: @_p.u16(0x18)
+  :fun pointer_count_if_set!: @_p.u16_if_set!(0x18)
   :fun ref "pointer_count="(new_value): @_p.set_u16(0x18, new_value, 0)
 
   :fun preferred_list_encoding: CapnProto.Meta.ElementSize._new(@_p.u16(0x1a))
+  :fun preferred_list_encoding_if_set!: CapnProto.Meta.ElementSize._new(@_p.u16_if_set!(0x1a))
   :fun ref "preferred_list_encoding="(new_value): @_p.set_u16(0x1a, CapnProto.Meta.ElementSize[new_value].u16, 0)
 
   :fun is_group: @_p.bool(0x1c, 0b00000001)
+  :fun is_group_if_set!: @_p.bool_if_set!(0x1c, 0b00000001)
   :fun ref "is_group="(new_value): @_p.set_bool(0x1c, 0b00000001, Bool[new_value])
 
   :fun discriminant_count: @_p.u16(0x1e)
+  :fun discriminant_count_if_set!: @_p.u16_if_set!(0x1e)
   :fun ref "discriminant_count="(new_value): @_p.set_u16(0x1e, new_value, 0)
 
   :fun discriminant_offset: @_p.u32(0x20)
+  :fun discriminant_offset_if_set!: @_p.u32_if_set!(0x20)
   :fun ref "discriminant_offset="(new_value): @_p.set_u32(0x20, new_value, 0)
 
   :fun ref fields: CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.list(3))
+  :fun ref fields_if_set!: CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_fields(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, new_count))
 
@@ -718,6 +879,7 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref enumerants: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list(3))
+  :fun ref enumerants_if_set!: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_enumerants(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, new_count))
 
@@ -729,10 +891,12 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref methods: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list(3))
+  :fun ref methods_if_set!: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_methods(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, new_count))
 
   :fun ref superclasses: CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.list(4))
+  :fun ref superclasses_if_set!: CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.list_if_set!(4))
   :fun ref init_superclasses(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, new_count))
 
@@ -744,8 +908,10 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
+  :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
 
   :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(4, 2, 1))
+  :fun ref value_if_set!: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct_if_set!(4, 2, 1))
 
 :struct CapnProto.Meta.Node.AS_annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -755,41 +921,54 @@
   :const capn_proto_pointer_count U16: 6
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
+  :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
 
   :fun targets_file: @_p.bool(0xe, 0b00000001)
+  :fun targets_file_if_set!: @_p.bool_if_set!(0xe, 0b00000001)
   :fun ref "targets_file="(new_value): @_p.set_bool(0xe, 0b00000001, Bool[new_value])
 
   :fun targets_const: @_p.bool(0xe, 0b00000010)
+  :fun targets_const_if_set!: @_p.bool_if_set!(0xe, 0b00000010)
   :fun ref "targets_const="(new_value): @_p.set_bool(0xe, 0b00000010, Bool[new_value])
 
   :fun targets_enum: @_p.bool(0xe, 0b00000100)
+  :fun targets_enum_if_set!: @_p.bool_if_set!(0xe, 0b00000100)
   :fun ref "targets_enum="(new_value): @_p.set_bool(0xe, 0b00000100, Bool[new_value])
 
   :fun targets_enumerant: @_p.bool(0xe, 0b00001000)
+  :fun targets_enumerant_if_set!: @_p.bool_if_set!(0xe, 0b00001000)
   :fun ref "targets_enumerant="(new_value): @_p.set_bool(0xe, 0b00001000, Bool[new_value])
 
   :fun targets_struct: @_p.bool(0xe, 0b00010000)
+  :fun targets_struct_if_set!: @_p.bool_if_set!(0xe, 0b00010000)
   :fun ref "targets_struct="(new_value): @_p.set_bool(0xe, 0b00010000, Bool[new_value])
 
   :fun targets_field: @_p.bool(0xe, 0b00100000)
+  :fun targets_field_if_set!: @_p.bool_if_set!(0xe, 0b00100000)
   :fun ref "targets_field="(new_value): @_p.set_bool(0xe, 0b00100000, Bool[new_value])
 
   :fun targets_union: @_p.bool(0xe, 0b01000000)
+  :fun targets_union_if_set!: @_p.bool_if_set!(0xe, 0b01000000)
   :fun ref "targets_union="(new_value): @_p.set_bool(0xe, 0b01000000, Bool[new_value])
 
   :fun targets_group: @_p.bool(0xe, 0b10000000)
+  :fun targets_group_if_set!: @_p.bool_if_set!(0xe, 0b10000000)
   :fun ref "targets_group="(new_value): @_p.set_bool(0xe, 0b10000000, Bool[new_value])
 
   :fun targets_interface: @_p.bool(0xf, 0b00000001)
+  :fun targets_interface_if_set!: @_p.bool_if_set!(0xf, 0b00000001)
   :fun ref "targets_interface="(new_value): @_p.set_bool(0xf, 0b00000001, Bool[new_value])
 
   :fun targets_method: @_p.bool(0xf, 0b00000010)
+  :fun targets_method_if_set!: @_p.bool_if_set!(0xf, 0b00000010)
   :fun ref "targets_method="(new_value): @_p.set_bool(0xf, 0b00000010, Bool[new_value])
 
   :fun targets_param: @_p.bool(0xf, 0b00000100)
+  :fun targets_param_if_set!: @_p.bool_if_set!(0xf, 0b00000100)
   :fun ref "targets_param="(new_value): @_p.set_bool(0xf, 0b00000100, Bool[new_value])
 
   :fun targets_annotation: @_p.bool(0xf, 0b00001000)
+  :fun targets_annotation_if_set!: @_p.bool_if_set!(0xf, 0b00001000)
   :fun ref "targets_annotation="(new_value): @_p.set_bool(0xf, 0b00001000, Bool[new_value])
 
 :struct CapnProto.Meta.Node.Parameter.Builder
@@ -800,6 +979,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
 
 :struct CapnProto.Meta.Node.NestedNode.Builder
@@ -810,9 +990,11 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
 :struct CapnProto.Meta.Field.Builder
@@ -825,20 +1007,25 @@
   :const no_discriminant U16: 65535
 
   :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
 
   :fun code_order: @_p.u16(0x0)
+  :fun code_order_if_set!: @_p.u16_if_set!(0x0)
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
+  :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
   :fun discriminant_value: @_p.u16(0x2).bit_xor(65535)
+  :fun discriminant_value_if_set!: @_p.u16_if_set!(0x2).bit_xor(65535)
   :fun ref "discriminant_value="(new_value): @_p.set_u16(0x2, new_value, 65535)
 
   :fun is_slot: @_p.check_union(0x8, 0)
   :fun ref slot!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.Builder.from_pointer(@_p)
+  :fun ref slot_if_set!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Field.AS_slot.Builder.from_pointer(@_p)
   :fun ref init_slot
     @_p.clear_32(0x4) // offset
     @_p.clear_pointer(2) // type
@@ -849,12 +1036,14 @@
 
   :fun is_group: @_p.check_union(0x8, 1)
   :fun ref group!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Field.AS_group.Builder.from_pointer(@_p)
+  :fun ref group_if_set!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Field.AS_group.Builder.from_pointer(@_p)
   :fun ref init_group
     @_p.clear_64(0x10) // type_id
     @_p.mark_union(0x8, 1)
     CapnProto.Meta.Field.AS_group.Builder.from_pointer(@_p)
 
   :fun ref ordinal: CapnProto.Meta.Field.AS_ordinal.Builder.from_pointer(@_p)
+  :fun ref ordinal_if_set!: CapnProto.Meta.Field.AS_ordinal.Builder.from_pointer(@_p)
 
 :struct CapnProto.Meta.Field.AS_slot.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -864,13 +1053,17 @@
   :const capn_proto_pointer_count U16: 4
 
   :fun offset: @_p.u32(0x4)
+  :fun offset_if_set!: @_p.u32_if_set!(0x4)
   :fun ref "offset="(new_value): @_p.set_u32(0x4, new_value, 0)
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(2, 3, 1))
+  :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(2, 3, 1))
 
   :fun ref default_value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(3, 2, 1))
+  :fun ref default_value_if_set!: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct_if_set!(3, 2, 1))
 
   :fun had_explicit_default: @_p.bool(0x10, 0b00000001)
+  :fun had_explicit_default_if_set!: @_p.bool_if_set!(0x10, 0b00000001)
   :fun ref "had_explicit_default="(new_value): @_p.set_bool(0x10, 0b00000001, Bool[new_value])
 
 :struct CapnProto.Meta.Field.AS_group.Builder
@@ -881,6 +1074,7 @@
   :const capn_proto_pointer_count U16: 4
 
   :fun type_id: @_p.u64(0x10)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x10)
   :fun ref "type_id="(new_value): @_p.set_u64(0x10, new_value, 0)
 
 :struct CapnProto.Meta.Field.AS_ordinal.Builder
@@ -892,12 +1086,14 @@
 
   :fun is_implicit: @_p.check_union(0xa, 0)
   :fun implicit!: @_p.assert_union!(0xa, 0), None
+  :fun implicit_if_set!: @_p.assert_union!(0xa, 0), None
   :fun ref init_implicit
     @_p.mark_union(0xa, 0)
     None
 
   :fun is_explicit: @_p.check_union(0xa, 1)
   :fun explicit!: @_p.assert_union!(0xa, 1), @_p.u16(0xc)
+  :fun explicit_if_set!: @_p.assert_union!(0xa, 1), @_p.u16_if_set!(0xc)
   :fun ref init_explicit(new_value)
     @_p.set_u16(0xc, new_value, 0)
     @_p.mark_union(0xa, 1)
@@ -911,12 +1107,15 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
 
   :fun code_order: @_p.u16(0x0)
+  :fun code_order_if_set!: @_p.u16_if_set!(0x0)
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
+  :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
@@ -928,9 +1127,11 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
+  :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
 
 :struct CapnProto.Meta.Method.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -940,26 +1141,34 @@
   :const capn_proto_pointer_count U16: 5
 
   :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
 
   :fun code_order: @_p.u16(0x0)
+  :fun code_order_if_set!: @_p.u16_if_set!(0x0)
   :fun ref "code_order="(new_value): @_p.set_u16(0x0, new_value, 0)
 
   :fun param_struct_type: @_p.u64(0x8)
+  :fun param_struct_type_if_set!: @_p.u64_if_set!(0x8)
   :fun ref "param_struct_type="(new_value): @_p.set_u64(0x8, new_value, 0)
 
   :fun result_struct_type: @_p.u64(0x10)
+  :fun result_struct_type_if_set!: @_p.u64_if_set!(0x10)
   :fun ref "result_struct_type="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(1))
+  :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
   :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2, 0, 1))
+  :fun ref param_brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(2, 0, 1))
 
   :fun ref result_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(3, 0, 1))
+  :fun ref result_brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(3, 0, 1))
 
   :fun ref implicit_parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(4))
+  :fun ref implicit_parameters_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list_if_set!(4))
   :fun ref init_implicit_parameters(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
 
@@ -972,90 +1181,105 @@
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
+  :fun void_if_set!: @_p.assert_union!(0x0, 0), None
   :fun ref init_void
     @_p.mark_union(0x0, 0)
     None
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), None
+  :fun bool_if_set!: @_p.assert_union!(0x0, 1), None
   :fun ref init_bool
     @_p.mark_union(0x0, 1)
     None
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), None
+  :fun int8_if_set!: @_p.assert_union!(0x0, 2), None
   :fun ref init_int8
     @_p.mark_union(0x0, 2)
     None
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), None
+  :fun int16_if_set!: @_p.assert_union!(0x0, 3), None
   :fun ref init_int16
     @_p.mark_union(0x0, 3)
     None
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), None
+  :fun int32_if_set!: @_p.assert_union!(0x0, 4), None
   :fun ref init_int32
     @_p.mark_union(0x0, 4)
     None
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), None
+  :fun int64_if_set!: @_p.assert_union!(0x0, 5), None
   :fun ref init_int64
     @_p.mark_union(0x0, 5)
     None
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), None
+  :fun uint8_if_set!: @_p.assert_union!(0x0, 6), None
   :fun ref init_uint8
     @_p.mark_union(0x0, 6)
     None
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), None
+  :fun uint16_if_set!: @_p.assert_union!(0x0, 7), None
   :fun ref init_uint16
     @_p.mark_union(0x0, 7)
     None
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), None
+  :fun uint32_if_set!: @_p.assert_union!(0x0, 8), None
   :fun ref init_uint32
     @_p.mark_union(0x0, 8)
     None
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), None
+  :fun uint64_if_set!: @_p.assert_union!(0x0, 9), None
   :fun ref init_uint64
     @_p.mark_union(0x0, 9)
     None
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), None
+  :fun float32_if_set!: @_p.assert_union!(0x0, 10), None
   :fun ref init_float32
     @_p.mark_union(0x0, 10)
     None
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), None
+  :fun float64_if_set!: @_p.assert_union!(0x0, 11), None
   :fun ref init_float64
     @_p.mark_union(0x0, 11)
     None
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun text!: @_p.assert_union!(0x0, 12), None
+  :fun text_if_set!: @_p.assert_union!(0x0, 12), None
   :fun ref init_text
     @_p.mark_union(0x0, 12)
     None
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun data!: @_p.assert_union!(0x0, 13), None
+  :fun data_if_set!: @_p.assert_union!(0x0, 13), None
   :fun ref init_data
     @_p.mark_union(0x0, 13)
     None
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun ref list!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.Builder.from_pointer(@_p)
+  :fun ref list_if_set!: @_p.assert_union!(0x0, 14), CapnProto.Meta.Type.AS_list.Builder.from_pointer(@_p)
   :fun ref init_list
     @_p.clear_pointer(0) // element_type
     @_p.mark_union(0x0, 14)
@@ -1063,6 +1287,7 @@
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun ref enum!: @_p.assert_union!(0x0, 15), CapnProto.Meta.Type.AS_enum.Builder.from_pointer(@_p)
+  :fun ref enum_if_set!: @_p.assert_union!(0x0, 15), CapnProto.Meta.Type.AS_enum.Builder.from_pointer(@_p)
   :fun ref init_enum
     @_p.clear_64(0x8) // type_id
     @_p.clear_pointer(0) // brand
@@ -1071,6 +1296,7 @@
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun ref struct!: @_p.assert_union!(0x0, 16), CapnProto.Meta.Type.AS_struct.Builder.from_pointer(@_p)
+  :fun ref struct_if_set!: @_p.assert_union!(0x0, 16), CapnProto.Meta.Type.AS_struct.Builder.from_pointer(@_p)
   :fun ref init_struct
     @_p.clear_64(0x8) // type_id
     @_p.clear_pointer(0) // brand
@@ -1079,6 +1305,7 @@
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun ref interface!: @_p.assert_union!(0x0, 17), CapnProto.Meta.Type.AS_interface.Builder.from_pointer(@_p)
+  :fun ref interface_if_set!: @_p.assert_union!(0x0, 17), CapnProto.Meta.Type.AS_interface.Builder.from_pointer(@_p)
   :fun ref init_interface
     @_p.clear_64(0x8) // type_id
     @_p.clear_pointer(0) // brand
@@ -1087,6 +1314,7 @@
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun ref any_pointer!: @_p.assert_union!(0x0, 18), CapnProto.Meta.Type.AS_anyPointer.Builder.from_pointer(@_p)
+  :fun ref any_pointer_if_set!: @_p.assert_union!(0x0, 18), CapnProto.Meta.Type.AS_anyPointer.Builder.from_pointer(@_p)
   :fun ref init_any_pointer
     @_p.mark_union(0x0, 18)
     CapnProto.Meta.Type.AS_anyPointer.Builder.from_pointer(@_p)
@@ -1099,6 +1327,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun ref element_type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
+  :fun ref element_type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(0, 3, 1))
 
 :struct CapnProto.Meta.Type.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1108,9 +1337,11 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun type_id: @_p.u64(0x8)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x8)
   :fun ref "type_id="(new_value): @_p.set_u64(0x8, new_value, 0)
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
+  :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
 
 :struct CapnProto.Meta.Type.AS_struct.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1120,9 +1351,11 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun type_id: @_p.u64(0x8)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x8)
   :fun ref "type_id="(new_value): @_p.set_u64(0x8, new_value, 0)
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
+  :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
 
 :struct CapnProto.Meta.Type.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1132,9 +1365,11 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun type_id: @_p.u64(0x8)
+  :fun type_id_if_set!: @_p.u64_if_set!(0x8)
   :fun ref "type_id="(new_value): @_p.set_u64(0x8, new_value, 0)
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
+  :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
 
 :struct CapnProto.Meta.Type.AS_anyPointer.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1145,12 +1380,14 @@
 
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun ref unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
+  :fun ref unconstrained_if_set!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
   :fun ref init_unconstrained
     @_p.mark_union(0x8, 0)
     CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
 
   :fun is_parameter: @_p.check_union(0x8, 1)
   :fun ref parameter!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Type.AS_anyPointer.AS_parameter.Builder.from_pointer(@_p)
+  :fun ref parameter_if_set!: @_p.assert_union!(0x8, 1), CapnProto.Meta.Type.AS_anyPointer.AS_parameter.Builder.from_pointer(@_p)
   :fun ref init_parameter
     @_p.clear_64(0x10) // scope_id
     @_p.clear_16(0xa) // parameter_index
@@ -1159,6 +1396,7 @@
 
   :fun is_implicit_method_parameter: @_p.check_union(0x8, 2)
   :fun ref implicit_method_parameter!: @_p.assert_union!(0x8, 2), CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.Builder.from_pointer(@_p)
+  :fun ref implicit_method_parameter_if_set!: @_p.assert_union!(0x8, 2), CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.Builder.from_pointer(@_p)
   :fun ref init_implicit_method_parameter
     @_p.clear_16(0xa) // parameter_index
     @_p.mark_union(0x8, 2)
@@ -1173,24 +1411,28 @@
 
   :fun is_any_kind: @_p.check_union(0xa, 0)
   :fun any_kind!: @_p.assert_union!(0xa, 0), None
+  :fun any_kind_if_set!: @_p.assert_union!(0xa, 0), None
   :fun ref init_any_kind
     @_p.mark_union(0xa, 0)
     None
 
   :fun is_struct: @_p.check_union(0xa, 1)
   :fun struct!: @_p.assert_union!(0xa, 1), None
+  :fun struct_if_set!: @_p.assert_union!(0xa, 1), None
   :fun ref init_struct
     @_p.mark_union(0xa, 1)
     None
 
   :fun is_list: @_p.check_union(0xa, 2)
   :fun list!: @_p.assert_union!(0xa, 2), None
+  :fun list_if_set!: @_p.assert_union!(0xa, 2), None
   :fun ref init_list
     @_p.mark_union(0xa, 2)
     None
 
   :fun is_capability: @_p.check_union(0xa, 3)
   :fun capability!: @_p.assert_union!(0xa, 3), None
+  :fun capability_if_set!: @_p.assert_union!(0xa, 3), None
   :fun ref init_capability
     @_p.mark_union(0xa, 3)
     None
@@ -1203,9 +1445,11 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun scope_id: @_p.u64(0x10)
+  :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
   :fun ref "scope_id="(new_value): @_p.set_u64(0x10, new_value, 0)
 
   :fun parameter_index: @_p.u16(0xa)
+  :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
   :fun ref "parameter_index="(new_value): @_p.set_u16(0xa, new_value, 0)
 
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.Builder
@@ -1216,6 +1460,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun parameter_index: @_p.u16(0xa)
+  :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
   :fun ref "parameter_index="(new_value): @_p.set_u16(0xa, new_value, 0)
 
 :struct CapnProto.Meta.Brand.Builder
@@ -1226,6 +1471,7 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun ref scopes: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list(0))
+  :fun ref scopes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list_if_set!(0))
   :fun ref init_scopes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, new_count))
 
@@ -1237,16 +1483,19 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun scope_id: @_p.u64(0x0)
+  :fun scope_id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "scope_id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
   :fun is_bind: @_p.check_union(0x8, 0)
   :fun ref bind!: @_p.assert_union!(0x8, 0), CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.list(0))
+  :fun ref bind_if_set!: @_p.assert_union!(0x8, 0), CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.list_if_set!(0))
   :fun ref init_bind(new_count)
     @_p.mark_union(0x8, 0)
     CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.init_list(0, 1, 1, new_count))
 
   :fun is_inherit: @_p.check_union(0x8, 1)
   :fun inherit!: @_p.assert_union!(0x8, 1), None
+  :fun inherit_if_set!: @_p.assert_union!(0x8, 1), None
   :fun ref init_inherit
     @_p.mark_union(0x8, 1)
     None
@@ -1260,12 +1509,14 @@
 
   :fun is_unbound: @_p.check_union(0x0, 0)
   :fun unbound!: @_p.assert_union!(0x0, 0), None
+  :fun unbound_if_set!: @_p.assert_union!(0x0, 0), None
   :fun ref init_unbound
     @_p.mark_union(0x0, 0)
     None
 
   :fun is_type: @_p.check_union(0x0, 1)
   :fun ref type!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
+  :fun ref type_if_set!: @_p.assert_union!(0x0, 1), CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(0, 3, 1))
   :fun ref init_type
     @_p.clear_pointer(0) // type
     @_p.mark_union(0x0, 1)
@@ -1280,12 +1531,14 @@
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
+  :fun void_if_set!: @_p.assert_union!(0x0, 0), None
   :fun ref init_void
     @_p.mark_union(0x0, 0)
     None
 
   :fun is_bool: @_p.check_union(0x0, 1)
   :fun bool!: @_p.assert_union!(0x0, 1), @_p.bool(0x2, 0b00000001)
+  :fun bool_if_set!: @_p.assert_union!(0x0, 1), @_p.bool_if_set!(0x2, 0b00000001)
   :fun ref init_bool(new_value)
     @_p.set_bool(0x2, 0b00000001, Bool[new_value])
     @_p.mark_union(0x0, 1)
@@ -1293,6 +1546,7 @@
 
   :fun is_int8: @_p.check_union(0x0, 2)
   :fun int8!: @_p.assert_union!(0x0, 2), @_p.i8(0x2)
+  :fun int8_if_set!: @_p.assert_union!(0x0, 2), @_p.i8_if_set!(0x2)
   :fun ref init_int8(new_value)
     @_p.set_i8(0x2, new_value, 0)
     @_p.mark_union(0x0, 2)
@@ -1300,6 +1554,7 @@
 
   :fun is_int16: @_p.check_union(0x0, 3)
   :fun int16!: @_p.assert_union!(0x0, 3), @_p.i16(0x2)
+  :fun int16_if_set!: @_p.assert_union!(0x0, 3), @_p.i16_if_set!(0x2)
   :fun ref init_int16(new_value)
     @_p.set_i16(0x2, new_value, 0)
     @_p.mark_union(0x0, 3)
@@ -1307,6 +1562,7 @@
 
   :fun is_int32: @_p.check_union(0x0, 4)
   :fun int32!: @_p.assert_union!(0x0, 4), @_p.i32(0x4)
+  :fun int32_if_set!: @_p.assert_union!(0x0, 4), @_p.i32_if_set!(0x4)
   :fun ref init_int32(new_value)
     @_p.set_i32(0x4, new_value, 0)
     @_p.mark_union(0x0, 4)
@@ -1314,6 +1570,7 @@
 
   :fun is_int64: @_p.check_union(0x0, 5)
   :fun int64!: @_p.assert_union!(0x0, 5), @_p.i64(0x8)
+  :fun int64_if_set!: @_p.assert_union!(0x0, 5), @_p.i64_if_set!(0x8)
   :fun ref init_int64(new_value)
     @_p.set_i64(0x8, new_value, 0)
     @_p.mark_union(0x0, 5)
@@ -1321,6 +1578,7 @@
 
   :fun is_uint8: @_p.check_union(0x0, 6)
   :fun uint8!: @_p.assert_union!(0x0, 6), @_p.u8(0x2)
+  :fun uint8_if_set!: @_p.assert_union!(0x0, 6), @_p.u8_if_set!(0x2)
   :fun ref init_uint8(new_value)
     @_p.set_u8(0x2, new_value, 0)
     @_p.mark_union(0x0, 6)
@@ -1328,6 +1586,7 @@
 
   :fun is_uint16: @_p.check_union(0x0, 7)
   :fun uint16!: @_p.assert_union!(0x0, 7), @_p.u16(0x2)
+  :fun uint16_if_set!: @_p.assert_union!(0x0, 7), @_p.u16_if_set!(0x2)
   :fun ref init_uint16(new_value)
     @_p.set_u16(0x2, new_value, 0)
     @_p.mark_union(0x0, 7)
@@ -1335,6 +1594,7 @@
 
   :fun is_uint32: @_p.check_union(0x0, 8)
   :fun uint32!: @_p.assert_union!(0x0, 8), @_p.u32(0x4)
+  :fun uint32_if_set!: @_p.assert_union!(0x0, 8), @_p.u32_if_set!(0x4)
   :fun ref init_uint32(new_value)
     @_p.set_u32(0x4, new_value, 0)
     @_p.mark_union(0x0, 8)
@@ -1342,6 +1602,7 @@
 
   :fun is_uint64: @_p.check_union(0x0, 9)
   :fun uint64!: @_p.assert_union!(0x0, 9), @_p.u64(0x8)
+  :fun uint64_if_set!: @_p.assert_union!(0x0, 9), @_p.u64_if_set!(0x8)
   :fun ref init_uint64(new_value)
     @_p.set_u64(0x8, new_value, 0)
     @_p.mark_union(0x0, 9)
@@ -1349,6 +1610,7 @@
 
   :fun is_float32: @_p.check_union(0x0, 10)
   :fun float32!: @_p.assert_union!(0x0, 10), @_p.f32(0x4)
+  :fun float32_if_set!: @_p.assert_union!(0x0, 10), @_p.f32_if_set!(0x4)
   :fun ref init_float32(new_value)
     @_p.set_f32(0x4, new_value, 0.0)
     @_p.mark_union(0x0, 10)
@@ -1356,6 +1618,7 @@
 
   :fun is_float64: @_p.check_union(0x0, 11)
   :fun float64!: @_p.assert_union!(0x0, 11), @_p.f64(0x8)
+  :fun float64_if_set!: @_p.assert_union!(0x0, 11), @_p.f64_if_set!(0x8)
   :fun ref init_float64(new_value)
     @_p.set_f64(0x8, new_value, 0.0)
     @_p.mark_union(0x0, 11)
@@ -1363,6 +1626,7 @@
 
   :fun is_text: @_p.check_union(0x0, 12)
   :fun ref text!: @_p.assert_union!(0x0, 12), @_p.text(0)
+  :fun ref text_if_set!: @_p.assert_union!(0x0, 12), @_p.text_if_set!(0)
   :fun ref init_text(new_value)
     @_p.set_text(0, new_value, "")
     @_p.mark_union(0x0, 12)
@@ -1370,6 +1634,7 @@
 
   :fun is_data: @_p.check_union(0x0, 13)
   :fun ref data!: @_p.assert_union!(0x0, 13), @_p.data(0)
+  :fun ref data_if_set!: @_p.assert_union!(0x0, 13), @_p.data_if_set!(0)
   :fun ref init_data(new_value)
     @_p.set_data(0, new_value, b"")
     @_p.mark_union(0x0, 13)
@@ -1377,12 +1642,14 @@
 
   :fun is_list: @_p.check_union(0x0, 14)
   :fun ref list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
+  :fun ref list_if_set!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
   :fun ref init_list(new_value None)
     @_p.mark_union(0x0, 14)
     None // UNHANDLED: anyPointer
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), @_p.u16(0x2)
+  :fun enum_if_set!: @_p.assert_union!(0x0, 15), @_p.u16_if_set!(0x2)
   :fun ref init_enum(new_value)
     @_p.set_u16(0x2, new_value, 0)
     @_p.mark_union(0x0, 15)
@@ -1390,18 +1657,21 @@
 
   :fun is_struct: @_p.check_union(0x0, 16)
   :fun ref struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
+  :fun ref struct_if_set!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
   :fun ref init_struct(new_value None)
     @_p.mark_union(0x0, 16)
     None // UNHANDLED: anyPointer
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun interface!: @_p.assert_union!(0x0, 17), None
+  :fun interface_if_set!: @_p.assert_union!(0x0, 17), None
   :fun ref init_interface
     @_p.mark_union(0x0, 17)
     None
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
   :fun ref any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
+  :fun ref any_pointer_if_set!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
   :fun ref init_any_pointer(new_value None)
     @_p.mark_union(0x0, 18)
     None // UNHANDLED: anyPointer
@@ -1414,11 +1684,14 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
   :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(0, 2, 1))
+  :fun ref value_if_set!: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct_if_set!(0, 2, 1))
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(1, 0, 1))
+  :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(1, 0, 1))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1428,10 +1701,12 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun ref nodes: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list(0))
+  :fun ref nodes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list_if_set!(0))
   :fun ref init_nodes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, new_count))
 
   :fun ref requested_files: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.list(1))
+  :fun ref requested_files_if_set!: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_requested_files(new_count)
     CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
 
@@ -1443,12 +1718,15 @@
   :const capn_proto_pointer_count U16: 2
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
   :fun ref filename: @_p.text(0)
+  :fun ref filename_if_set!: @_p.text_if_set!(0)
   :fun ref "filename="(new_value): @_p.set_text(0, new_value, "")
 
   :fun ref imports: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.list(1))
+  :fun ref imports_if_set!: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_imports(new_count)
     CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
 
@@ -1460,7 +1738,9 @@
   :const capn_proto_pointer_count U16: 1
 
   :fun id: @_p.u64(0x0)
+  :fun id_if_set!: @_p.u64_if_set!(0x0)
   :fun ref "id="(new_value): @_p.set_u64(0x0, new_value, 0)
 
   :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
   :fun ref "name="(new_value): @_p.set_text(0, new_value, "")

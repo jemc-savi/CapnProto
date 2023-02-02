@@ -213,6 +213,7 @@
       @_out << "\n"
       try @_emit_field_check_union_method!(node, field)
       @_emit_field_getter(node, field, is_builder)
+      @_emit_field_getter_if_set(node, field, is_builder)
       if is_builder (
         try @_emit_field_setter!(node, field)
       )
@@ -254,7 +255,23 @@
       try @_emit_field_check_union!(node, field, True)
       @_out << ", "
     )
-    @_emit_field_get_expr(field, is_builder)
+    @_emit_field_get_expr(field, is_builder, False)
+
+  :fun ref _emit_field_getter_if_set(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+    is_builder Bool
+  )
+    is_union = field.discriminant_value != field.no_discriminant
+    needs_ref = is_builder && try (@_is_pointer_type(field.slot!.type) | True)
+    @_out << "\n  :fun\(
+      if needs_ref " ref"
+    ) \(_TextCase.Snake[field.name])_if_set!: "
+    if is_union (
+      try @_emit_field_check_union!(node, field, True)
+      @_out << ", "
+    )
+    @_emit_field_get_expr(field, is_builder, True)
 
   :fun ref _emit_field_setter!(
     node CapnProto.Meta.Node
@@ -354,7 +371,7 @@
     ))"
 
     @_out << "\n    "
-    @_emit_field_get_expr(field, True)
+    @_emit_field_get_expr(field, True, False)
 
   :fun ref _emit_field_check_union_method!(
     node CapnProto.Meta.Node
@@ -382,7 +399,13 @@
       field.discriminant_value
     ))"
 
-  :fun ref _emit_field_get_expr(field CapnProto.Meta.Field, is_builder Bool)
+  :fun ref _emit_field_get_expr(
+    field CapnProto.Meta.Field
+    is_builder Bool
+    is_get_if_set Bool
+  )
+    suffix = if is_get_if_set ("_if_set!" | "")
+
     // First, handle the case where the field is a group instead of a slot.
     try (
       type_id = field.group!.type_id
@@ -406,7 +429,7 @@
     | type.is_void |
       @_out << "None"
     | type.is_bool |
-      @_out << "@_p.bool(\(
+      @_out << "@_p.bool\(suffix)(\(
         (offset / 8).format.hex.without_leading_zeros
       ), \(
         U8[1].bit_shl((offset % 8).u8).format.binary
@@ -417,84 +440,84 @@
         )
       )
     | type.is_int8 |
-      @_out << "@_p.i8(\((offset * 1).format.hex.without_leading_zeros))"
+      @_out << "@_p.i8\(suffix)(\((offset * 1).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.int8! != 0) (
           @_out << ".bit_xor(\(slot.default_value.int8!))"
         )
       )
     | type.is_int16 |
-      @_out << "@_p.i16(\((offset * 2).format.hex.without_leading_zeros))"
+      @_out << "@_p.i16\(suffix)(\((offset * 2).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.int16! != 0) (
           @_out << ".bit_xor(\(slot.default_value.int16!))"
         )
       )
     | type.is_int32 |
-      @_out << "@_p.i32(\((offset * 4).format.hex.without_leading_zeros))"
+      @_out << "@_p.i32\(suffix)(\((offset * 4).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.int32! != 0) (
           @_out << ".bit_xor(\(slot.default_value.int32!))"
         )
       )
     | type.is_int64 |
-      @_out << "@_p.i64(\((offset * 8).format.hex.without_leading_zeros))"
+      @_out << "@_p.i64\(suffix)(\((offset * 8).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.int64! != 0) (
           @_out << ".bit_xor(\(slot.default_value.int64!))"
         )
       )
     | type.is_uint8 |
-      @_out << "@_p.u8(\((offset * 1).format.hex.without_leading_zeros))"
+      @_out << "@_p.u8\(suffix)(\((offset * 1).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.uint8! != 0) (
           @_out << ".bit_xor(\(slot.default_value.uint8!))"
         )
       )
     | type.is_uint16 |
-      @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"
+      @_out << "@_p.u16\(suffix)(\((offset * 2).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.uint16! != 0) (
           @_out << ".bit_xor(\(slot.default_value.uint16!))"
         )
       )
     | type.is_uint32 |
-      @_out << "@_p.u32(\((offset * 4).format.hex.without_leading_zeros))"
+      @_out << "@_p.u32\(suffix)(\((offset * 4).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.uint32! != 0) (
           @_out << ".bit_xor(\(slot.default_value.uint32!))"
         )
       )
     | type.is_uint64 |
-      @_out << "@_p.u64(\((offset * 8).format.hex.without_leading_zeros))"
+      @_out << "@_p.u64\(suffix)(\((offset * 8).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.uint64! != 0) (
           @_out << ".bit_xor(\(slot.default_value.uint64!))"
         )
       )
     | type.is_float32 |
-      @_out << "@_p.f32(\((offset * 4).format.hex.without_leading_zeros))"
+      @_out << "@_p.f32\(suffix)(\((offset * 4).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.float32! != 0) (
           @_out << " // UNHANDLED: default_value"
         )
       )
     | type.is_float64 |
-      @_out << "@_p.f64(\((offset * 8).format.hex.without_leading_zeros))"
+      @_out << "@_p.f64\(suffix)(\((offset * 8).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.float64! != 0) (
           @_out << " // UNHANDLED: default_value"
         )
       )
     | type.is_text |
-      @_out << "@_p.text(\(offset))"
+      @_out << "@_p.text\(suffix)(\(offset))"
       try (
         if (slot.default_value.text!.size > 0) (
           @_out << " // UNHANDLED: default_value"
         )
       )
     | type.is_data |
-      @_out << "@_p.data(\(offset))"
+      @_out << "@_p.data\(suffix)(\(offset))"
     //   TODO: Handle default value:
     //   try (
     //     if (slot.default_value.data!.size > 0) (
@@ -505,10 +528,10 @@
       // TODO: handle default list values
       @_out << "\(@_type_name(type, is_builder)).\(
         if is_builder ("" | "read_")
-      )from_pointer(@_p.list(\(offset)))"
+      )from_pointer(@_p.list\(suffix)(\(offset)))"
     | type.is_enum |
       @_out << "\(@_type_name(type, is_builder))._new("
-      @_out << "@_p.u16(\((offset * 2).format.hex.without_leading_zeros))"
+      @_out << "@_p.u16\(suffix)(\((offset * 2).format.hex.without_leading_zeros))"
       try (
         if (slot.default_value.uint16! != 0) (
           @_out << ".bit_xor(\(slot.default_value.uint16!))"
@@ -522,7 +545,7 @@
 
         @_out << "\(@_type_name(type, is_builder)).\(
           if is_builder ("" | "read_")
-        )from_pointer(@_p.struct(\(offset)\(
+        )from_pointer(@_p.struct\(suffix)(\(offset)\(
           if is_builder ", \(struct.data_word_count), \(struct.pointer_count)"
         )))"
       )

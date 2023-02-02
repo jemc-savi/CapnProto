@@ -13,6 +13,14 @@
   :fun some_i16: @_p.i16(0x1c)
   :fun some_u8: @_p.u8(0x1e)
   :fun some_i8: @_p.i8(0x1f)
+  :fun some_u64_if_set!: @_p.u64_if_set!(0x0)
+  :fun some_i64_if_set!: @_p.i64_if_set!(0x8)
+  :fun some_u32_if_set!: @_p.u32_if_set!(0x10)
+  :fun some_i32_if_set!: @_p.i32_if_set!(0x14)
+  :fun some_u16_if_set!: @_p.u16_if_set!(0x18)
+  :fun some_i16_if_set!: @_p.i16_if_set!(0x1c)
+  :fun some_u8_if_set!: @_p.u8_if_set!(0x1e)
+  :fun some_i8_if_set!: @_p.i8_if_set!(0x1f)
   :fun ref "some_u64="(new_value): @_p.set_u64(0x0, new_value, 0)
   :fun ref "some_i64="(new_value): @_p.set_i64(0x8, new_value, 0)
   :fun ref "some_u32="(new_value): @_p.set_u32(0x10, new_value, 0)
@@ -25,12 +33,16 @@
   :const capn_proto_pointer_count U16: 5
   :fun ref some_text: @_p.text(0)
   :fun ref some_data: @_p.data(1)
+  :fun ref some_text_if_set!: @_p.text_if_set!(0)
+  :fun ref some_data_if_set!: @_p.data_if_set!(1)
   :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
   :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
 
   :fun ref child: _ExampleChildBuilder.from_pointer(@_p.struct(2, 2, 1))
+  :fun ref child_if_set!: _ExampleChildBuilder.from_pointer(@_p.struct_if_set!(2, 2, 1))
 
   :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(3))
+  :fun ref children_if_set!: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(3, 2, 1, new_count))
 
   :fun is_foo: @_p.check_union(0x30, 0)
@@ -109,40 +121,52 @@
     assert: root.some_u8  == 0, root.some_u8  = 41, assert: root.some_u8  == 41
     assert: root.some_i8  == 0, root.some_i8  = 42, assert: root.some_i8  == 42
 
-    assert: "\(root.some_text)" == ""
-    root.some_text               = "foo"
-    assert: "\(root.some_text)" == "foo"
-    root.some_text               = "This is an example string"
-    assert: "\(root.some_text)" == "This is an example string"
-    root.some_text               = ""
-    assert: "\(root.some_text)" == ""
+    assert error: root.some_text_if_set!
+    assert: "\(root.some_text)"         == ""
+    root.some_text                       = "foo"
+    assert: "\(root.some_text)"         == "foo"
+    assert: "\(root.some_text_if_set!)" == "foo"
+    root.some_text                       = "This is an example string"
+    assert: "\(root.some_text)"         == "This is an example string"
+    assert: "\(root.some_text_if_set!)" == "This is an example string"
+    root.some_text                       = ""
+    assert: "\(root.some_text)"         == ""
+    assert error: root.some_text_if_set!
 
-    assert: "\(root.some_data)" == ""
-    root.some_data              = b"bar"
-    assert: "\(root.some_data)" == "bar"
-    root.some_data              = b"This is some example data"
-    assert: "\(root.some_data)" == "This is some example data"
-    root.some_data              = b""
-    assert: "\(root.some_data)" == ""
+    assert error: root.some_data_if_set!
+    assert: "\(root.some_data)"         == ""
+    root.some_data                      = b"bar"
+    assert: "\(root.some_data)"         == "bar"
+    assert: "\(root.some_data_if_set!)" == "bar"
+    root.some_data                      = b"This is some example data"
+    assert: "\(root.some_data)"         == "This is some example data"
+    assert: "\(root.some_data_if_set!)" == "This is some example data"
+    root.some_data                      = b""
+    assert: "\(root.some_data)"         == ""
+    assert error: root.some_data_if_set!
 
   :it "reads from and writes to fields of the child struct"
     message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
     root = message.root
+    assert error: root.child_if_set!
     assert: root.child.a == 0, root.child.a = 77, assert: root.child.a == 77
     assert: root.child.b == 0, root.child.b = 88, assert: root.child.b == 88
 
     assert: "\(root.child.name)" == ""
     root.child.name = "Alice"
     assert: "\(root.child.name)" == "Alice"
+    assert: "\(root.child_if_set!.name)" == "Alice"
 
   :it "reads from and writes to fields of the list children structs"
     message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
     root = message.root
 
     assert: root.children.size == 0
+    assert error: root.children_if_set!
     assert error: root.children[0]!
 
     assert: root.init_children(3).size == 3
+    assert: root.children_if_set!.size == 3
     assert: root.children[0]!.a == 0
     assert: root.children[0]!.b == 0
     assert: "\(root.children[0]!.name)" == ""
