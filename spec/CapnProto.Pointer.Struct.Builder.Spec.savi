@@ -13,10 +13,14 @@
   :it "writes and reads numeric values in the data region"
     p = @init_with_size(0x10, 0)
 
+    assert error: p.u64_if_set!(0x0) // not yet set
+    assert error: p.u64_if_set!(0x8) // not yet set
     assert: p.set_u64(0x0, 0xbeeedeeed000daaa, 0) == 0xbeeedeeed000daaa
     assert: p.set_u64(0x8, 0xb333d333d0ffdaff, 0) == 0xb333d333d0ffdaff
     assert: p.u64(0x0) == 0xbeeedeeed000daaa
     assert: p.u64(0x8) == 0xb333d333d0ffdaff
+    assert: p.u64_if_set!(0x0) == 0xbeeedeeed000daaa
+    assert: p.u64_if_set!(0x8) == 0xb333d333d0ffdaff
 
     assert: p.set_u32(0x0, 0xbaaafaaa, 0) == 0xbaaafaaa
     assert: p.set_u32(0x4, 0xb000f000, 0) == 0xb000f000

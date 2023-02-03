@@ -65,6 +65,19 @@
     assert no_error: p.assert_union!(0x2, 0x3322)
     assert    error: p.assert_union!(0x2, 0x3300)
 
+    assert: p.u64_if_set!(0x8) == 0xffeeddccbbaa9988
+    assert error: p.u64_if_set!(0x10) // outside the data region
+    assert: p.u32_if_set!(0xc) == 0xffeeddcc
+    assert error: p.u32_if_set!(0x10) // outside the data region
+    assert: p.u16_if_set!(0xe) == 0xffee
+    assert error: p.u16_if_set!(0x10) == 0 // outside the data region
+    assert: p.u8_if_set!(0xf) == 0xff
+    assert error: p.u8_if_set!(0x10) // outside the data region
+    assert error: p.u8_if_set!(0x0) // inside the data region, but zero
+    assert: p.bool_if_set!(0xf, 0b10).is_true
+    assert error: p.bool_if_set!(0x10, 0b1) // outside the data region
+    assert error: p.bool_if_set!(0x0, 0b1) // inside the data region, but false
+
   :it "can point to a prior data region"
     p = @from_segment(b"\
       \x00\x11\x22\x33\x44\x55\x66\x77\
