@@ -167,10 +167,12 @@
     @_out << "\n    )"
 
   :fun ref _emit_struct(node CapnProto.Meta.Node, is_builder Bool)
+    node_scoped_name = @_node_scoped_name(node)
+
     @_out << "\n\n:struct \(
       if !is_builder "box "
     )\(
-      @_node_scoped_name(node)
+      node_scoped_name
     )\(
       if is_builder ".Builder"
     )"
@@ -180,6 +182,12 @@
     @_out << "\n  :new \(
       if !is_builder "box read_"
     )from_pointer(@_p)"
+
+    if is_builder (
+      @_out << "\n  :fun as_reader: \(
+        node_scoped_name
+      ).read_from_pointer(@_p.as_reader)"
+    )
 
     // Emit protocol-level constant info.
     try (
@@ -206,6 +214,9 @@
         )"
       )
     )
+
+    // Emit data tracing method.
+    @_emit_trace_data(node, is_builder)
 
     // Emit field accessor methods.
     fields = try (node.struct!.fields | return)
@@ -237,6 +248,31 @@
         next if nested.is_const
         @_emit_type(nested, is_builder)
       )
+    )
+
+  :fun ref _emit_trace_data(node CapnProto.Meta.Node, is_builder Bool)
+    @_out << "\n\n  :is TraceData"
+    @_out << "\n  :fun trace_data(trace TraceData.Observer)"
+
+    if is_builder (
+      // We can't trace a builder directly because some of its properties
+      // may require `:fun ref` to access. So we must trace it via a reader.
+      @_out << "\n    @as_reader.trace_data(trace)"
+    |
+      // If this is a group type (rather than a proper struct), we'll use
+      // zero as the recurse id so that recursion prevention won't prevent
+      // tracing of the inner group after seeing it has the same address
+      // as the struct that contains the group.
+      is_group = try (node.struct!.is_group | False)
+      recurse_id_expr = if is_group ("0" | "@_p.absolute_address")
+
+      // Trace the object and its properties
+      @_out << "\n    trace.object(\(recurse_id_expr)) -> ("
+      try node.struct!.fields.each -> (field |
+        name String = "\(_TextCase.Snake[field.name])"
+        @_out << "\n      try trace.property(\(name.format.literal), @\(name)_if_set!)"
+      )
+      @_out << "\n    )"
     )
 
   :fun ref _emit_field_getter(

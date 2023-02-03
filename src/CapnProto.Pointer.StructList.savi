@@ -160,6 +160,8 @@
     @_data_word_count = 0
     @_pointer_count = 0
 
+  :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
+
   :fun _element_byte_size: (@_data_word_count.u32 + @_pointer_count.u32) * 8
 
   :fun "[]!"(n U32)
@@ -192,6 +194,8 @@
     @_segment, @_byte_offset
     @_list_count, @_data_word_count, @_pointer_count
   )
+
+  :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
 
   :new empty(@_segment)
     @_byte_offset = 0

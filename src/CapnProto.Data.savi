@@ -17,6 +17,10 @@
     // TODO: Do a more efficient copy here.
     @_p.each(0, @size) -> (byte | out.push_byte(byte))
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.primitive_bytes("\(@)".as_bytes)
+
   :fun each_byte_with_index(
     from USize = 0
     to = USize.max_value

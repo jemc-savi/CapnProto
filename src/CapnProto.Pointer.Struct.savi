@@ -106,6 +106,8 @@
     @_data_word_count = 0
     @_pointer_count = 0
 
+  :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
+
   :fun _ptr_byte_offset!(n U16)
     error! unless (@_pointer_count > n)
     @_byte_offset +! (@_data_word_count +! n).u32 * 8
@@ -228,6 +230,14 @@
     @_byte_offset = byte_offset
 
   :fun ref _free: @_segment._free_pointer(@_byte_offset, @_total_byte_size), @
+
+  :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
+
+  :fun as_reader:
+    CapnProto.Pointer.Struct._new(
+      @_segment, @_byte_offset
+      @_data_word_count, @_pointer_count
+    )
 
   :fun _ptr_byte_offset!(n U16)
     error! unless (@_pointer_count > n)
