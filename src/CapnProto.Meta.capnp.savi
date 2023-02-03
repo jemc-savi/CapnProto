@@ -9,6 +9,25 @@
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("id", @id_if_set!)
+      try trace.property("display_name", @display_name_if_set!)
+      try trace.property("display_name_prefix_length", @display_name_prefix_length_if_set!)
+      try trace.property("scope_id", @scope_id_if_set!)
+      try trace.property("nested_nodes", @nested_nodes_if_set!)
+      try trace.property("annotations", @annotations_if_set!)
+      try trace.property("file", @file_if_set!)
+      try trace.property("struct", @struct_if_set!)
+      try trace.property("enum", @enum_if_set!)
+      try trace.property("interface", @interface_if_set!)
+      try trace.property("const", @const_if_set!)
+      try trace.property("annotation", @annotation_if_set!)
+      try trace.property("parameters", @parameters_if_set!)
+      try trace.property("is_generic", @is_generic_if_set!)
+    )
+
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
 
@@ -64,6 +83,18 @@
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("data_word_count", @data_word_count_if_set!)
+      try trace.property("pointer_count", @pointer_count_if_set!)
+      try trace.property("preferred_list_encoding", @preferred_list_encoding_if_set!)
+      try trace.property("is_group", @is_group_if_set!)
+      try trace.property("discriminant_count", @discriminant_count_if_set!)
+      try trace.property("discriminant_offset", @discriminant_offset_if_set!)
+      try trace.property("fields", @fields_if_set!)
+    )
+
   :fun data_word_count: @_p.u16(0xe)
   :fun data_word_count_if_set!: @_p.u16_if_set!(0xe)
 
@@ -92,6 +123,12 @@
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("enumerants", @enumerants_if_set!)
+    )
+
   :fun enumerants: CapnProto.List(CapnProto.Meta.Enumerant).read_from_pointer(@_p.list(3))
   :fun enumerants_if_set!: CapnProto.List(CapnProto.Meta.Enumerant).read_from_pointer(@_p.list_if_set!(3))
 
@@ -101,6 +138,13 @@
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("methods", @methods_if_set!)
+      try trace.property("superclasses", @superclasses_if_set!)
+    )
 
   :fun methods: CapnProto.List(CapnProto.Meta.Method).read_from_pointer(@_p.list(3))
   :fun methods_if_set!: CapnProto.List(CapnProto.Meta.Method).read_from_pointer(@_p.list_if_set!(3))
@@ -115,6 +159,13 @@
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("type", @type_if_set!)
+      try trace.property("value", @value_if_set!)
+    )
+
   :fun type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(3))
   :fun type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(3))
 
@@ -127,6 +178,24 @@
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("type", @type_if_set!)
+      try trace.property("targets_file", @targets_file_if_set!)
+      try trace.property("targets_const", @targets_const_if_set!)
+      try trace.property("targets_enum", @targets_enum_if_set!)
+      try trace.property("targets_enumerant", @targets_enumerant_if_set!)
+      try trace.property("targets_struct", @targets_struct_if_set!)
+      try trace.property("targets_field", @targets_field_if_set!)
+      try trace.property("targets_union", @targets_union_if_set!)
+      try trace.property("targets_group", @targets_group_if_set!)
+      try trace.property("targets_interface", @targets_interface_if_set!)
+      try trace.property("targets_method", @targets_method_if_set!)
+      try trace.property("targets_param", @targets_param_if_set!)
+      try trace.property("targets_annotation", @targets_annotation_if_set!)
+    )
 
   :fun type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(3))
   :fun type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(3))
@@ -174,6 +243,12 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("name", @name_if_set!)
+    )
+
   :fun name: @_p.text(0)
   :fun name_if_set!: @_p.text_if_set!(0)
 
@@ -183,6 +258,13 @@
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("name", @name_if_set!)
+      try trace.property("id", @id_if_set!)
+    )
 
   :fun name: @_p.text(0)
   :fun name_if_set!: @_p.text_if_set!(0)
@@ -198,6 +280,18 @@
   :const capn_proto_pointer_count U16: 4
 
   :const no_discriminant U16: 65535
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("name", @name_if_set!)
+      try trace.property("code_order", @code_order_if_set!)
+      try trace.property("annotations", @annotations_if_set!)
+      try trace.property("discriminant_value", @discriminant_value_if_set!)
+      try trace.property("slot", @slot_if_set!)
+      try trace.property("group", @group_if_set!)
+      try trace.property("ordinal", @ordinal_if_set!)
+    )
 
   :fun name: @_p.text(0)
   :fun name_if_set!: @_p.text_if_set!(0)
@@ -229,6 +323,15 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("offset", @offset_if_set!)
+      try trace.property("type", @type_if_set!)
+      try trace.property("default_value", @default_value_if_set!)
+      try trace.property("had_explicit_default", @had_explicit_default_if_set!)
+    )
+
   :fun offset: @_p.u32(0x4)
   :fun offset_if_set!: @_p.u32_if_set!(0x4)
 
@@ -248,6 +351,12 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("type_id", @type_id_if_set!)
+    )
+
   :fun type_id: @_p.u64(0x10)
   :fun type_id_if_set!: @_p.u64_if_set!(0x10)
 
@@ -257,6 +366,13 @@
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("implicit", @implicit_if_set!)
+      try trace.property("explicit", @explicit_if_set!)
+    )
 
   :fun is_implicit: @_p.check_union(0xa, 0)
   :fun implicit!: @_p.assert_union!(0xa, 0), None
@@ -272,6 +388,14 @@
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 2
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("name", @name_if_set!)
+      try trace.property("code_order", @code_order_if_set!)
+      try trace.property("annotations", @annotations_if_set!)
+    )
 
   :fun name: @_p.text(0)
   :fun name_if_set!: @_p.text_if_set!(0)
@@ -289,6 +413,13 @@
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("id", @id_if_set!)
+      try trace.property("brand", @brand_if_set!)
+    )
+
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
 
@@ -301,6 +432,19 @@
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 5
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("name", @name_if_set!)
+      try trace.property("code_order", @code_order_if_set!)
+      try trace.property("param_struct_type", @param_struct_type_if_set!)
+      try trace.property("result_struct_type", @result_struct_type_if_set!)
+      try trace.property("annotations", @annotations_if_set!)
+      try trace.property("param_brand", @param_brand_if_set!)
+      try trace.property("result_brand", @result_brand_if_set!)
+      try trace.property("implicit_parameters", @implicit_parameters_if_set!)
+    )
 
   :fun name: @_p.text(0)
   :fun name_if_set!: @_p.text_if_set!(0)
@@ -332,6 +476,30 @@
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("void", @void_if_set!)
+      try trace.property("bool", @bool_if_set!)
+      try trace.property("int8", @int8_if_set!)
+      try trace.property("int16", @int16_if_set!)
+      try trace.property("int32", @int32_if_set!)
+      try trace.property("int64", @int64_if_set!)
+      try trace.property("uint8", @uint8_if_set!)
+      try trace.property("uint16", @uint16_if_set!)
+      try trace.property("uint32", @uint32_if_set!)
+      try trace.property("uint64", @uint64_if_set!)
+      try trace.property("float32", @float32_if_set!)
+      try trace.property("float64", @float64_if_set!)
+      try trace.property("text", @text_if_set!)
+      try trace.property("data", @data_if_set!)
+      try trace.property("list", @list_if_set!)
+      try trace.property("enum", @enum_if_set!)
+      try trace.property("struct", @struct_if_set!)
+      try trace.property("interface", @interface_if_set!)
+      try trace.property("any_pointer", @any_pointer_if_set!)
+    )
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
@@ -416,6 +584,12 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("element_type", @element_type_if_set!)
+    )
+
   :fun element_type: CapnProto.Meta.Type.read_from_pointer(@_p.struct(0))
   :fun element_type_if_set!: CapnProto.Meta.Type.read_from_pointer(@_p.struct_if_set!(0))
 
@@ -425,6 +599,13 @@
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("type_id", @type_id_if_set!)
+      try trace.property("brand", @brand_if_set!)
+    )
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -439,6 +620,13 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("type_id", @type_id_if_set!)
+      try trace.property("brand", @brand_if_set!)
+    )
+
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
 
@@ -452,6 +640,13 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("type_id", @type_id_if_set!)
+      try trace.property("brand", @brand_if_set!)
+    )
+
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
 
@@ -464,6 +659,14 @@
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("unconstrained", @unconstrained_if_set!)
+      try trace.property("parameter", @parameter_if_set!)
+      try trace.property("implicit_method_parameter", @implicit_method_parameter_if_set!)
+    )
 
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.read_from_pointer(@_p)
@@ -483,6 +686,15 @@
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("any_kind", @any_kind_if_set!)
+      try trace.property("struct", @struct_if_set!)
+      try trace.property("list", @list_if_set!)
+      try trace.property("capability", @capability_if_set!)
+    )
 
   :fun is_any_kind: @_p.check_union(0xa, 0)
   :fun any_kind!: @_p.assert_union!(0xa, 0), None
@@ -507,6 +719,13 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("scope_id", @scope_id_if_set!)
+      try trace.property("parameter_index", @parameter_index_if_set!)
+    )
+
   :fun scope_id: @_p.u64(0x10)
   :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
 
@@ -520,6 +739,12 @@
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("parameter_index", @parameter_index_if_set!)
+    )
+
   :fun parameter_index: @_p.u16(0xa)
   :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
 
@@ -530,6 +755,12 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("scopes", @scopes_if_set!)
+    )
+
   :fun scopes: CapnProto.List(CapnProto.Meta.Brand.Scope).read_from_pointer(@_p.list(0))
   :fun scopes_if_set!: CapnProto.List(CapnProto.Meta.Brand.Scope).read_from_pointer(@_p.list_if_set!(0))
 
@@ -539,6 +770,14 @@
 
   :const capn_proto_data_word_count U16: 2
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("scope_id", @scope_id_if_set!)
+      try trace.property("bind", @bind_if_set!)
+      try trace.property("inherit", @inherit_if_set!)
+    )
 
   :fun scope_id: @_p.u64(0x0)
   :fun scope_id_if_set!: @_p.u64_if_set!(0x0)
@@ -558,6 +797,13 @@
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("unbound", @unbound_if_set!)
+      try trace.property("type", @type_if_set!)
+    )
+
   :fun is_unbound: @_p.check_union(0x0, 0)
   :fun unbound!: @_p.assert_union!(0x0, 0), None
   :fun unbound_if_set!: @_p.assert_union!(0x0, 0), None
@@ -572,6 +818,30 @@
 
   :const capn_proto_data_word_count U16: 2
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("void", @void_if_set!)
+      try trace.property("bool", @bool_if_set!)
+      try trace.property("int8", @int8_if_set!)
+      try trace.property("int16", @int16_if_set!)
+      try trace.property("int32", @int32_if_set!)
+      try trace.property("int64", @int64_if_set!)
+      try trace.property("uint8", @uint8_if_set!)
+      try trace.property("uint16", @uint16_if_set!)
+      try trace.property("uint32", @uint32_if_set!)
+      try trace.property("uint64", @uint64_if_set!)
+      try trace.property("float32", @float32_if_set!)
+      try trace.property("float64", @float64_if_set!)
+      try trace.property("text", @text_if_set!)
+      try trace.property("data", @data_if_set!)
+      try trace.property("list", @list_if_set!)
+      try trace.property("enum", @enum_if_set!)
+      try trace.property("struct", @struct_if_set!)
+      try trace.property("interface", @interface_if_set!)
+      try trace.property("any_pointer", @any_pointer_if_set!)
+    )
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
@@ -656,6 +926,14 @@
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 2
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("id", @id_if_set!)
+      try trace.property("value", @value_if_set!)
+      try trace.property("brand", @brand_if_set!)
+    )
+
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
 
@@ -691,6 +969,13 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 2
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("nodes", @nodes_if_set!)
+      try trace.property("requested_files", @requested_files_if_set!)
+    )
+
   :fun nodes: CapnProto.List(CapnProto.Meta.Node).read_from_pointer(@_p.list(0))
   :fun nodes_if_set!: CapnProto.List(CapnProto.Meta.Node).read_from_pointer(@_p.list_if_set!(0))
 
@@ -703,6 +988,14 @@
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 2
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("id", @id_if_set!)
+      try trace.property("filename", @filename_if_set!)
+      try trace.property("imports", @imports_if_set!)
+    )
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -720,6 +1013,13 @@
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
 
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("id", @id_if_set!)
+      try trace.property("name", @name_if_set!)
+    )
+
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
 
@@ -729,9 +1029,14 @@
 :struct CapnProto.Meta.Node.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -838,9 +1143,14 @@
 :struct CapnProto.Meta.Node.AS_struct.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.AS_struct.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun data_word_count: @_p.u16(0xe)
   :fun data_word_count_if_set!: @_p.u16_if_set!(0xe)
@@ -874,9 +1184,14 @@
 :struct CapnProto.Meta.Node.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.AS_enum.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref enumerants: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list(3))
   :fun ref enumerants_if_set!: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list_if_set!(3))
@@ -886,9 +1201,14 @@
 :struct CapnProto.Meta.Node.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.AS_interface.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref methods: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list(3))
   :fun ref methods_if_set!: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list_if_set!(3))
@@ -903,9 +1223,14 @@
 :struct CapnProto.Meta.Node.AS_const.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.AS_const.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
@@ -916,9 +1241,14 @@
 :struct CapnProto.Meta.Node.AS_annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.AS_annotation.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 5
   :const capn_proto_pointer_count U16: 6
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
@@ -974,9 +1304,14 @@
 :struct CapnProto.Meta.Node.Parameter.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.Parameter.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -985,9 +1320,14 @@
 :struct CapnProto.Meta.Node.NestedNode.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Node.NestedNode.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1000,11 +1340,16 @@
 :struct CapnProto.Meta.Field.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Field.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
 
   :const no_discriminant U16: 65535
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1048,9 +1393,14 @@
 :struct CapnProto.Meta.Field.AS_slot.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Field.AS_slot.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun offset: @_p.u32(0x4)
   :fun offset_if_set!: @_p.u32_if_set!(0x4)
@@ -1069,9 +1419,14 @@
 :struct CapnProto.Meta.Field.AS_group.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Field.AS_group.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun type_id: @_p.u64(0x10)
   :fun type_id_if_set!: @_p.u64_if_set!(0x10)
@@ -1080,9 +1435,14 @@
 :struct CapnProto.Meta.Field.AS_ordinal.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Field.AS_ordinal.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 4
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun is_implicit: @_p.check_union(0xa, 0)
   :fun implicit!: @_p.assert_union!(0xa, 0), None
@@ -1102,9 +1462,14 @@
 :struct CapnProto.Meta.Enumerant.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Enumerant.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 2
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1122,9 +1487,14 @@
 :struct CapnProto.Meta.Superclass.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Superclass.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -1136,9 +1506,14 @@
 :struct CapnProto.Meta.Method.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Method.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 5
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1175,9 +1550,14 @@
 :struct CapnProto.Meta.Type.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
@@ -1322,9 +1702,14 @@
 :struct CapnProto.Meta.Type.AS_list.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_list.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref element_type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
   :fun ref element_type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(0, 3, 1))
@@ -1332,9 +1717,14 @@
 :struct CapnProto.Meta.Type.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_enum.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -1346,9 +1736,14 @@
 :struct CapnProto.Meta.Type.AS_struct.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_struct.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -1360,9 +1755,14 @@
 :struct CapnProto.Meta.Type.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_interface.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -1374,9 +1774,14 @@
 :struct CapnProto.Meta.Type.AS_anyPointer.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_anyPointer.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun ref unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
@@ -1405,9 +1810,14 @@
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun is_any_kind: @_p.check_union(0xa, 0)
   :fun any_kind!: @_p.assert_union!(0xa, 0), None
@@ -1440,9 +1850,14 @@
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_parameter.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_anyPointer.AS_parameter.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun scope_id: @_p.u64(0x10)
   :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
@@ -1455,9 +1870,14 @@
 :struct CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 3
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun parameter_index: @_p.u16(0xa)
   :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
@@ -1466,9 +1886,14 @@
 :struct CapnProto.Meta.Brand.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Brand.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref scopes: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list(0))
   :fun ref scopes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list_if_set!(0))
@@ -1478,9 +1903,14 @@
 :struct CapnProto.Meta.Brand.Scope.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Brand.Scope.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 2
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun scope_id: @_p.u64(0x0)
   :fun scope_id_if_set!: @_p.u64_if_set!(0x0)
@@ -1503,9 +1933,14 @@
 :struct CapnProto.Meta.Brand.Binding.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Brand.Binding.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun is_unbound: @_p.check_union(0x0, 0)
   :fun unbound!: @_p.assert_union!(0x0, 0), None
@@ -1525,9 +1960,14 @@
 :struct CapnProto.Meta.Value.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Value.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 2
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
@@ -1679,9 +2119,14 @@
 :struct CapnProto.Meta.Annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.Annotation.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 2
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -1696,9 +2141,14 @@
 :struct CapnProto.Meta.CodeGeneratorRequest.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.CodeGeneratorRequest.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 2
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun ref nodes: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list(0))
   :fun ref nodes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list_if_set!(0))
@@ -1713,9 +2163,14 @@
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.CodeGeneratorRequest.RequestedFile.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 2
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -1733,9 +2188,14 @@
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+  :fun as_reader: CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.read_from_pointer(@_p.as_reader)
 
   :const capn_proto_data_word_count U16: 1
   :const capn_proto_pointer_count U16: 1
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)

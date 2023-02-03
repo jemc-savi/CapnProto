@@ -1,4 +1,5 @@
 :trait box _FromStructPointer
+  :is TraceData
   :new box read_from_pointer(pointer CapnProto.Pointer.Struct)
 
 :struct box CapnProto.List(A _FromStructPointer)
@@ -12,6 +13,16 @@
   :fun each
     :yields A
     @_p.each -> (p | yield A.read_from_pointer(p))
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.array(@_p.absolute_address - 8) -> (
+      if (A <: TraceData) ( // TODO: This should have already been proved
+        @each -> (element |
+          trace.array_element(element)
+        )
+      )
+    )
 
 :trait _FromStructPointerBuilder
   :new from_pointer(pointer CapnProto.Pointer.Struct.Builder)
