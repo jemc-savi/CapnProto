@@ -83,7 +83,7 @@
 
   :const capn_proto_data_word_count U16: 7
   :fun some_u64: @_p.u64(0x20)
-  :fun some_u32: @_p.u64(0x28)
+  :fun some_u32: @_p.u32(0x28)
   :fun ref "some_u64="(new_value): @_p.set_u64(0x20, new_value, 0)
   :fun ref "some_u32="(new_value): @_p.set_u32(0x28, new_value, 0)
 
@@ -97,7 +97,7 @@
 
   :const capn_proto_data_word_count U16: 7
   :fun some_f64: @_p.f64(0x20)
-  :fun some_f32: @_p.f64(0x28)
+  :fun some_f32: @_p.f32(0x28)
   :fun ref "some_f64="(new_value): @_p.set_f64(0x20, new_value, 0)
   :fun ref "some_f32="(new_value): @_p.set_f32(0x28, new_value, 0)
 
@@ -215,8 +215,8 @@
     assert: root.is_foo.is_false
     assert: root.is_bar.is_true
 
-    assert: bar.some_f64 == 0, bar.some_f64 = 42, assert: bar.some_f64 == 42
-    assert: bar.some_f32 == 0, bar.some_f32 = 43, assert: bar.some_f32 == 43
+    assert: bar.some_f64 == 0, bar.some_f64 = 42.2, assert: bar.some_f64 == 42.2
+    assert: bar.some_f32 == 0, bar.some_f32 = 43.3, assert: bar.some_f32 == 43.3
     assert: "\(bar.blob)" == "", bar.blob = b"!!", assert: "\(bar.blob)" == "!!"
 
   :it "lets you take the resulting byte buffers"

@@ -138,8 +138,8 @@
   :fun i32(n): @u32(n).i32
   :fun i64(n): @u64(n).i64
 
-  :fun f32(n): @u32(n).f32
-  :fun f64(n): @u64(n).f64
+  :fun f32(n): F32.from_bits(@u32(n))
+  :fun f64(n): F64.from_bits(@u64(n))
 
   :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
 
@@ -153,8 +153,8 @@
   :fun i32_if_set!(n): @u32_if_set!(n).i32
   :fun i64_if_set!(n): @u64_if_set!(n).i64
 
-  :fun f32_if_set!(n): @u32_if_set!(n).f32
-  :fun f64_if_set!(n): @u64_if_set!(n).f64
+  :fun f32_if_set!(n): F32.from_bits(@u32_if_set!(n))
+  :fun f64_if_set!(n): F64.from_bits(@u64_if_set!(n))
 
   :fun bool_if_set!(n, bit_mask)
     if (@_u8!(n).bit_and(bit_mask) != 0) (True | error!)
@@ -285,8 +285,8 @@
   :fun i32(n): @u32(n).i32
   :fun i64(n): @u64(n).i64
 
-  :fun f32(n): @u32(n).f32
-  :fun f64(n): @u64(n).f64
+  :fun f32(n): F32.from_bits(@u32(n))
+  :fun f64(n): F64.from_bits(@u64(n))
 
   :fun bool(n, bit_mask): @u8(n).bit_and(bit_mask) != 0
 
@@ -300,8 +300,8 @@
   :fun i32_if_set!(n): @u32_if_set!(n).i32
   :fun i64_if_set!(n): @u64_if_set!(n).i64
 
-  :fun f32_if_set!(n): @u32_if_set!(n).f32
-  :fun f64_if_set!(n): @u64_if_set!(n).f64
+  :fun f32_if_set!(n): F32.from_bits(@u32_if_set!(n))
+  :fun f64_if_set!(n): F64.from_bits(@u64_if_set!(n))
 
   :fun bool_if_set!(n, bit_mask)
     if (@_u8!(n).bit_and(bit_mask) != 0) (True | error!)
@@ -316,8 +316,8 @@
   :fun ref set_i32(n, v I32, d I32): @set_u32(n, v.u32, d.u32), v
   :fun ref set_i64(n, v I64, d I64): @set_u64(n, v.u64, d.u64), v
 
-  :fun ref set_f32(n, v F32, d F32): @set_u32(n, v.u32, d.u32), v
-  :fun ref set_f64(n, v F64, d F64): @set_u64(n, v.u64, d.u64), v
+  :fun ref set_f32(n, v F32, d F32): @set_u32(n, v.bits, d.bits), v
+  :fun ref set_f64(n, v F64, d F64): @set_u64(n, v.bits, d.bits), v
 
   :fun ref set_bool(n, bit_mask, value Bool)
     if value (
