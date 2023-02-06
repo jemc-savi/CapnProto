@@ -227,11 +227,8 @@
       @_emit_field_getter_if_set(node, field, is_builder)
       if is_builder (
         try @_emit_field_setter!(node, field)
-      )
-      if is_builder (
         try @_emit_field_list_initter!(node, field)
-      )
-      if is_builder (
+        try @_emit_field_list_trimmer!(node, field)
         try @_emit_field_union_initter!(node, field)
       )
     )
@@ -361,6 +358,33 @@
     ), \(
       struct.pointer_count
     ), new_count))"
+
+  :fun ref _emit_field_list_trimmer!(
+    node CapnProto.Meta.Node
+    field CapnProto.Meta.Field
+  )
+    is_union = field.discriminant_value != field.no_discriminant
+    error! if is_union // TODO: implement for union-lists
+
+    slot = field.slot!
+    type = slot.type
+
+    struct_type = type.list!.element_type.struct!
+    struct = @_find_node!(struct_type.type_id).struct!
+
+    @_out << "\n  :fun ref trim_\(
+      _TextCase.Snake[field.name]
+    )(new_start, new_finish)"
+
+    @_out << "\n    \(
+      @_type_name(type, True)
+    ).from_pointer(@_p.trim_list(\(
+      slot.offset
+    ), \(
+      struct.data_word_count
+    ), \(
+      struct.pointer_count
+    ), new_start, new_finish))"
 
   :fun ref _emit_field_union_initter!(
     node CapnProto.Meta.Node

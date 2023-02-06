@@ -510,3 +510,48 @@
     )
 
     new_pointer
+
+  :fun ref trim_list(
+    n U16
+    data_word_count U16
+    pointer_count U16
+    new_list_start USize
+    new_list_finish USize
+  ) CapnProto.Pointer.StructList.Builder
+
+    // We expect the byte offset to be within bounds - otherwise we can't do it,
+    // and we'll return an empty list builder to signal this problem.
+    byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_list)
+
+    // If there's no existing list pointer (or if an empty list was requested)
+    // follow the same logic as init_list.
+    pointer = try (
+      _ParseStructListPointer._parse_builder!(
+        @_segment, byte_offset, @_segment._u64!(byte_offset)
+      )
+    |
+      new_list_finish = new_list_finish.at_least(new_list_start)
+      new_list_count = new_list_finish - new_list_start
+      return @init_list(n, data_word_count, pointer_count, new_list_count)
+    )
+
+    // Clip the parameters. If they end up empty, init an zero-length list.
+    new_list_finish = new_list_finish.at_most(pointer._list_count.usize)
+    new_list_start = new_list_start.at_most(new_list_finish)
+    if (new_list_finish == new_list_start) (
+      return @init_list(n, data_word_count, pointer_count, 0)
+    )
+
+    // Get a trimmed pointer (which also frees the gaps on each side)
+    pointer = pointer._trim(
+      new_list_start.u32
+      pointer._list_count - new_list_finish.u32
+    )
+
+    // We need to write the pointer to the buffer so it can be followed.
+    try @_segment._set_u64!(
+      byte_offset
+      _WriteStructListPointer._encode(byte_offset, pointer)
+    )
+
+    pointer

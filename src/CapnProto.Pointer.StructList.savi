@@ -219,6 +219,40 @@
     @_byte_offset = byte_offset + 8
     try @_segment._set_u64!(byte_offset, _WriteStructListPointer._encode_tag(@))
 
+  :fun ref _trim(trim_left U32, trim_right U32)
+    // Create the new, trimmed pointer.
+    added_byte_offset = @_element_byte_size * trim_left
+    byte_offset = @_byte_offset + added_byte_offset
+    list_count = @_list_count - trim_left - trim_right
+    new_pointer = @_new(
+      @_segment, byte_offset
+      list_count, @_data_word_count, @_pointer_count
+    )
+
+    // Free the bytes to the right, if applicable.
+    if trim_right.is_nonzero (
+      @_segment._free_pointer(
+        byte_offset + @_element_byte_size * list_count
+        @_element_byte_size * trim_right
+      )
+    )
+
+    // Free the bytes to the left, if applicable.
+    if trim_left.is_nonzero (
+      @_segment._free_pointer(
+        byte_offset - 8 - added_byte_offset
+        added_byte_offset
+      )
+    )
+
+    // Re-encode the tag byte.
+    try @_segment._set_u64!(
+      byte_offset - 8
+      _WriteStructListPointer._encode_tag(new_pointer)
+    )
+
+    new_pointer
+
   :fun ref _reallocate(new_count U32)
     try (
       element_byte_size = @_element_byte_size
