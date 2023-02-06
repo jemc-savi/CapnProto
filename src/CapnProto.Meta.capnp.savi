@@ -1058,11 +1058,15 @@
   :fun ref nested_nodes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_nested_nodes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
+  :fun ref trim_nested_nodes(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.trim_list(1, 1, 1, new_start, new_finish))
 
   :fun ref annotations: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list(2))
   :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(2))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, new_count))
+  :fun ref trim_annotations(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.trim_list(2, 1, 2, new_start, new_finish))
 
   :fun is_file: @_p.check_union(0xc, 0)
   :fun file!: @_p.assert_union!(0xc, 0), None
@@ -1135,6 +1139,8 @@
   :fun ref parameters_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list_if_set!(5))
   :fun ref init_parameters(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
+  :fun ref trim_parameters(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.trim_list(5, 0, 1, new_start, new_finish))
 
   :fun is_generic: @_p.bool(0x24, 0b00000001)
   :fun is_generic_if_set!: @_p.bool_if_set!(0x24, 0b00000001)
@@ -1180,6 +1186,8 @@
   :fun ref fields_if_set!: CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_fields(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, new_count))
+  :fun ref trim_fields(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.trim_list(3, 3, 4, new_start, new_finish))
 
 :struct CapnProto.Meta.Node.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1197,6 +1205,8 @@
   :fun ref enumerants_if_set!: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_enumerants(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, new_count))
+  :fun ref trim_enumerants(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.trim_list(3, 1, 2, new_start, new_finish))
 
 :struct CapnProto.Meta.Node.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1214,11 +1224,15 @@
   :fun ref methods_if_set!: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_methods(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, new_count))
+  :fun ref trim_methods(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.trim_list(3, 3, 5, new_start, new_finish))
 
   :fun ref superclasses: CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.list(4))
   :fun ref superclasses_if_set!: CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.list_if_set!(4))
   :fun ref init_superclasses(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, new_count))
+  :fun ref trim_superclasses(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.trim_list(4, 1, 1, new_start, new_finish))
 
 :struct CapnProto.Meta.Node.AS_const.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1363,6 +1377,8 @@
   :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref trim_annotations(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.trim_list(1, 1, 2, new_start, new_finish))
 
   :fun discriminant_value: @_p.u16(0x2).bit_xor(65535)
   :fun discriminant_value_if_set!: @_p.u16_if_set!(0x2).bit_xor(65535)
@@ -1483,6 +1499,8 @@
   :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref trim_annotations(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.trim_list(1, 1, 2, new_start, new_finish))
 
 :struct CapnProto.Meta.Superclass.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1535,6 +1553,8 @@
   :fun ref annotations_if_set!: CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref trim_annotations(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.trim_list(1, 1, 2, new_start, new_finish))
 
   :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2, 0, 1))
   :fun ref param_brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(2, 0, 1))
@@ -1546,6 +1566,8 @@
   :fun ref implicit_parameters_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list_if_set!(4))
   :fun ref init_implicit_parameters(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
+  :fun ref trim_implicit_parameters(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.trim_list(4, 0, 1, new_start, new_finish))
 
 :struct CapnProto.Meta.Type.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1899,6 +1921,8 @@
   :fun ref scopes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.list_if_set!(0))
   :fun ref init_scopes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, new_count))
+  :fun ref trim_scopes(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.trim_list(0, 2, 1, new_start, new_finish))
 
 :struct CapnProto.Meta.Brand.Scope.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -2154,11 +2178,15 @@
   :fun ref nodes_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.list_if_set!(0))
   :fun ref init_nodes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, new_count))
+  :fun ref trim_nodes(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.trim_list(0, 5, 6, new_start, new_finish))
 
   :fun ref requested_files: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.list(1))
   :fun ref requested_files_if_set!: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_requested_files(new_count)
     CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
+  :fun ref trim_requested_files(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.trim_list(1, 1, 2, new_start, new_finish))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -2184,6 +2212,8 @@
   :fun ref imports_if_set!: CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.list_if_set!(1))
   :fun ref init_imports(new_count)
     CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
+  :fun ref trim_imports(new_start, new_finish)
+    CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.trim_list(1, 1, 1, new_start, new_finish))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder
   :let _p CapnProto.Pointer.Struct.Builder

@@ -44,6 +44,7 @@
   :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(3))
   :fun ref children_if_set!: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list_if_set!(3))
   :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(3, 2, 1, new_count))
+  :fun ref trim_children(new_start, new_finish): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.trim_list(3, 2, 1, new_start, new_finish))
 
   :fun is_foo: @_p.check_union(0x30, 0)
   :fun ref foo!: @_p.assert_union!(0x30, 0), _ExampleAsFooBuilder.from_pointer(@_p)
@@ -185,6 +186,20 @@
     assert: (children[2]!.a = 55, children[2]!.a == 55)
     assert: (children[2]!.b = 66, children[2]!.b == 66)
     assert: (children[2]!.name = "baz", "\(children[2]!.name)" == "baz")
+
+    children = root.trim_children(0, 3)
+    assert: children.size == 3
+    children = root.trim_children(0, 999)
+    assert: children.size == 3
+    children = root.trim_children(1, 2)
+    assert: children.size == 1
+    children = root.children
+    assert: children.size == 1
+    assert: children[0]!.a == 33
+    assert: children[0]!.b == 44
+    assert: "\(children[0]!.name)" == "bar"
+    children = root.trim_children(999, 0)
+    assert: children.size == 0
 
     assert: root.init_children(1000).size == 1000
     assert: root.children[0]!.a == 0
