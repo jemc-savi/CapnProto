@@ -266,8 +266,10 @@
       // Trace the object and its properties
       @_out << "\n    trace.object(\(recurse_id_expr)) -> ("
       try node.struct!.fields.each -> (field |
+        is_union = field.discriminant_value != field.no_discriminant
+        suffix = if is_union ("" | "_if_set")
         name String = "\(_TextCase.Snake[field.name])"
-        @_out << "\n      try trace.property(\(name.format.literal), @\(name)_if_set!)"
+        @_out << "\n      try trace.property(\(name.format.literal), @\(name)\(suffix)!)"
       )
       @_out << "\n    )"
     )
