@@ -26,7 +26,7 @@
 
     // The 2 least significant bits (A) encode the pointer kind.
     // Raise an error if this is not coded as a struct pointer (kind zero).
-    error! unless (value.u8.bit_and(0b11) == 0)
+    error! unless value.u8.bit_and(0b11) == 0
 
     // The bottom 32 bits of the value (excluding the 2 least significant bits)
     // encode a 30-bit signed integer (B) indicating the offset in 8-byte words
@@ -44,7 +44,7 @@
     // or underflow is treated as a protocol error (an invalid pointer).
     offset_half = value.u32.i32
     byte_offset = (current_offset.i32 +! 8 +! offset_half +! offset_half).u32!
-    if (override_byte_offset != -1) (byte_offset = override_byte_offset)
+    if override_byte_offset != -1 (byte_offset = override_byte_offset)
 
     // The two upper U16 parts of the value (C and D) indicate the size
     // of the struct's data section and its pointers section, in 8-byte words.
@@ -58,7 +58,7 @@
 
   :fun _parse_builder!(segment CapnProto.Segment, current_offset, value)
     read_ptr = @_parse!(segment, current_offset, value)
-    if (read_ptr._segment !== segment) (
+    if read_ptr._segment !== segment (
       try (segment = segment._segments._list[read_ptr._segment._index]!)
     )
     CapnProto.Pointer.Struct.Builder._new(
@@ -109,23 +109,23 @@
   :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
 
   :fun _ptr_byte_offset!(n U16)
-    error! unless (@_pointer_count > n)
+    error! unless @_pointer_count > n
     @_byte_offset +! (@_data_word_count +! n).u32 * 8
 
   :fun _u8!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u8!(@_byte_offset +! n)
 
   :fun _u16!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u16!(@_byte_offset +! n)
 
   :fun _u32!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u32!(@_byte_offset +! n)
 
   :fun _u64!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u64!(@_byte_offset +! n)
 
   :fun u8(n) U8: try (@_u8!(n) | 0)
@@ -157,9 +157,9 @@
   :fun f64_if_set!(n): F64.from_bits(@u64_if_set!(n))
 
   :fun bool_if_set!(n, bit_mask)
-    if (@_u8!(n).bit_and(bit_mask) != 0) (True | error!)
+    if @_u8!(n).bit_and(bit_mask) != 0 (True | error!)
 
-  :fun assert_union!(n, value): error! if (@u16(n) != value)
+  :fun assert_union!(n, value): error! if @u16(n) != value
   :fun check_union(n, value): @u16(n) == value
 
   :fun text(n): try (@text_if_set!(n) | @_empty_text)
@@ -240,39 +240,39 @@
     )
 
   :fun _ptr_byte_offset!(n U16)
-    error! unless (@_pointer_count > n)
+    error! unless @_pointer_count > n
     @_byte_offset +! (@_data_word_count +! n).u32 * 8
 
   :fun _u8!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u8!(@_byte_offset +! n)
 
   :fun _u16!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u16!(@_byte_offset +! n)
 
   :fun _u32!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u32!(@_byte_offset +! n)
 
   :fun _u64!(n U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._u64!(@_byte_offset +! n)
 
   :fun ref _set_u8!(n U32, v U8)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._set_u8!(@_byte_offset +! n, v)
 
   :fun ref _set_u16!(n U32, v U16)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._set_u16!(@_byte_offset +! n, v)
 
   :fun ref _set_u32!(n U32, v U32)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._set_u32!(@_byte_offset +! n, v)
 
   :fun ref _set_u64!(n U32, v U64)
-    error! unless (@_data_word_count.u32 * 8 > n)
+    error! unless @_data_word_count.u32 * 8 > n
     @_segment._set_u64!(@_byte_offset +! n, v)
 
   :fun u8(n) U8: try (@_u8!(n) | 0)
@@ -304,7 +304,7 @@
   :fun f64_if_set!(n): F64.from_bits(@u64_if_set!(n))
 
   :fun bool_if_set!(n, bit_mask)
-    if (@_u8!(n).bit_and(bit_mask) != 0) (True | error!)
+    if @_u8!(n).bit_and(bit_mask) != 0 (True | error!)
 
   :fun ref set_u8(n, v U8, d U8): try @_set_u8!(n, v.bit_xor(d)), v
   :fun ref set_u16(n, v U16, d U16): try @_set_u16!(n, v.bit_xor(d)), v
@@ -336,7 +336,7 @@
     try @_segment._set_u64!(@_ptr_byte_offset!(n), 0)
     @
 
-  :fun assert_union!(n, value): error! if (@u16(n) != value)
+  :fun assert_union!(n, value): error! if @u16(n) != value
   :fun check_union(n, value): @u16(n) == value
   :fun ref mark_union(n, value): try @_set_u16!(n, value), @
 
@@ -538,7 +538,7 @@
     // Clip the parameters. If they end up empty, init an zero-length list.
     new_list_finish = new_list_finish.at_most(pointer._list_count.usize)
     new_list_start = new_list_start.at_most(new_list_finish)
-    if (new_list_finish == new_list_start) (
+    if new_list_finish == new_list_start (
       return @init_list(n, data_word_count, pointer_count, 0)
     )
 

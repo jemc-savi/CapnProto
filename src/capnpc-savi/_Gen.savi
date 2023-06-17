@@ -8,7 +8,7 @@
 
   :fun _find_node!(id U64) CapnProto.Meta.Node
     @req.nodes.each -> (node |
-      return node if (node.id == id)
+      return node if node.id == id
     )
     error!
 
@@ -26,7 +26,7 @@
         node.annotations.each -> (annotation |
           // The namespace of the file can be dictated by the `namespace`
           // annotation in `CapnProto.Savi.Meta.capnp`, whose id is well-known.
-          if (annotation.id == 0x9c3f4a6aa35d6820) (
+          if annotation.id == 0x9c3f4a6aa35d6820 (
             return "\(try annotation.value.text!)"
           )
         )
@@ -44,7 +44,7 @@
     scope_node = @_find_node!(node.scope_id)
     scope_node.struct!.fields.each -> (field |
       try (
-        if (node.id == field.group!.type_id) (
+        if node.id == field.group!.type_id (
           return "\(@_node_scoped_name(scope_node)).AS_\(field.name)"
         )
       )
@@ -55,8 +55,8 @@
     scope_node = @_find_node!(node.scope_id)
     scope_node_name = @_node_scoped_name(scope_node)
     scope_node.nested_nodes.each -> (nested |
-      if (nested.id == node.id) (
-        if (scope_node_name == "_") (
+      if nested.id == node.id (
+        if scope_node_name == "_" (
           return "_\(nested.name)"
         |
           return "\(scope_node_name).\(nested.name)"
@@ -154,7 +154,7 @@
     value U64 = 0
     zero_name = ""
     enum.enumerants.each -> (enumerant |
-      if (value == 0) (zero_name = "\(_TextCase.Pascal[enumerant.name])")
+      if value == 0 (zero_name = "\(_TextCase.Pascal[enumerant.name])")
       @_out << "\n  :member \(_TextCase.Pascal[enumerant.name]) \(value)"
       value += 1
     )
@@ -280,7 +280,7 @@
     is_builder Bool
   )
     is_union = field.discriminant_value != field.no_discriminant
-    needs_ref = is_builder && try (@_is_pointer_type(field.slot!.type) | True)
+    needs_ref = is_builder && (try (@_is_pointer_type(field.slot!.type) | True))
     @_out << "\n  :fun\(
       if needs_ref " ref"
     ) \(_TextCase.Snake[field.name])\(
@@ -298,7 +298,7 @@
     is_builder Bool
   )
     is_union = field.discriminant_value != field.no_discriminant
-    needs_ref = is_builder && try (@_is_pointer_type(field.slot!.type) | True)
+    needs_ref = is_builder && (try (@_is_pointer_type(field.slot!.type) | True))
     @_out << "\n  :fun\(
       if needs_ref " ref"
     ) \(_TextCase.Snake[field.name])_if_set!: "
@@ -396,7 +396,7 @@
     error! unless is_union
 
     struct = node.struct!
-    error! unless (struct.discriminant_count > 1)
+    error! unless struct.discriminant_count > 1
 
     // List init methods are handled in another place
     try (return if field.slot!.type.is_list)
@@ -439,7 +439,7 @@
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
   )
-    error! if (field.discriminant_value == field.no_discriminant)
+    error! if field.discriminant_value == field.no_discriminant
     @_out << "\n  :fun is_\(_TextCase.Snake[field.name]): "
     try @_emit_field_check_union!(node, field, False)
 
@@ -450,8 +450,8 @@
   )
     // Error if this field is not a struct, or not a discriminated one.
     struct = node.struct!
-    error! unless (struct.discriminant_count > 1)
-    error! if (field.discriminant_value == field.no_discriminant)
+    error! unless struct.discriminant_count > 1
+    error! if field.discriminant_value == field.no_discriminant
 
     @_out << "@_p.\(
       if is_assert ("assert_union!" | "check_union")
@@ -504,77 +504,77 @@
     | type.is_int8 |
       @_out << "@_p.i8\(suffix)(\((offset * 1).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.int8! != 0) (
+        if slot.default_value.int8! != 0 (
           @_out << ".bit_xor(\(slot.default_value.int8!))"
         )
       )
     | type.is_int16 |
       @_out << "@_p.i16\(suffix)(\((offset * 2).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.int16! != 0) (
+        if slot.default_value.int16! != 0 (
           @_out << ".bit_xor(\(slot.default_value.int16!))"
         )
       )
     | type.is_int32 |
       @_out << "@_p.i32\(suffix)(\((offset * 4).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.int32! != 0) (
+        if slot.default_value.int32! != 0 (
           @_out << ".bit_xor(\(slot.default_value.int32!))"
         )
       )
     | type.is_int64 |
       @_out << "@_p.i64\(suffix)(\((offset * 8).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.int64! != 0) (
+        if slot.default_value.int64! != 0 (
           @_out << ".bit_xor(\(slot.default_value.int64!))"
         )
       )
     | type.is_uint8 |
       @_out << "@_p.u8\(suffix)(\((offset * 1).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.uint8! != 0) (
+        if slot.default_value.uint8! != 0 (
           @_out << ".bit_xor(\(slot.default_value.uint8!))"
         )
       )
     | type.is_uint16 |
       @_out << "@_p.u16\(suffix)(\((offset * 2).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.uint16! != 0) (
+        if slot.default_value.uint16! != 0 (
           @_out << ".bit_xor(\(slot.default_value.uint16!))"
         )
       )
     | type.is_uint32 |
       @_out << "@_p.u32\(suffix)(\((offset * 4).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.uint32! != 0) (
+        if slot.default_value.uint32! != 0 (
           @_out << ".bit_xor(\(slot.default_value.uint32!))"
         )
       )
     | type.is_uint64 |
       @_out << "@_p.u64\(suffix)(\((offset * 8).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.uint64! != 0) (
+        if slot.default_value.uint64! != 0 (
           @_out << ".bit_xor(\(slot.default_value.uint64!))"
         )
       )
     | type.is_float32 |
       @_out << "@_p.f32\(suffix)(\((offset * 4).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.float32! != 0) (
+        if slot.default_value.float32! != 0 (
           @_out << " // UNHANDLED: default_value"
         )
       )
     | type.is_float64 |
       @_out << "@_p.f64\(suffix)(\((offset * 8).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.float64! != 0) (
+        if slot.default_value.float64! != 0 (
           @_out << " // UNHANDLED: default_value"
         )
       )
     | type.is_text |
       @_out << "@_p.text\(suffix)(\(offset))"
       try (
-        if (slot.default_value.text!.size > 0) (
+        if slot.default_value.text!.size > 0 (
           @_out << " // UNHANDLED: default_value"
         )
       )
@@ -595,7 +595,7 @@
       @_out << "\(@_type_name(type, is_builder))._new("
       @_out << "@_p.u16\(suffix)(\((offset * 2).format.hex.without_leading_zeros))"
       try (
-        if (slot.default_value.uint16! != 0) (
+        if slot.default_value.uint16! != 0 (
           @_out << ".bit_xor(\(slot.default_value.uint16!))"
         )
       )

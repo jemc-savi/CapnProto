@@ -32,7 +32,7 @@
     // The 2 least significant bits (A) encode the pointer kind.
     // Raise an error if this is not coded as a list pointer (kind two).
     // The next bit (B) is set only in the rare case of a "double far" pointer.
-    error! unless (value.u8.bit_and(0b11) == 2)
+    error! unless value.u8.bit_and(0b11) == 2
     is_double_far = (value.u8.bit_and(0b100) == 0b100)
 
     // The bottom 32 bits of the value (excluding the 3 least significant bits
@@ -61,7 +61,7 @@
     if is_double_far (
       // The landing pad of a double-far pointer is a normal far pointer.
       // We must validate it as such, then get from it the override byte offset.
-      error! unless (pointer_value.u8.bit_and(0b111) == 0b010)
+      error! unless pointer_value.u8.bit_and(0b111) == 0b010
       override_byte_offset = pointer_value.u32.bit_and(0xFFFFFFF8)
 
       // The second half of the landing pad of a double-far pointer is a
