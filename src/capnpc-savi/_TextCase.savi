@@ -9,8 +9,8 @@
   :fun into_string(out String'ref) None
     // TODO: UTF8-aware per-codepoint instead of per-byte here:
     @_text.each_byte_with_index -> (byte, index |
-      if (byte >= 'A' && byte <= 'Z') (
-        if (index != 0) out.push_byte('_')
+      if byte >= 'A' && byte <= 'Z' (
+        if index != 0 out.push_byte('_')
         out.push_byte(byte + 'a' - 'A')
       |
         out.push_byte(byte)
@@ -29,12 +29,12 @@
     should_capitalize_next_byte = True
     // TODO: UTF8-aware per-codepoint instead of per-byte here:
     @_text.each_byte_with_index -> (byte, index |
-      if (byte == '_') (
+      if byte == '_' (
         should_capitalize_next_byte = True
         next
       )
 
-      if (byte >= 'a' && byte <= 'z' && should_capitalize_next_byte) (
+      if byte >= 'a' && byte <= 'z' && should_capitalize_next_byte (
         out.push_byte(byte + 'A' - 'a')
       |
         out.push_byte(byte)

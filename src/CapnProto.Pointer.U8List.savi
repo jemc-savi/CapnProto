@@ -37,7 +37,7 @@
 
     // The 2 least significant bits (A) encode the pointer kind.
     // Raise an error if this is not coded as a list pointer (kind one).
-    error! unless (value.u8.bit_and(0b11) == 1)
+    error! unless value.u8.bit_and(0b11) == 1
     lower_32 = value.u32.bit_xor(1)
 
     // The 3 least significant bits of the upper half (C) encode the size class.
@@ -65,7 +65,7 @@
     // or underflow is treated as a protocol error (an invalid pointer).
     offset_half = lower_32.i32
     byte_offset = (current_offset.i32 +! 8 +! offset_half +! offset_half).u32!
-    if (override_byte_offset != -1) (byte_offset = override_byte_offset)
+    if override_byte_offset != -1 (byte_offset = override_byte_offset)
 
     // The upper 32-bits of the value, excluding the least significant 3 bits,
     // (D) indicate the number of elements in the list, which is the same as
@@ -76,7 +76,7 @@
 
   :fun _parse_builder!(segment CapnProto.Segment, current_offset, value)
     read_ptr = @_parse!(segment, current_offset, value)
-    if (read_ptr._segment !== segment) (
+    if read_ptr._segment !== segment (
       try (segment = segment._segments._list[read_ptr._segment._index]!)
     )
     CapnProto.Pointer.U8List._new_read(
@@ -127,7 +127,7 @@
     @_byte_count = 0
 
   :fun _free(segment CapnProto.Segment)
-    if (segment === @_segment) (
+    if segment === @_segment (
       segment._free_pointer(@_byte_offset, @_byte_count), @
     )
 

@@ -69,13 +69,13 @@
       hole_size = hole.tail - hole.head
 
       // If it fits exactly in the hole, the hole is removed.
-      if (hole_size == need_size) (
+      if hole_size == need_size (
         try @_holes.delete_at!(index)
         return hole.head.u32
       )
 
       // If it fits in part of the hole, the hole is reduced.
-      if (hole_size > need_size) (
+      if hole_size > need_size (
         new_hole = Pair(U32).new(hole.head + need_size, hole.tail)
         try (@_holes[index]! = new_hole)
         return hole.head.u32
@@ -90,7 +90,7 @@
     final_hole_size U32 = 0
     try (
       hole = @_holes.last!
-      if (hole.tail == @_bytes.size.u32) (
+      if hole.tail == @_bytes.size.u32 (
         final_hole_head = hole.head
         final_hole_size = hole.tail - hole.head
       )
@@ -109,8 +109,8 @@
     // Do the internal bookkeeping needed to ensure our remaining final hole
     // is properly accounted for, as necessary.
     remaining_final_hole = Pair(U32).new(occupied_size.u32, @_bytes.space.u32)
-    if (remaining_final_hole.tail > remaining_final_hole.head) (
-      if (final_hole_size > 0) (
+    if remaining_final_hole.tail > remaining_final_hole.head (
+      if final_hole_size > 0 (
         try (@_holes.last! = remaining_final_hole)
       |
         @_holes.push(remaining_final_hole)
@@ -135,19 +135,19 @@
     // Now figure out where the freed range should be noted in the holes list.
     @_holes.each_with_index -> (hole, index |
       // If the freed range is left-adjacent to a hole, extend that hole.
-      if (hole.tail == free_head) (
+      if hole.tail == free_head (
         try (@_holes[index]! = Pair(U32).new(hole.head, free_tail))
         return @
       )
 
       // If the freed range is right-adjacent to a hole, extend that hole.
-      if (hole.head == free_tail) (
+      if hole.head == free_tail (
         try (@_holes[index]! = Pair(U32).new(free_head, hole.tail))
         return @
       )
 
       // If the freed range is after the hole, insert it as a new hole here.
-      if (hole.tail < free_head) (
+      if hole.tail < free_head (
         try @_holes.insert_at!(index + 1, Pair(U32).new(free_head, free_tail))
         return @
       )

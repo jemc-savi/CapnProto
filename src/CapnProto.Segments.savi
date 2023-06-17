@@ -79,8 +79,8 @@
     // Raise an error if even the header alone will exceed our max size.
     header_has_padding = segment_count.is_even
     header_size =
-      (segment_count.usize +! 1) *! 4 +! if header_has_padding (4 | 0)
-    error! if (header_size > @max_total_size)
+      (segment_count.usize +! 1) *! 4 +! (if header_has_padding (4 | 0))
+    error! if header_size > @max_total_size
 
     // Extract the header bytes into our field for storage later.
     // Return False if the complete header bytes aren't available yet.
@@ -94,7 +94,7 @@
     // We'll reserve enough space in the stream buffer for that many bytes.
     // But first, raise an error if the size would violate our security limit.
     expected_total_size = @_expected_total_size
-    if (expected_total_size + header_size > @max_total_size) (
+    if expected_total_size + header_size > @max_total_size (
       // Error out, but first clear the header so that we'll be ready to
       // accept a different message header the next time we try to read.
       @_header = b""
@@ -108,7 +108,7 @@
     // Keep reading segments one by one until we've collected them all.
     // The header informs us about the size of each segment.
     count = @_expected_segment_count
-    while (@_segments._list.size < count) (
+    while @_segments._list.size < count (
       segment_id = @_segments._list.size
       segment_size = @_expected_segment_size(segment_id)
       try (

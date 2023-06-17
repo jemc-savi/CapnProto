@@ -17,7 +17,7 @@
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
     trace.array(@_p.absolute_address - 8) -> (
-      if (A <: TraceData) ( // TODO: This should have already been proved
+      if A <: TraceData ( // TODO: This should have already been proved
         @each -> (element |
           trace.array_element(element)
         )
