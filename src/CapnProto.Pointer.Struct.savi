@@ -79,9 +79,9 @@
     // C (16 bits) = Size of the struct's data section, in words.
     // D (16 bits) = Size of the struct's pointer section, in words.
 
-    relative_words = (pointer._byte_offset / 8).i32 - (write_offset / 8).i32 - 1
+    relative_words = (pointer._byte_offset.i32 - write_offset.i32 - 8) / 8
 
-    relative_words.u64.bit_shl(2)                       // B (A is zero)
+    relative_words.u64.bit_shl(2).bit_and(0xffffffff)   // B (A is zero)
       .bit_or(pointer._data_word_count.u64.bit_shl(32)) // C
       .bit_or(pointer._pointer_count.u64.bit_shl(48))   // D
 
