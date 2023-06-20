@@ -110,11 +110,11 @@
     //     when C = 7: Number of words in the list, not counting the tag word
     //     (see below).
 
-    relative_words = (pointer._byte_offset / 8).i32 - (write_offset / 8).i32 - 1
+    relative_words = (pointer._byte_offset.i32 - write_offset.i32 - 8) / 8
 
-    pointer._byte_count.at_most(0x1FFFFFFF).u64.bit_shl(35) // D
-      .bit_or(relative_words.u64.bit_shl(2))                // B
-      .bit_or(0x0000000200000001)                           // A and C
+    pointer._byte_count.at_most(0x1fffffff).u64.bit_shl(35)      // D
+      .bit_or(relative_words.u64.bit_shl(2).bit_and(0xffffffff)) // B
+      .bit_or(0x0000000200000001)                                // A and C
 
 :struct CapnProto.Pointer.U8List
   :let _segment CapnProto.Segment'box

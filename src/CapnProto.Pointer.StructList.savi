@@ -127,16 +127,16 @@
     //     when C = 7: Number of words in the list, not counting the tag word
     //     (see below).
 
-    // Note that for relative words, we subtract 2 instead of 1 because
+    // Note that for relative words, we subtract 2 words instead of 1 because
     // the tag word is an extra landing pad.
-    relative_words = (pointer._byte_offset / 8).i32 - (write_offset / 8).i32 - 2
+    relative_words = (pointer._byte_offset.i32 - write_offset.i32 - 16) / 8
 
     per_struct_words = pointer._data_word_count.u32 + pointer._pointer_count.u32
     total_list_words = per_struct_words.saturating_multiply(pointer._list_count)
 
-    total_list_words.at_most(0x1FFFFFFF).u64.bit_shl(35) // D
-      .bit_or(relative_words.u64.bit_shl(2))             // B
-      .bit_or(0x0000000700000001)                        // A and C
+    total_list_words.at_most(0x1fffffff).u64.bit_shl(35)         // D
+      .bit_or(relative_words.u64.bit_shl(2).bit_and(0xffffffff)) // B
+      .bit_or(0x0000000700000001)                                // A and C
 
   :fun _encode_tag(pointer CapnProto.Pointer.StructList.Builder)
     pointer._list_count.at_most(0x3fffffff).u64.bit_shl(2) // B

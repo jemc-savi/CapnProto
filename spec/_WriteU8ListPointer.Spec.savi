@@ -1,0 +1,21 @@
+:class _WriteU8ListPointer.Spec
+  :is Spec
+  :const describes: "_WriteU8ListPointer"
+
+  :it "encodes byte list pointer information correctly"
+    segment = CapnProto.Segment.new(CapnProto.Segments.new, 0x8000)
+
+    // Forward relative jump to the pointer address.
+    assert: _WriteU8ListPointer._encode(0
+      CapnProto.Pointer.U8List._new_read(segment, 0x2468, 32)
+    ) == 0x0000010200001231
+
+    // Backward relative jump to the pointer address.
+    assert: _WriteU8ListPointer._encode(0x4000
+      CapnProto.Pointer.U8List._new_read(segment, 0x2468, 32)
+    ) == 0x00000102fffff231
+
+    // Edge case: maximum list item count.
+    assert: _WriteU8ListPointer._encode(0
+      CapnProto.Pointer.U8List._new_read(segment, 0x2468, U32.max_value)
+    ) == 0xfffffffa00001231

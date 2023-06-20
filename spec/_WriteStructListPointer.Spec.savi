@@ -1,0 +1,55 @@
+:class _WriteStructListPointer.Spec
+  :is Spec
+  :const describes: "_WriteStructListPointer"
+
+  :it "encodes struct list pointer information correctly"
+    segment = CapnProto.Segment.new(CapnProto.Segments.new, 0x8000)
+
+    // Forward relative jump to the pointer address.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, 32, 5, 7
+    )
+    assert: _WriteStructListPointer._encode(0, ptr) == 0x00000c070000122d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0x0007000500000080
+
+    // Backward relative jump to the pointer address.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, 32, 5, 7
+    )
+    assert: _WriteStructListPointer._encode(0x4000, ptr) == 0x00000c07fffff22d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0x0007000500000080
+
+    // Edge case: maximum list item count.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, U32.max_value, 5, 7
+    )
+    assert: _WriteStructListPointer._encode(0, ptr) == 0xffffffff0000122d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0x00070005fffffffc
+
+    // Edge case: maximum data word count.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, 32, U16.max_value, 7
+    )
+    assert: _WriteStructListPointer._encode(0, ptr) == 0x010006070000122d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0x0007ffff00000080
+
+    // Edge case: maximum pointer count.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, 32, 5, U16.max_value
+    )
+    assert: _WriteStructListPointer._encode(0, ptr) == 0x010004070000122d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0xffff000500000080
+
+    // Edge case: maximum data word count and pointer count.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, 32, U16.max_value, U16.max_value
+    )
+    assert: _WriteStructListPointer._encode(0, ptr) == 0x01fffe070000122d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0xffffffff00000080
+
+    // Edge case: maximum list item, data word count, and pointer count.
+    ptr = CapnProto.Pointer.StructList.Builder._new(
+      segment, 0x2468, U32.max_value, U16.max_value, U16.max_value
+    )
+    assert: _WriteStructListPointer._encode(0, ptr) == 0xffffffff0000122d
+    assert: _WriteStructListPointer._encode_tag(ptr) == 0xfffffffffffffffc

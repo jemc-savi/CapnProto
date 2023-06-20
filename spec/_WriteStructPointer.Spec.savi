@@ -1,0 +1,30 @@
+:class _WriteStructPointer.Spec
+  :is Spec
+  :const describes: "_WriteStructPointer"
+
+  :it "encodes struct pointer information correctly"
+    segment = CapnProto.Segment.new(CapnProto.Segments.new, 0x8000)
+
+    // Forward relative jump to the pointer address.
+    assert: _WriteStructPointer._encode(
+      0
+      CapnProto.Pointer.Struct.Builder._new(segment, 0x2468, 5, 7)
+    ) == 0x0007000500001230
+
+    // Backward relative jump to the pointer address.
+    assert: _WriteStructPointer._encode(
+      0x4000
+      CapnProto.Pointer.Struct.Builder._new(segment, 0x2468, 5, 7)
+    ) == 0x00070005fffff230
+
+    // Edge case: maximum data word count.
+    assert: _WriteStructPointer._encode(
+      0
+      CapnProto.Pointer.Struct.Builder._new(segment, 0x2468, U16.max_value, 7)
+    ) == 0x0007ffff00001230
+
+    // Edge case: maximum pointer count.
+    assert: _WriteStructPointer._encode(
+      0
+      CapnProto.Pointer.Struct.Builder._new(segment, 0x2468, 5, U16.max_value)
+    ) == 0xffff000500001230
