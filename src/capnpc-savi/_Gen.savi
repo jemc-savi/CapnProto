@@ -199,6 +199,7 @@
       @_out << "\n  :const capn_proto_pointer_count U16: \(
         struct.pointer_count
       )"
+      @_out << "\n  :fun capn_proto_address U64: @_p.capn_proto_address"
     )
 
     // Emit constant values.
