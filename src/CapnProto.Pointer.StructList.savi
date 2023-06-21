@@ -96,7 +96,7 @@
   )
     read_ptr = @_parse!(segment, current_offset, value)
     if read_ptr._segment !== segment (
-      try (segment = segment._segments._list[read_ptr._segment._index]!)
+      try (segment = segment._segments._list[read_ptr._segment.index]!)
     )
     CapnProto.Pointer.StructList.Builder._new(
       segment, read_ptr._byte_offset
@@ -160,6 +160,7 @@
     @_data_word_count = 0
     @_pointer_count = 0
 
+  :fun capn_proto_address: @_byte_offset.u64.bit_or(@_segment.index.u64.bit_shl(32))
   :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
 
   :fun _element_byte_size: (@_data_word_count.u32 + @_pointer_count.u32) * 8
@@ -195,6 +196,7 @@
     @_list_count, @_data_word_count, @_pointer_count
   )
 
+  :fun capn_proto_address: @_byte_offset.u64.bit_or(@_segment.index.u64.bit_shl(32))
   :fun absolute_address: @_segment._bytes.cpointer.address + @_byte_offset.usize
 
   :new empty(@_segment)

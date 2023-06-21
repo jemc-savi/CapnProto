@@ -77,7 +77,7 @@
   :fun _parse_builder!(segment CapnProto.Segment, current_offset, value)
     read_ptr = @_parse!(segment, current_offset, value)
     if read_ptr._segment !== segment (
-      try (segment = segment._segments._list[read_ptr._segment._index]!)
+      try (segment = segment._segments._list[read_ptr._segment.index]!)
     )
     CapnProto.Pointer.U8List._new_read(
       segment, read_ptr._byte_offset, read_ptr._byte_count
@@ -125,6 +125,8 @@
   :new box empty(@_segment)
     @_byte_offset = 0
     @_byte_count = 0
+
+  :fun capn_proto_address: @_byte_offset.u64.bit_or(@_segment.index.u64.bit_shl(32))
 
   :fun _free(segment CapnProto.Segment)
     if segment === @_segment (

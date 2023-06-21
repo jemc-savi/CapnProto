@@ -2,17 +2,19 @@
   :let _segments CapnProto.Segments
   :let _bytes Bytes'ref
   :let _holes Array(Pair(U32))
-  :let _index USize
+
+  :: Within the list of segments, this segment's index (starting from zero).
+  :let index USize
 
   :new new_from_bytes(@_segments, @_bytes, @_holes = [])
-    @_index = @_segments._list.size
+    @index = @_segments._list.size
     @_segments._list << @
 
   :new (@_segments, space USize)
     @_bytes = Bytes.new(space)
     @_bytes.fill_with_zeros(0, @_bytes.space)
     @_holes = [Pair(U32).new(0, space.u32)]
-    @_index = @_segments._list.size
+    @index = @_segments._list.size
     @_segments._list << @
 
   :fun _u8!(offset U32): @_bytes[offset.usize]!
