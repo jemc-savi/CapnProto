@@ -469,6 +469,26 @@
 
     new_pointer
 
+  :fun ref set_struct_to_point_to_existing(
+    n U16
+    existing_pointer CapnProto.Pointer.Struct.Builder
+  ) CapnProto.Pointer.Struct.Builder
+    // We expect the byte offset to be within bounds - otherwise we can't do it,
+    // and we'll return an empty struct to signal this problem.
+    byte_offset = try (@_ptr_byte_offset!(n) | return @_empty_struct)
+
+    // If there's an existing struct pointer, we don't free it.
+    // Something else may be referring to it still.
+    // TODO: By this logic, should we perhaps never free anything?
+
+    // We need to write the pointer to the buffer so it can be followed.
+    try @_segment._set_u64!(
+      byte_offset
+      _WriteStructPointer._encode(byte_offset, existing_pointer)
+    )
+
+    existing_pointer
+
   :fun ref list(n): try (@list_if_set!(n) | @_empty_list)
   :fun ref _empty_list
     CapnProto.Pointer.StructList.Builder.empty(@_segment)

@@ -1285,9 +1285,11 @@
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
+  :fun ref set_type_to_point_to_existing(existing CapnProto.Meta.Type.Builder): CapnProto.Meta.Type.Builder.from_pointer(@_p.set_struct_to_point_to_existing(3, existing._p))
 
   :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(4, 2, 1))
   :fun ref value_if_set!: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct_if_set!(4, 2, 1))
+  :fun ref set_value_to_point_to_existing(existing CapnProto.Meta.Value.Builder): CapnProto.Meta.Value.Builder.from_pointer(@_p.set_struct_to_point_to_existing(4, existing._p))
 
 :struct CapnProto.Meta.Node.AS_annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1304,6 +1306,7 @@
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
+  :fun ref set_type_to_point_to_existing(existing CapnProto.Meta.Type.Builder): CapnProto.Meta.Type.Builder.from_pointer(@_p.set_struct_to_point_to_existing(3, existing._p))
 
   :fun targets_file: @_p.bool(0xe, 0b00000001)
   :fun targets_file_if_set!: @_p.bool_if_set!(0xe, 0b00000001)
@@ -1466,9 +1469,11 @@
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(2, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(2, 3, 1))
+  :fun ref set_type_to_point_to_existing(existing CapnProto.Meta.Type.Builder): CapnProto.Meta.Type.Builder.from_pointer(@_p.set_struct_to_point_to_existing(2, existing._p))
 
   :fun ref default_value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(3, 2, 1))
   :fun ref default_value_if_set!: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct_if_set!(3, 2, 1))
+  :fun ref set_default_value_to_point_to_existing(existing CapnProto.Meta.Value.Builder): CapnProto.Meta.Value.Builder.from_pointer(@_p.set_struct_to_point_to_existing(3, existing._p))
 
   :fun had_explicit_default: @_p.bool(0x10, 0b00000001)
   :fun had_explicit_default_if_set!: @_p.bool_if_set!(0x10, 0b00000001)
@@ -1566,6 +1571,7 @@
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
   :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
+  :fun ref set_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
 
 :struct CapnProto.Meta.Method.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1605,9 +1611,11 @@
 
   :fun ref param_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(2, 0, 1))
   :fun ref param_brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(2, 0, 1))
+  :fun ref set_param_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(2, existing._p))
 
   :fun ref result_brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(3, 0, 1))
   :fun ref result_brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(3, 0, 1))
+  :fun ref set_result_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(3, existing._p))
 
   :fun ref implicit_parameters: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list(4))
   :fun ref implicit_parameters_if_set!: CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.list_if_set!(4))
@@ -1784,6 +1792,7 @@
 
   :fun ref element_type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
   :fun ref element_type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(0, 3, 1))
+  :fun ref set_element_type_to_point_to_existing(existing CapnProto.Meta.Type.Builder): CapnProto.Meta.Type.Builder.from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
 
 :struct CapnProto.Meta.Type.AS_enum.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1804,6 +1813,7 @@
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
   :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
+  :fun ref set_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
 
 :struct CapnProto.Meta.Type.AS_struct.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1824,6 +1834,7 @@
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
   :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
+  :fun ref set_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
 
 :struct CapnProto.Meta.Type.AS_interface.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -1844,6 +1855,7 @@
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(0, 0, 1))
   :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(0, 0, 1))
+  :fun ref set_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
 
 :struct CapnProto.Meta.Type.AS_anyPointer.Builder
   :let _p CapnProto.Pointer.Struct.Builder
@@ -2219,9 +2231,11 @@
 
   :fun ref value: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct(0, 2, 1))
   :fun ref value_if_set!: CapnProto.Meta.Value.Builder.from_pointer(@_p.struct_if_set!(0, 2, 1))
+  :fun ref set_value_to_point_to_existing(existing CapnProto.Meta.Value.Builder): CapnProto.Meta.Value.Builder.from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
 
   :fun ref brand: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct(1, 0, 1))
   :fun ref brand_if_set!: CapnProto.Meta.Brand.Builder.from_pointer(@_p.struct_if_set!(1, 0, 1))
+  :fun ref set_brand_to_point_to_existing(existing CapnProto.Meta.Brand.Builder): CapnProto.Meta.Brand.Builder.from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
 
 :struct CapnProto.Meta.CodeGeneratorRequest.Builder
   :let _p CapnProto.Pointer.Struct.Builder
