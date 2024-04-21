@@ -4,6 +4,8 @@
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
 
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
   :const capn_proto_data_word_count U16: 7
   :fun some_u64: @_p.u64(0x0)
   :fun some_i64: @_p.i64(0x8)
@@ -38,13 +40,14 @@
   :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
   :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
 
-  :fun ref child: _ExampleChildBuilder.from_pointer(@_p.struct(2, 2, 1))
-  :fun ref child_if_set!: _ExampleChildBuilder.from_pointer(@_p.struct_if_set!(2, 2, 1))
+  :fun ref child: _ExampleChildBuilder.from_pointer(@_p.struct(2, 2, 2))
+  :fun ref child_if_set!: _ExampleChildBuilder.from_pointer(@_p.struct_if_set!(2, 2, 2))
+  :fun ref set_child_to_point_to_existing(existing _ExampleChildBuilder): _ExampleChildBuilder.from_pointer(@_p.set_struct_to_point_to_existing(2, existing._p))
 
   :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(3))
   :fun ref children_if_set!: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list_if_set!(3))
-  :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(3, 2, 1, new_count))
-  :fun ref trim_children(new_start, new_finish): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.trim_list(3, 2, 1, new_start, new_finish))
+  :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(3, 2, 2, new_count))
+  :fun ref trim_children(new_start, new_finish): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.trim_list(3, 2, 2, new_start, new_finish))
 
   :fun is_foo: @_p.check_union(0x30, 0)
   :fun ref foo!: @_p.assert_union!(0x30, 0), _ExampleAsFooBuilder.from_pointer(@_p)
@@ -68,6 +71,28 @@
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
 
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :const capn_proto_data_word_count U16: 2
+  :fun a: @_p.u64(0x0)
+  :fun b: @_p.u64(0x8)
+  :fun ref "a="(new_value): @_p.set_u64(0x0, new_value, 0)
+  :fun ref "b="(new_value): @_p.set_u64(0x8, new_value, 0)
+
+  :const capn_proto_pointer_count U16: 2
+  :fun ref name: @_p.text(0)
+  :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
+
+  :fun ref referenced: _ExampleReferencedBuilder.from_pointer(@_p.struct(1, 2, 1))
+  :fun ref referenced_if_set!: _ExampleReferencedBuilder.from_pointer(@_p.struct_if_set!(1, 2, 1))
+  :fun ref set_referenced_to_point_to_existing(existing _ExampleReferencedBuilder): _ExampleReferencedBuilder.from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
+
+:struct _ExampleReferencedBuilder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
   :const capn_proto_data_word_count U16: 2
   :fun a: @_p.u64(0x0)
   :fun b: @_p.u64(0x8)
@@ -82,6 +107,8 @@
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
 
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
   :const capn_proto_data_word_count U16: 7
   :fun some_u64: @_p.u64(0x20)
   :fun some_u32: @_p.u32(0x28)
@@ -95,6 +122,8 @@
 :struct _ExampleAsBarBuilder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
+
+  :fun capn_proto_address U64: @_p.capn_proto_address
 
   :const capn_proto_data_word_count U16: 7
   :fun some_f64: @_p.f64(0x20)
@@ -234,6 +263,68 @@
     assert: bar.some_f32 == 0, bar.some_f32 = 43.3, assert: bar.some_f32 == 43.3
     assert: "\(bar.blob)" == "", bar.blob = b"!!", assert: "\(bar.blob)" == "!!"
 
+  :it "lets you point two parents to the same child struct in memory"
+    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    root = message.root
+
+    assert: root.init_children(4).size == 4
+    assert: root.children.size == 4
+
+    assert error: root.children[0]!.referenced_if_set!
+    assert error: root.children[1]!.referenced_if_set!
+
+    assert no_error: (
+      root.children[0]!.referenced.a = 11
+      root.children[0]!.referenced.b = 22
+      root.children[0]!.referenced.name = "foo"
+    )
+
+    assert: root.children[1]!.set_referenced_to_point_to_existing(
+      root.children[0]!.referenced
+    ).capn_proto_address == root.children[0]!.referenced.capn_proto_address
+
+    assert: root.children[1]!.referenced.a == 11
+    assert: root.children[1]!.referenced.b == 22
+    assert: "\(root.children[1]!.referenced.name)" == "foo"
+
+    assert no_error: (
+      root.children[0]!.referenced.a = 33
+      root.children[0]!.referenced.b = 44
+      root.children[0]!.referenced.name = "bar"
+    )
+
+    assert: root.children[1]!.referenced.a == 33
+    assert: root.children[1]!.referenced.b == 44
+    assert: "\(root.children[1]!.referenced.name)" == "bar"
+
+    assert no_error: (
+      root.children[2]!.referenced.a = 55
+      root.children[2]!.referenced.b = 66
+      root.children[2]!.referenced.name = "baz"
+    )
+
+    assert: root.children[0]!.set_referenced_to_point_to_existing(
+      root.children[2]!.referenced
+    ).capn_proto_address == root.children[2]!.referenced.capn_proto_address
+
+    assert: root.children[0]!.referenced.a == 55
+    assert: root.children[0]!.referenced.b == 66
+    assert: "\(root.children[0]!.referenced.name)" == "baz"
+
+    assert: root.children[1]!.referenced.a == 33
+    assert: root.children[1]!.referenced.b == 44
+    assert: "\(root.children[1]!.referenced.name)" == "bar"
+
+    assert no_error: (
+      root.children[3]!.referenced.a = 77
+      root.children[3]!.referenced.b = 88
+      root.children[3]!.referenced.name = "qux"
+    )
+
+    assert: root.children[1]!.referenced.a == 33
+    assert: root.children[1]!.referenced.b == 44
+    assert: "\(root.children[1]!.referenced.name)" == "bar"
+
   :it "lets you take the resulting byte buffers"
     message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
     buffers = message.take_val_buffers
@@ -244,7 +335,7 @@
 
     buffers = message.take_val_buffers
     assert: buffers.size == 1
-    assert: buffers[0]!.size == 0x5E18
+    assert: buffers[0]!.size == 0x7D50
     assert: buffers[0]!.space == 0x8000
 
     message.root // allocate just the root struct

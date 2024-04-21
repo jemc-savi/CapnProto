@@ -317,14 +317,23 @@
     error! if is_union
 
     slot = field.slot!
-    // TODO: implement pointer setter as a deep copy, like C++ does
+    // TODO: Implement other pointer-sharing setter options
     error! if (
       slot.type.is_void ||
-      (@_is_pointer_type(slot.type) && !slot.type.is_text && !slot.type.is_data)
+      (
+        @_is_pointer_type(slot.type) &&
+        !slot.type.is_text && !slot.type.is_data && !slot.type.is_struct
+      )
     )
 
-    @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
-    @_emit_field_set_expr(field, "new_value")
+    if slot.type.is_struct (
+      @_out << "\n  :fun ref set_\(_TextCase.Snake[field.name]
+        )_to_point_to_existing(existing \(@_type_name(slot.type, True))): "
+      @_emit_field_set_to_point_to_existing_expr(field, "existing._p")
+    |
+      @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
+      @_emit_field_set_expr(field, "new_value")
+    )
 
   :fun ref _emit_field_list_initter!(
     node CapnProto.Meta.Node
@@ -616,6 +625,22 @@
       @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
     | type.is_any_pointer |
       @_out << "None // UNHANDLED: anyPointer" // TODO: handle "any pointer"
+    |
+      @_out << "NOT_IMPLEMENTED"
+    )
+
+  :fun ref _emit_field_set_to_point_to_existing_expr(
+    field CapnProto.Meta.Field
+    input_name String
+  )
+    slot = try (field.slot! | return)
+
+    type = slot.type
+    offset = slot.offset
+    case (
+    | type.is_struct |
+      @_out << "\(@_type_name(type, True)).from_pointer(\(
+      )@_p.set_struct_to_point_to_existing(\(offset), \(input_name)))"
     |
       @_out << "NOT_IMPLEMENTED"
     )
