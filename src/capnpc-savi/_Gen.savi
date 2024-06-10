@@ -327,8 +327,11 @@
     )
 
     if slot.type.is_struct (
-      @_out << "\n  :fun ref set_\(_TextCase.Snake[field.name]
-        )_to_point_to_existing(existing \(@_type_name(slot.type, True))): "
+      @_out << "\n  :fun ref set_\(
+        _TextCase.Snake[field.name]
+      )_to_point_to_existing(existing \(
+        @_type_name(slot.type, True)
+      )): "
       @_emit_field_set_to_point_to_existing_expr(field, "existing._p")
     |
       @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
