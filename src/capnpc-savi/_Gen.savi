@@ -187,6 +187,9 @@
       @_out << "\n  :fun as_reader: \(
         node_scoped_name
       ).read_from_pointer(@_p.as_reader)"
+    |
+      @_out << "\n  :new val read_val_from_pointer"
+      @_out << "(p CapnProto.Pointer.Struct'val): @_p = p"
     )
 
     // Emit protocol-level constant info.
