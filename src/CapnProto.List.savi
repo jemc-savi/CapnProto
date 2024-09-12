@@ -1,10 +1,12 @@
 :trait box _FromStructPointer
   :is TraceData
   :new box read_from_pointer(pointer CapnProto.Pointer.Struct)
+  :new val read_val_from_pointer(pointer CapnProto.Pointer.Struct'val)
 
 :struct box CapnProto.List(A _FromStructPointer)
   :let _p CapnProto.Pointer.StructList
   :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.StructList'val): @_p = p
 
   :fun size: @_p._list_count.usize
 

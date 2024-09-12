@@ -1,5 +1,12 @@
 // TODO: Generate the following test structs via capnpc-savi
 
+:struct box _ExamplePartialReader
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :fun some_text: @_p.text(0)
+
 :struct _ExampleBuilder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
@@ -344,3 +351,26 @@
     assert: buffers.size == 1
     assert: buffers[0]!.size == 0x68
     assert: buffers[0]!.space == 0x4000
+
+  :it "lets you take the resulting message as a val"
+    builder = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    builder.root.some_text = "foo"
+
+    assert no_error: (
+      message val = CapnProto.Message(_ExamplePartialReader).from_val_segments!(
+        builder.take_val_segments
+      )
+
+      assert: "\(message.root.some_text)" == "foo"
+
+      assert: message.val_buffers.size == 1
+      assert: message.val_buffers[0]! == b"\
+        \x00\x00\x00\x00\x07\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x11\x00\x00\x00\"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x00\x00\x00\x00foo\x00\x00\x00\x00\x00\
+      "
+    )

@@ -2,6 +2,7 @@
   :let _p CapnProto.Pointer.U8List'box
   :new from_pointer(@_p)
   :new box read_from_pointer(p CapnProto.Pointer.U8List'box): @_p = p
+  :new val read_val_from_pointer(p CapnProto.Pointer.U8List'val): @_p = p
 
   :new _new(segment CapnProto.Segment, value Bytes)
     byte_offset = segment._allocate_and_write_bytes(value)

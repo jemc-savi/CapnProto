@@ -1,19 +1,36 @@
 :trait box _MessageRoot
   :new box read_from_pointer(p CapnProto.Pointer.Struct)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val)
 
 :struct box CapnProto.Message(A _MessageRoot)
-  :let root A
-  :new box (@root)
+  :let _p CapnProto.Pointer.Struct
+
+  :new box (@_p)
+  :new val new_val(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :fun root: A.read_from_pointer(@_p)
+  :fun val val_root: A.read_val_from_pointer(@_p)
+
+  :fun val val_buffers
+    @_p._segment._segments.val_buffers
 
   :fun non from_segments!(
-    segments CapnProto.Segments
+    segments CapnProto.Segments'box
     start_offset USize = 0
     segment_index USize = 0
   )
     segment = segments._list[segment_index]!
     value = segment._u64!(start_offset.u32)
-    pointer = _ParseStructPointer._parse!(segment, start_offset.u32, value)
-    @new(A.read_from_pointer(pointer))
+    @new(_ParseStructPointer._parse!(segment, start_offset.u32, value))
+
+  :fun non from_val_segments!(
+    segments CapnProto.Segments'val
+    start_offset USize = 0
+    segment_index USize = 0
+  )
+    segment = segments._list[segment_index]!
+    value = segment._u64!(start_offset.u32)
+    @new_val(_ParseStructPointer._parse_val!(segment, start_offset.u32, value))
 
 :trait _MessageBuilderRoot
   :new from_pointer(p CapnProto.Pointer.Struct.Builder)
@@ -34,6 +51,7 @@
     @_segments = CapnProto.Segments.new
 
   :fun ref take_val_buffers: @_segments.take_val_buffers
+  :fun ref take_val_segments: @_segments.take_val_segments
 
   :fun ref root
     segment = try (

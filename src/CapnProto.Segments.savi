@@ -2,11 +2,30 @@
   :let _list Array(CapnProto.Segment)'ref
   :new: @_list = []
 
+  :fun val val_buffers Array(Bytes)'val
+    out Array(Bytes)'iso = []
+    @_list.each -> (segment | out << segment._bytes)
+    --out
+
   :fun ref take_val_buffers Array(Bytes)'val
     out Array(Bytes)'iso = []
     @_list.each -> (segment | out << segment._take_buffer)
     @_list.clear
     --out
+
+  :fun ref _take_iso_ref_buffers Array(Bytes'ref)'iso
+    out Array(Bytes'ref)'iso = []
+    @_list.each -> (segment | out << segment._take_buffer)
+    @_list.clear
+    --out
+
+  :fun ref take_val_segments @'val
+    @_val_from_buffers(@_take_iso_ref_buffers)
+
+  :new val _val_from_buffers(buffers_iso Array(Bytes'ref)'iso)
+    buffers ref = --buffers_iso
+    @_list = []
+    buffers.each -> (buffer | CapnProto.Segment.new_from_bytes(@, buffer))
 
 :class CapnProto.Segments.Reader
   :var _header: b""

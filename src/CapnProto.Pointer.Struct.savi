@@ -56,6 +56,16 @@
       segment, byte_offset, data_word_count, pointer_count
     )
 
+  :fun _parse_val!(segment CapnProto.Segment'val, current_offset U32, value U64)
+    box_ptr = @_parse!(segment, current_offset, value)
+    if box_ptr._segment !== segment (
+      try (segment = segment._segments._list[box_ptr._segment.index]!)
+    )
+    CapnProto.Pointer.Struct._new_val(
+      segment, box_ptr._byte_offset
+      box_ptr._data_word_count, box_ptr._pointer_count
+    )
+
   :fun _parse_builder!(segment CapnProto.Segment, current_offset, value)
     read_ptr = @_parse!(segment, current_offset, value)
     if read_ptr._segment !== segment (
@@ -100,6 +110,12 @@
     @_segment, @_byte_offset
     @_data_word_count, @_pointer_count
   )
+
+  :new val _new_val(
+    segment CapnProto.Segment'val, @_byte_offset
+    @_data_word_count, @_pointer_count
+  )
+    @_segment = segment
 
   :new box empty(@_segment)
     @_byte_offset = 0
