@@ -27,6 +27,28 @@
     @_list = []
     buffers.each -> (buffer | CapnProto.Segment.new_from_bytes(@, buffer))
 
+:module CapnProto.Segments.Writer
+  :: Create a new array of buffers which has a new header buffer prepended.
+  ::
+  :: Raises an error if there are too many segments, or if any individual
+  :: segment is too large to represent its size in the new header data.
+  :fun non add_header_to_val_buffers!(buffers Array(Bytes)'val) Array(Bytes)'val
+    header_size = CapnProto.Segments.Reader._header_size_for_segment_count!(
+      buffers.size
+    )
+    header = Bytes.new_iso(header_size)
+    header_index USize = 0
+    header.push_native_u32(buffers.size.u32!.saturating_subtract(1).native_to_le)
+    buffers.each -> (buffer |
+      header.push_native_u32((buffer.size.u32! / 8).native_to_le)
+    )
+    while header.size < header_size header.push_native_u32(0) // padding
+
+    out = Array(Bytes).new_iso(buffers.size + 1)
+    out << --header
+    buffers.each -> (buffer | out << buffer)
+    --out
+
 :class CapnProto.Segments.Reader
   :var _header: b""
   :var _segments: CapnProto.Segments.new // TODO: iso
@@ -81,6 +103,14 @@
     // Then read any available segments from the stream.
     @_read_all_segments(stream)
 
+  :: Return the number of bytes needed to represent the segments header,
+  :: given the total number of segments to be addressed by the header.
+  ::
+  :: Raises an error if the header size would overflow the USize type.
+  :fun non _header_size_for_segment_count!(segment_count USize) USize
+    header_has_padding = segment_count.is_even
+    (segment_count +! 1) *! 4 +! (if header_has_padding (4 | 0))
+
   :: Read the "segment table" header portion preceding and framing the segments.
   ::
   :: Returns False if there aren't enough bytes to read the complete header yet.
@@ -96,9 +126,7 @@
 
     // Determine the number of bytes to expect in the segment table header.
     // Raise an error if even the header alone will exceed our max size.
-    header_has_padding = segment_count.is_even
-    header_size =
-      (segment_count.usize +! 1) *! 4 +! (if header_has_padding (4 | 0))
+    header_size = @_header_size_for_segment_count!(segment_count.usize)
     error! if header_size > @max_total_size
 
     // Extract the header bytes into our field for storage later.
