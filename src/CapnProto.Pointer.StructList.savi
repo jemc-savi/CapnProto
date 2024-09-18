@@ -165,6 +165,8 @@
 
   :fun _element_byte_size: (@_data_word_count.u32 + @_pointer_count.u32) * 8
 
+  :fun count: @_list_count
+
   :fun "[]!"(n U32)
     error! unless n < @_list_count
 
@@ -175,13 +177,17 @@
     )
 
   :fun each
+    @each_with_index -> (item, n | yield item)
+
+  :fun each_with_index
     @_list_count.times -> (n |
       try (
         byte_offset = @_byte_offset +! @_element_byte_size *! n
-
-        yield CapnProto.Pointer.Struct._new(
+        item = CapnProto.Pointer.Struct._new(
           @_segment, byte_offset, @_data_word_count, @_pointer_count
         )
+
+        yield (item, n)
       )
     )
 
@@ -275,6 +281,8 @@
       @
     )
 
+  :fun count: @_list_count
+
   :fun ref "[]!"(n U32)
     error! unless n < @_list_count
 
@@ -286,13 +294,16 @@
     )
 
   :fun ref each
+    @each_with_index -> (item, n | yield item)
+
+  :fun ref each_with_index
     @_list_count.times -> (n |
       try (
-        byte_offset = @_byte_offset
-          +! (@_data_word_count.u32 +! @_pointer_count.u32) *! n *! 8
-
-        yield CapnProto.Pointer.Struct.Builder._new(
+        byte_offset = @_byte_offset +! @_element_byte_size *! n
+        item = CapnProto.Pointer.Struct.Builder._new(
           @_segment, byte_offset, @_data_word_count, @_pointer_count
         )
+
+        yield (item, n)
       )
     )

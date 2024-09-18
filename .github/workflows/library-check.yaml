@@ -63,4 +63,5 @@ jobs:
       - run: savi deps update --for capnpc-savi
       - run: savi build capnpc-savi
       - run: capnp compile src/CapnProto.Meta.capnp --output=- | bin/capnpc-savi > src/CapnProto.Meta.capnp.savi
+      - run: capnp compile -Isrc/ spec/_Example.capnp --output=- | bin/capnpc-savi > spec/_Example.capnp.savi
       - run: git diff --exit-code

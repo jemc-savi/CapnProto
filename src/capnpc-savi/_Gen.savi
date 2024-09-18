@@ -219,8 +219,9 @@
       )
     )
 
-    // Emit data tracing method.
+    // Emit data tracing methods.
     @_emit_trace_data(node, is_builder)
+    if is_builder @_emit_copy_data_from(node)
 
     // Emit field accessor methods.
     fields = try (node.struct!.fields | return)
@@ -232,6 +233,7 @@
       if is_builder (
         try @_emit_field_setter!(node, field)
         try @_emit_field_list_initter!(node, field)
+        try @_emit_field_list_initter!(node, field, True)
         try @_emit_field_list_trimmer!(node, field)
         try @_emit_field_union_initter!(node, field)
       )
@@ -276,6 +278,48 @@
         @_out << "\n      try trace.property(\(name.format.literal), @\(name)\(suffix)!)"
       )
       @_out << "\n    )"
+    )
+
+  :fun ref _emit_copy_data_from(node CapnProto.Meta.Node)
+    // TODO: It should be possible to copy data (without knowing the schema
+    // of every type we're copying) at the underlying pointer level.
+    // This would be a more efficient and ultimately simpler way to copy data,
+    // but it would require additional time investment that isn't important now.
+
+    @_out << "\n\n  :fun ref copy_data_from(other \(@_node_scoped_name(node))) None"
+
+    try node.struct!.fields.each -> (field |
+      name String = "\(_TextCase.Snake[field.name])"
+      is_union = field.discriminant_value != field.no_discriminant
+      get_suffix = if is_union ("" | "_if_set")
+      init_prefix = if is_union ("init_" | "")
+
+      slot = try (field.slot! |
+        // If the field is not a slot, it must be a group.
+        @_out << "\n    try (other_\(name) = other.\(name)\(get_suffix)!, @\(init_prefix)\(name).copy_data_from(other_\(name)))"
+        next
+      )
+
+      case (
+      | slot.type.is_void |
+        if is_union (
+          @_out << "\n    if other.is_\(name) @init_\(name)"
+        )
+      | slot.type.is_struct |
+        @_out << "\n    try (other_\(name) = other.\(name)\(get_suffix)!, @\(init_prefix)\(name).copy_data_from(other_\(name)))"
+      | slot.type.is_text |
+        @_out << "\n    try "
+        @_emit_field_set_expr(field, "\"\\(other.\(name)\(get_suffix)!)\"") // TODO: avoid intermediate string copy
+      | slot.type.is_data |
+        @_out << "\n    try "
+        @_emit_field_set_expr(field, "\"\\(other.\(name)\(get_suffix)!)\".as_bytes") // TODO: avoid intermediate string copy
+      | slot.type.is_list |
+        @_out << "\n    try @init_\(name)_and_copy_data_from(other.\(name)\(get_suffix)!)"
+      | @_is_pointer_type(slot.type) | // TODO: handle other pointer types
+      |
+        @_out << "\n    try "
+        @_emit_field_set_expr(field, "other.\(name)\(get_suffix)!")
+      )
     )
 
   :fun ref _emit_field_getter(
@@ -344,6 +388,7 @@
   :fun ref _emit_field_list_initter!(
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
+    is_copy Bool = False
   )
     slot = field.slot!
     type = slot.type
@@ -351,9 +396,19 @@
     struct_type = type.list!.element_type.struct!
     struct = @_find_node!(struct_type.type_id).struct!
 
+    suffix = ""
+    params = "new_count"
+    init_list_args = "new_count"
+
+    if is_copy (
+      suffix = "_and_copy_data_from"
+      params = "existing \(@_type_name(type, False))"
+      init_list_args = "existing._p.count.usize"
+    )
+
     @_out << "\n  :fun ref init_\(
       _TextCase.Snake[field.name]
-    )(new_count)"
+    )\(suffix)(\(params))"
 
     is_union = field.discriminant_value != field.no_discriminant
     if is_union (
@@ -367,7 +422,9 @@
       )
     )
 
-    @_out << "\n    \(
+    @_out << "\n    "
+    if is_copy @_out << "list = "
+    @_out << "\(
       @_type_name(type, True)
     ).from_pointer(@_p.init_list(\(
       slot.offset
@@ -375,7 +432,15 @@
       struct.data_word_count
     ), \(
       struct.pointer_count
-    ), new_count))"
+    ), \(init_list_args)))"
+
+    if is_copy (
+      @_out << "\n    existing.each_with_index -> (existing_item, index |"
+      @_out << "\n      new_item = try (list[index]! | next)"
+      @_out << "\n      new_item.copy_data_from(existing_item)"
+      @_out << "\n    )"
+      @_out << "\n    list"
+    )
 
   :fun ref _emit_field_list_trimmer!(
     node CapnProto.Meta.Node
