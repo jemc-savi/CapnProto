@@ -234,7 +234,7 @@
   :fun ref init_children(new_count)
     CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.init_list(3, 2, 2, new_count))
   :fun ref init_children_and_copy_data_from(existing CapnProto.List(_Example.Child))
-    list = CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.init_list(3, 2, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.init_list(3, 2, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)

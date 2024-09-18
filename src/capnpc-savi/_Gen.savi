@@ -403,7 +403,7 @@
     if is_copy (
       suffix = "_and_copy_data_from"
       params = "existing \(@_type_name(type, False))"
-      init_list_args = "existing._p.count.usize"
+      init_list_args = "existing.size"
     )
 
     @_out << "\n  :fun ref init_\(
