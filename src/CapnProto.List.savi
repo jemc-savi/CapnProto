@@ -16,6 +16,10 @@
     :yields A
     @_p.each -> (p | yield A.read_from_pointer(p))
 
+  :fun each_with_index
+    :yields A
+    @_p.each_with_index -> (p, i | yield (A.read_from_pointer(p), i.usize))
+
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
     trace.array(@_p.absolute_address - 8) -> (
@@ -40,3 +44,7 @@
   :fun ref each
     :yields A
     @_p.each -> (p | yield A.from_pointer(p))
+
+  :fun ref each_with_index
+    :yields A
+    @_p.each_with_index -> (p, i | yield (A.from_pointer(p), i.usize))

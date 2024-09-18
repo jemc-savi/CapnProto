@@ -1,153 +1,9 @@
-// TODO: Generate the following test structs via capnpc-savi
-
-:struct box _ExamplePartialReader
-  :let _p CapnProto.Pointer.Struct
-  :new box read_from_pointer(@_p)
-  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
-
-  :fun some_text: @_p.text(0)
-
-:struct _ExampleBuilder
-  :let _p CapnProto.Pointer.Struct.Builder
-  :new from_pointer(@_p)
-
-  :fun capn_proto_address U64: @_p.capn_proto_address
-
-  :const capn_proto_data_word_count U16: 7
-  :fun some_u64: @_p.u64(0x0)
-  :fun some_i64: @_p.i64(0x8)
-  :fun some_u32: @_p.u32(0x10)
-  :fun some_i32: @_p.i32(0x14)
-  :fun some_u16: @_p.u16(0x18)
-  :fun some_i16: @_p.i16(0x1c)
-  :fun some_u8: @_p.u8(0x1e)
-  :fun some_i8: @_p.i8(0x1f)
-  :fun some_u64_if_set!: @_p.u64_if_set!(0x0)
-  :fun some_i64_if_set!: @_p.i64_if_set!(0x8)
-  :fun some_u32_if_set!: @_p.u32_if_set!(0x10)
-  :fun some_i32_if_set!: @_p.i32_if_set!(0x14)
-  :fun some_u16_if_set!: @_p.u16_if_set!(0x18)
-  :fun some_i16_if_set!: @_p.i16_if_set!(0x1c)
-  :fun some_u8_if_set!: @_p.u8_if_set!(0x1e)
-  :fun some_i8_if_set!: @_p.i8_if_set!(0x1f)
-  :fun ref "some_u64="(new_value): @_p.set_u64(0x0, new_value, 0)
-  :fun ref "some_i64="(new_value): @_p.set_i64(0x8, new_value, 0)
-  :fun ref "some_u32="(new_value): @_p.set_u32(0x10, new_value, 0)
-  :fun ref "some_i32="(new_value): @_p.set_i32(0x14, new_value, 0)
-  :fun ref "some_u16="(new_value): @_p.set_u16(0x18, new_value, 0)
-  :fun ref "some_i16="(new_value): @_p.set_i16(0x1c, new_value, 0)
-  :fun ref "some_u8="(new_value): @_p.set_u8(0x1e, new_value, 0)
-  :fun ref "some_i8="(new_value): @_p.set_i8(0x1f, new_value, 0)
-
-  :const capn_proto_pointer_count U16: 5
-  :fun ref some_text: @_p.text(0)
-  :fun ref some_data: @_p.data(1)
-  :fun ref some_text_if_set!: @_p.text_if_set!(0)
-  :fun ref some_data_if_set!: @_p.data_if_set!(1)
-  :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
-  :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
-
-  :fun ref child: _ExampleChildBuilder.from_pointer(@_p.struct(2, 2, 2))
-  :fun ref child_if_set!: _ExampleChildBuilder.from_pointer(@_p.struct_if_set!(2, 2, 2))
-  :fun ref set_child_to_point_to_existing(existing _ExampleChildBuilder): _ExampleChildBuilder.from_pointer(@_p.set_struct_to_point_to_existing(2, existing._p))
-
-  :fun ref children: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list(3))
-  :fun ref children_if_set!: CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.list_if_set!(3))
-  :fun ref init_children(new_count): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.init_list(3, 2, 2, new_count))
-  :fun ref trim_children(new_start, new_finish): CapnProto.List.Builder(_ExampleChildBuilder).from_pointer(@_p.trim_list(3, 2, 2, new_start, new_finish))
-
-  :fun is_foo: @_p.check_union(0x30, 0)
-  :fun ref foo!: @_p.assert_union!(0x30, 0), _ExampleAsFooBuilder.from_pointer(@_p)
-  :fun ref init_foo
-    @_p.clear_64(0x20)
-    @_p.clear_32(0x28)
-    @_p.clear_pointer(4)
-    @_p.mark_union(0x30, 0)
-    _ExampleAsFooBuilder.from_pointer(@_p)
-
-  :fun is_bar: @_p.check_union(0x30, 1)
-  :fun ref bar!: @_p.assert_union!(0x30, 1), _ExampleAsBarBuilder.from_pointer(@_p)
-  :fun ref init_bar
-    @_p.clear_64(0x20)
-    @_p.clear_32(0x28)
-    @_p.clear_pointer(4)
-    @_p.mark_union(0x30, 1)
-    _ExampleAsBarBuilder.from_pointer(@_p)
-
-:struct _ExampleChildBuilder
-  :let _p CapnProto.Pointer.Struct.Builder
-  :new from_pointer(@_p)
-
-  :fun capn_proto_address U64: @_p.capn_proto_address
-
-  :const capn_proto_data_word_count U16: 2
-  :fun a: @_p.u64(0x0)
-  :fun b: @_p.u64(0x8)
-  :fun ref "a="(new_value): @_p.set_u64(0x0, new_value, 0)
-  :fun ref "b="(new_value): @_p.set_u64(0x8, new_value, 0)
-
-  :const capn_proto_pointer_count U16: 2
-  :fun ref name: @_p.text(0)
-  :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
-
-  :fun ref referenced: _ExampleReferencedBuilder.from_pointer(@_p.struct(1, 2, 1))
-  :fun ref referenced_if_set!: _ExampleReferencedBuilder.from_pointer(@_p.struct_if_set!(1, 2, 1))
-  :fun ref set_referenced_to_point_to_existing(existing _ExampleReferencedBuilder): _ExampleReferencedBuilder.from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
-
-:struct _ExampleReferencedBuilder
-  :let _p CapnProto.Pointer.Struct.Builder
-  :new from_pointer(@_p)
-
-  :fun capn_proto_address U64: @_p.capn_proto_address
-
-  :const capn_proto_data_word_count U16: 2
-  :fun a: @_p.u64(0x0)
-  :fun b: @_p.u64(0x8)
-  :fun ref "a="(new_value): @_p.set_u64(0x0, new_value, 0)
-  :fun ref "b="(new_value): @_p.set_u64(0x8, new_value, 0)
-
-  :const capn_proto_pointer_count U16: 1
-  :fun ref name: @_p.text(0)
-  :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
-
-:struct _ExampleAsFooBuilder
-  :let _p CapnProto.Pointer.Struct.Builder
-  :new from_pointer(@_p)
-
-  :fun capn_proto_address U64: @_p.capn_proto_address
-
-  :const capn_proto_data_word_count U16: 7
-  :fun some_u64: @_p.u64(0x20)
-  :fun some_u32: @_p.u32(0x28)
-  :fun ref "some_u64="(new_value): @_p.set_u64(0x20, new_value, 0)
-  :fun ref "some_u32="(new_value): @_p.set_u32(0x28, new_value, 0)
-
-  :const capn_proto_pointer_count U16: 5
-  :fun ref txt: @_p.text(4)
-  :fun ref "txt="(new_value): @_p.set_text(4, new_value, "")
-
-:struct _ExampleAsBarBuilder
-  :let _p CapnProto.Pointer.Struct.Builder
-  :new from_pointer(@_p)
-
-  :fun capn_proto_address U64: @_p.capn_proto_address
-
-  :const capn_proto_data_word_count U16: 7
-  :fun some_f64: @_p.f64(0x20)
-  :fun some_f32: @_p.f32(0x28)
-  :fun ref "some_f64="(new_value): @_p.set_f64(0x20, new_value, 0)
-  :fun ref "some_f32="(new_value): @_p.set_f32(0x28, new_value, 0)
-
-  :const capn_proto_pointer_count U16: 5
-  :fun ref blob: @_p.data(4)
-  :fun ref "blob="(new_value): @_p.set_data(4, new_value, b"")
-
 :class CapnProto.Message.Builder.Spec
   :is Spec
   :const describes: "CapnProto.Message.Builder"
 
   :it "reads from and writes to fields of the root struct"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     root = message.root
     assert: root.some_u64 == 0, root.some_u64 = 35, assert: root.some_u64 == 35
     assert: root.some_i64 == 0, root.some_i64 = 36, assert: root.some_i64 == 36
@@ -182,8 +38,29 @@
     assert: "\(root.some_data)"         == ""
     assert error: root.some_data_if_set!
 
+    message2 = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
+    root2 = message2.root
+    root2.copy_data_from(root.as_reader)
+
+    assert: root2.some_u64 == 35
+    assert: root2.some_i64 == 36
+    assert: root2.some_u32 == 37
+    assert: root2.some_i32 == 38
+    assert: root2.some_u16 == 39
+    assert: root2.some_i16 == 40
+    assert: root2.some_u8  == 41
+    assert: root2.some_i8  == 42
+    assert: "\(root2.some_text)" == ""
+    assert: "\(root2.some_data)" == ""
+
+    root.some_text = "foo"
+    root.some_data = b"bar"
+    root2.copy_data_from(root.as_reader)
+    assert: "\(root2.some_text)" == "foo"
+    assert: "\(root2.some_data)" == "bar"
+
   :it "reads from and writes to fields of the child struct"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     root = message.root
     assert error: root.child_if_set!
     assert: root.child.a == 0, root.child.a = 77, assert: root.child.a == 77
@@ -194,8 +71,16 @@
     assert: "\(root.child.name)" == "Alice"
     assert: "\(root.child_if_set!.name)" == "Alice"
 
+    message2 = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
+    root2 = message2.root
+    root2.copy_data_from(root.as_reader)
+
+    assert: root2.child.a == 77
+    assert: root2.child.b == 88
+    assert: "\(root2.child.name)" == "Alice"
+
   :it "reads from and writes to fields of the list children structs"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     root = message.root
 
     assert: root.children.size == 0
@@ -223,6 +108,21 @@
     assert: (children[2]!.b = 66, children[2]!.b == 66)
     assert: (children[2]!.name = "baz", "\(children[2]!.name)" == "baz")
 
+    message2 = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
+    root2 = message2.root
+    root2.copy_data_from(root.as_reader)
+
+    assert: root2.children.size == 3
+    assert: root2.children[0]!.a == 11
+    assert: root2.children[0]!.b == 22
+    assert: "\(root2.children[0]!.name)" == "foo"
+    assert: root2.children[1]!.a == 33
+    assert: root2.children[1]!.b == 44
+    assert: "\(root2.children[1]!.name)" == "bar"
+    assert: root2.children[2]!.a == 55
+    assert: root2.children[2]!.b == 66
+    assert: "\(root2.children[2]!.name)" == "baz"
+
     children = root.trim_children(0, 3)
     assert: children.size == 3
     children = root.trim_children(0, 999)
@@ -247,7 +147,7 @@
     assert error: root.children[1000]!
 
   :it "marks union group membership and reads from and writes to union fields"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     root = message.root
 
     foo = root.init_foo
@@ -270,8 +170,19 @@
     assert: bar.some_f32 == 0, bar.some_f32 = 43.3, assert: bar.some_f32 == 43.3
     assert: "\(bar.blob)" == "", bar.blob = b"!!", assert: "\(bar.blob)" == "!!"
 
+    message2 = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
+    root2 = message2.root
+    root2.copy_data_from(root.as_reader)
+
+    assert: root2.is_foo.is_false
+    assert: root2.is_bar.is_true
+
+    assert: root2.bar!.some_f64 == 42.2
+    assert: root2.bar!.some_f32 == 43.3
+    assert: "\(root2.bar!.blob)" == "!!"
+
   :it "lets you point two parents to the same child struct in memory"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     root = message.root
 
     assert: root.init_children(4).size == 4
@@ -333,7 +244,7 @@
     assert: "\(root.children[1]!.referenced.name)" == "bar"
 
   :it "lets you take the resulting byte buffers"
-    message = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     buffers = message.take_val_buffers
 
     assert: buffers.size == 0
@@ -342,22 +253,22 @@
 
     buffers = message.take_val_buffers
     assert: buffers.size == 1
-    assert: buffers[0]!.size == 0x7D50
+    assert: buffers[0]!.size == 0x7D48
     assert: buffers[0]!.space == 0x8000
 
     message.root // allocate just the root struct
 
     buffers = message.take_val_buffers
     assert: buffers.size == 1
-    assert: buffers[0]!.size == 0x68
+    assert: buffers[0]!.size == 0x60
     assert: buffers[0]!.space == 0x4000
 
   :it "lets you take the resulting message as a val"
-    builder = CapnProto.Message.Builder(_ExampleBuilder).new(0x4000)
+    builder = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     builder.root.some_text = "foo"
 
     assert no_error: (
-      message val = CapnProto.Message(_ExamplePartialReader).from_val_segments!(
+      message val = CapnProto.Message(_Example.Root).from_val_segments!(
         builder.take_val_segments
       )
 
@@ -365,12 +276,12 @@
 
       assert: message.val_buffers.size == 1
       assert: message.val_buffers[0]! == b"\
-        \x00\x00\x00\x00\x07\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x06\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\
         \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
         \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
+        \x00\x00\x00\x00\x00\x00\x00\x00\x11\x00\x00\x00\"\x00\x00\x00\
         \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
-        \x11\x00\x00\x00\"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
         \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
-        \x00\x00\x00\x00\x00\x00\x00\x00foo\x00\x00\x00\x00\x00\
+        foo\x00\x00\x00\x00\x00\
       "
     )

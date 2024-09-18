@@ -1,0 +1,359 @@
+///
+// NOTE: This file was auto-generated from a Cap'n Proto file
+// using the `capnp` compiler with the `--output=savi` option.
+
+:struct box _Example.Root
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :const capn_proto_data_word_count U16: 6
+  :const capn_proto_pointer_count U16: 5
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("some_u64", @some_u64_if_set!)
+      try trace.property("some_i64", @some_i64_if_set!)
+      try trace.property("some_u32", @some_u32_if_set!)
+      try trace.property("some_i32", @some_i32_if_set!)
+      try trace.property("some_u16", @some_u16_if_set!)
+      try trace.property("some_i16", @some_i16_if_set!)
+      try trace.property("some_u8", @some_u8_if_set!)
+      try trace.property("some_i8", @some_i8_if_set!)
+      try trace.property("some_text", @some_text_if_set!)
+      try trace.property("some_data", @some_data_if_set!)
+      try trace.property("child", @child_if_set!)
+      try trace.property("children", @children_if_set!)
+      try trace.property("foo", @foo!)
+      try trace.property("bar", @bar!)
+    )
+
+  :fun some_u64: @_p.u64(0x0)
+  :fun some_u64_if_set!: @_p.u64_if_set!(0x0)
+
+  :fun some_i64: @_p.i64(0x8)
+  :fun some_i64_if_set!: @_p.i64_if_set!(0x8)
+
+  :fun some_u32: @_p.u32(0x10)
+  :fun some_u32_if_set!: @_p.u32_if_set!(0x10)
+
+  :fun some_i32: @_p.i32(0x14)
+  :fun some_i32_if_set!: @_p.i32_if_set!(0x14)
+
+  :fun some_u16: @_p.u16(0x18)
+  :fun some_u16_if_set!: @_p.u16_if_set!(0x18)
+
+  :fun some_i16: @_p.i16(0x1a)
+  :fun some_i16_if_set!: @_p.i16_if_set!(0x1a)
+
+  :fun some_u8: @_p.u8(0x1c)
+  :fun some_u8_if_set!: @_p.u8_if_set!(0x1c)
+
+  :fun some_i8: @_p.i8(0x1d)
+  :fun some_i8_if_set!: @_p.i8_if_set!(0x1d)
+
+  :fun some_text: @_p.text(0)
+  :fun some_text_if_set!: @_p.text_if_set!(0)
+
+  :fun some_data: @_p.data(1)
+  :fun some_data_if_set!: @_p.data_if_set!(1)
+
+  :fun child: _Example.Child.read_from_pointer(@_p.struct(2))
+  :fun child_if_set!: _Example.Child.read_from_pointer(@_p.struct_if_set!(2))
+
+  :fun children: CapnProto.List(_Example.Child).read_from_pointer(@_p.list(3))
+  :fun children_if_set!: CapnProto.List(_Example.Child).read_from_pointer(@_p.list_if_set!(3))
+
+  :fun is_foo: @_p.check_union(0x1e, 0)
+  :fun foo!: @_p.assert_union!(0x1e, 0), _Example.Root.AS_foo.read_from_pointer(@_p)
+  :fun foo_if_set!: @_p.assert_union!(0x1e, 0), _Example.Root.AS_foo.read_from_pointer(@_p)
+
+  :fun is_bar: @_p.check_union(0x1e, 1)
+  :fun bar!: @_p.assert_union!(0x1e, 1), _Example.Root.AS_bar.read_from_pointer(@_p)
+  :fun bar_if_set!: @_p.assert_union!(0x1e, 1), _Example.Root.AS_bar.read_from_pointer(@_p)
+
+:struct box _Example.Root.AS_foo
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :const capn_proto_data_word_count U16: 6
+  :const capn_proto_pointer_count U16: 5
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("some_u64", @some_u64_if_set!)
+      try trace.property("some_u32", @some_u32_if_set!)
+      try trace.property("txt", @txt_if_set!)
+    )
+
+  :fun some_u64: @_p.u64(0x20)
+  :fun some_u64_if_set!: @_p.u64_if_set!(0x20)
+
+  :fun some_u32: @_p.u32(0x28)
+  :fun some_u32_if_set!: @_p.u32_if_set!(0x28)
+
+  :fun txt: @_p.text(4)
+  :fun txt_if_set!: @_p.text_if_set!(4)
+
+:struct box _Example.Root.AS_bar
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :const capn_proto_data_word_count U16: 6
+  :const capn_proto_pointer_count U16: 5
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(0) -> (
+      try trace.property("some_f64", @some_f64_if_set!)
+      try trace.property("some_f32", @some_f32_if_set!)
+      try trace.property("blob", @blob_if_set!)
+    )
+
+  :fun some_f64: @_p.f64(0x20)
+  :fun some_f64_if_set!: @_p.f64_if_set!(0x20)
+
+  :fun some_f32: @_p.f32(0x28)
+  :fun some_f32_if_set!: @_p.f32_if_set!(0x28)
+
+  :fun blob: @_p.data(4)
+  :fun blob_if_set!: @_p.data_if_set!(4)
+
+:struct box _Example.Child
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :const capn_proto_data_word_count U16: 2
+  :const capn_proto_pointer_count U16: 2
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("a", @a_if_set!)
+      try trace.property("b", @b_if_set!)
+      try trace.property("name", @name_if_set!)
+      try trace.property("referenced", @referenced_if_set!)
+    )
+
+  :fun a: @_p.u64(0x0)
+  :fun a_if_set!: @_p.u64_if_set!(0x0)
+
+  :fun b: @_p.u64(0x8)
+  :fun b_if_set!: @_p.u64_if_set!(0x8)
+
+  :fun name: @_p.text(0)
+  :fun name_if_set!: @_p.text_if_set!(0)
+
+  :fun referenced: _Example.Child.read_from_pointer(@_p.struct(1))
+  :fun referenced_if_set!: _Example.Child.read_from_pointer(@_p.struct_if_set!(1))
+
+:struct _Example.Root.Builder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+  :fun as_reader: _Example.Root.read_from_pointer(@_p.as_reader)
+
+  :const capn_proto_data_word_count U16: 6
+  :const capn_proto_pointer_count U16: 5
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
+
+  :fun ref copy_data_from(other _Example.Root) None
+    try @_p.set_u64(0x0, other.some_u64_if_set!, 0)
+    try @_p.set_i64(0x8, other.some_i64_if_set!, 0)
+    try @_p.set_u32(0x10, other.some_u32_if_set!, 0)
+    try @_p.set_i32(0x14, other.some_i32_if_set!, 0)
+    try @_p.set_u16(0x18, other.some_u16_if_set!, 0)
+    try @_p.set_i16(0x1a, other.some_i16_if_set!, 0)
+    try @_p.set_u8(0x1c, other.some_u8_if_set!, 0)
+    try @_p.set_i8(0x1d, other.some_i8_if_set!, 0)
+    try @_p.set_text(0, "\(other.some_text_if_set!)", "")
+    try @_p.set_data(1, "\(other.some_data_if_set!)".as_bytes, b"")
+    try (other_child = other.child_if_set!, @child.copy_data_from(other_child))
+    try @init_children_and_copy_data_from(other.children_if_set!)
+    try (other_foo = other.foo!, @init_foo.copy_data_from(other_foo))
+    try (other_bar = other.bar!, @init_bar.copy_data_from(other_bar))
+
+  :fun some_u64: @_p.u64(0x0)
+  :fun some_u64_if_set!: @_p.u64_if_set!(0x0)
+  :fun ref "some_u64="(new_value): @_p.set_u64(0x0, new_value, 0)
+
+  :fun some_i64: @_p.i64(0x8)
+  :fun some_i64_if_set!: @_p.i64_if_set!(0x8)
+  :fun ref "some_i64="(new_value): @_p.set_i64(0x8, new_value, 0)
+
+  :fun some_u32: @_p.u32(0x10)
+  :fun some_u32_if_set!: @_p.u32_if_set!(0x10)
+  :fun ref "some_u32="(new_value): @_p.set_u32(0x10, new_value, 0)
+
+  :fun some_i32: @_p.i32(0x14)
+  :fun some_i32_if_set!: @_p.i32_if_set!(0x14)
+  :fun ref "some_i32="(new_value): @_p.set_i32(0x14, new_value, 0)
+
+  :fun some_u16: @_p.u16(0x18)
+  :fun some_u16_if_set!: @_p.u16_if_set!(0x18)
+  :fun ref "some_u16="(new_value): @_p.set_u16(0x18, new_value, 0)
+
+  :fun some_i16: @_p.i16(0x1a)
+  :fun some_i16_if_set!: @_p.i16_if_set!(0x1a)
+  :fun ref "some_i16="(new_value): @_p.set_i16(0x1a, new_value, 0)
+
+  :fun some_u8: @_p.u8(0x1c)
+  :fun some_u8_if_set!: @_p.u8_if_set!(0x1c)
+  :fun ref "some_u8="(new_value): @_p.set_u8(0x1c, new_value, 0)
+
+  :fun some_i8: @_p.i8(0x1d)
+  :fun some_i8_if_set!: @_p.i8_if_set!(0x1d)
+  :fun ref "some_i8="(new_value): @_p.set_i8(0x1d, new_value, 0)
+
+  :fun ref some_text: @_p.text(0)
+  :fun ref some_text_if_set!: @_p.text_if_set!(0)
+  :fun ref "some_text="(new_value): @_p.set_text(0, new_value, "")
+
+  :fun ref some_data: @_p.data(1)
+  :fun ref some_data_if_set!: @_p.data_if_set!(1)
+  :fun ref "some_data="(new_value): @_p.set_data(1, new_value, b"")
+
+  :fun ref child: _Example.Child.Builder.from_pointer(@_p.struct(2, 2, 2))
+  :fun ref child_if_set!: _Example.Child.Builder.from_pointer(@_p.struct_if_set!(2, 2, 2))
+  :fun ref set_child_to_point_to_existing(existing _Example.Child.Builder): _Example.Child.Builder.from_pointer(@_p.set_struct_to_point_to_existing(2, existing._p))
+
+  :fun ref children: CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.list(3))
+  :fun ref children_if_set!: CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.list_if_set!(3))
+  :fun ref init_children(new_count)
+    CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.init_list(3, 2, 2, new_count))
+  :fun ref init_children_and_copy_data_from(existing CapnProto.List(_Example.Child))
+    list = CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.init_list(3, 2, 2, existing._p.count.usize))
+    existing.each_with_index -> (existing_item, index |
+      new_item = try (list[index]! | next)
+      new_item.copy_data_from(existing_item)
+    )
+    list
+  :fun ref trim_children(new_start, new_finish)
+    CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.trim_list(3, 2, 2, new_start, new_finish))
+
+  :fun is_foo: @_p.check_union(0x1e, 0)
+  :fun ref foo!: @_p.assert_union!(0x1e, 0), _Example.Root.AS_foo.Builder.from_pointer(@_p)
+  :fun ref foo_if_set!: @_p.assert_union!(0x1e, 0), _Example.Root.AS_foo.Builder.from_pointer(@_p)
+  :fun ref init_foo
+    @_p.clear_64(0x20) // some_u64
+    @_p.clear_32(0x28) // some_u32
+    @_p.clear_pointer(4) // txt
+    @_p.mark_union(0x1e, 0)
+    _Example.Root.AS_foo.Builder.from_pointer(@_p)
+
+  :fun is_bar: @_p.check_union(0x1e, 1)
+  :fun ref bar!: @_p.assert_union!(0x1e, 1), _Example.Root.AS_bar.Builder.from_pointer(@_p)
+  :fun ref bar_if_set!: @_p.assert_union!(0x1e, 1), _Example.Root.AS_bar.Builder.from_pointer(@_p)
+  :fun ref init_bar
+    @_p.clear_64(0x20) // some_f64
+    @_p.clear_32(0x28) // some_f32
+    @_p.clear_pointer(4) // blob
+    @_p.mark_union(0x1e, 1)
+    _Example.Root.AS_bar.Builder.from_pointer(@_p)
+
+:struct _Example.Root.AS_foo.Builder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+  :fun as_reader: _Example.Root.AS_foo.read_from_pointer(@_p.as_reader)
+
+  :const capn_proto_data_word_count U16: 6
+  :const capn_proto_pointer_count U16: 5
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
+
+  :fun ref copy_data_from(other _Example.Root.AS_foo) None
+    try @_p.set_u64(0x20, other.some_u64_if_set!, 0)
+    try @_p.set_u32(0x28, other.some_u32_if_set!, 0)
+    try @_p.set_text(4, "\(other.txt_if_set!)", "")
+
+  :fun some_u64: @_p.u64(0x20)
+  :fun some_u64_if_set!: @_p.u64_if_set!(0x20)
+  :fun ref "some_u64="(new_value): @_p.set_u64(0x20, new_value, 0)
+
+  :fun some_u32: @_p.u32(0x28)
+  :fun some_u32_if_set!: @_p.u32_if_set!(0x28)
+  :fun ref "some_u32="(new_value): @_p.set_u32(0x28, new_value, 0)
+
+  :fun ref txt: @_p.text(4)
+  :fun ref txt_if_set!: @_p.text_if_set!(4)
+  :fun ref "txt="(new_value): @_p.set_text(4, new_value, "")
+
+:struct _Example.Root.AS_bar.Builder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+  :fun as_reader: _Example.Root.AS_bar.read_from_pointer(@_p.as_reader)
+
+  :const capn_proto_data_word_count U16: 6
+  :const capn_proto_pointer_count U16: 5
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
+
+  :fun ref copy_data_from(other _Example.Root.AS_bar) None
+    try @_p.set_f64(0x20, other.some_f64_if_set!, 0.0)
+    try @_p.set_f32(0x28, other.some_f32_if_set!, 0.0)
+    try @_p.set_data(4, "\(other.blob_if_set!)".as_bytes, b"")
+
+  :fun some_f64: @_p.f64(0x20)
+  :fun some_f64_if_set!: @_p.f64_if_set!(0x20)
+  :fun ref "some_f64="(new_value): @_p.set_f64(0x20, new_value, 0.0)
+
+  :fun some_f32: @_p.f32(0x28)
+  :fun some_f32_if_set!: @_p.f32_if_set!(0x28)
+  :fun ref "some_f32="(new_value): @_p.set_f32(0x28, new_value, 0.0)
+
+  :fun ref blob: @_p.data(4)
+  :fun ref blob_if_set!: @_p.data_if_set!(4)
+  :fun ref "blob="(new_value): @_p.set_data(4, new_value, b"")
+
+:struct _Example.Child.Builder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+  :fun as_reader: _Example.Child.read_from_pointer(@_p.as_reader)
+
+  :const capn_proto_data_word_count U16: 2
+  :const capn_proto_pointer_count U16: 2
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
+
+  :fun ref copy_data_from(other _Example.Child) None
+    try @_p.set_u64(0x0, other.a_if_set!, 0)
+    try @_p.set_u64(0x8, other.b_if_set!, 0)
+    try @_p.set_text(0, "\(other.name_if_set!)", "")
+    try (other_referenced = other.referenced_if_set!, @referenced.copy_data_from(other_referenced))
+
+  :fun a: @_p.u64(0x0)
+  :fun a_if_set!: @_p.u64_if_set!(0x0)
+  :fun ref "a="(new_value): @_p.set_u64(0x0, new_value, 0)
+
+  :fun b: @_p.u64(0x8)
+  :fun b_if_set!: @_p.u64_if_set!(0x8)
+  :fun ref "b="(new_value): @_p.set_u64(0x8, new_value, 0)
+
+  :fun ref name: @_p.text(0)
+  :fun ref name_if_set!: @_p.text_if_set!(0)
+  :fun ref "name="(new_value): @_p.set_text(0, new_value, "")
+
+  :fun ref referenced: _Example.Child.Builder.from_pointer(@_p.struct(1, 2, 2))
+  :fun ref referenced_if_set!: _Example.Child.Builder.from_pointer(@_p.struct_if_set!(1, 2, 2))
+  :fun ref set_referenced_to_point_to_existing(existing _Example.Child.Builder): _Example.Child.Builder.from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
