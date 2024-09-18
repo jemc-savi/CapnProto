@@ -1140,7 +1140,7 @@
   :fun ref init_nested_nodes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
   :fun ref init_nested_nodes_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Node.NestedNode))
-    list = CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Node.NestedNode.Builder).from_pointer(@_p.init_list(1, 1, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1154,7 +1154,7 @@
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, new_count))
   :fun ref init_annotations_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Annotation))
-    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(2, 1, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1235,7 +1235,7 @@
   :fun ref init_parameters(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, new_count))
   :fun ref init_parameters_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Node.Parameter))
-    list = CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(5, 0, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1299,7 +1299,7 @@
   :fun ref init_fields(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, new_count))
   :fun ref init_fields_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Field))
-    list = CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Field.Builder).from_pointer(@_p.init_list(3, 3, 4, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1329,7 +1329,7 @@
   :fun ref init_enumerants(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, new_count))
   :fun ref init_enumerants_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Enumerant))
-    list = CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.init_list(3, 1, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1360,7 +1360,7 @@
   :fun ref init_methods(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, new_count))
   :fun ref init_methods_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Method))
-    list = CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.init_list(3, 3, 5, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1374,7 +1374,7 @@
   :fun ref init_superclasses(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, new_count))
   :fun ref init_superclasses_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Superclass))
-    list = CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Superclass.Builder).from_pointer(@_p.init_list(4, 1, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1570,7 +1570,7 @@
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
   :fun ref init_annotations_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Annotation))
-    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1723,7 +1723,7 @@
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
   :fun ref init_annotations_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Annotation))
-    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1801,7 +1801,7 @@
   :fun ref init_annotations(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
   :fun ref init_annotations_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Annotation))
-    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Annotation.Builder).from_pointer(@_p.init_list(1, 1, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -1823,7 +1823,7 @@
   :fun ref init_implicit_parameters(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, new_count))
   :fun ref init_implicit_parameters_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Node.Parameter))
-    list = CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Node.Parameter.Builder).from_pointer(@_p.init_list(4, 0, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -2256,7 +2256,7 @@
   :fun ref init_scopes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, new_count))
   :fun ref init_scopes_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Brand.Scope))
-    list = CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Brand.Scope.Builder).from_pointer(@_p.init_list(0, 2, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -2295,7 +2295,7 @@
     CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.init_list(0, 1, 1, new_count))
   :fun ref init_bind_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Brand.Binding))
     @_p.mark_union(0x8, 0)
-    list = CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.init_list(0, 1, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Brand.Binding.Builder).from_pointer(@_p.init_list(0, 1, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -2571,7 +2571,7 @@
   :fun ref init_nodes(new_count)
     CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, new_count))
   :fun ref init_nodes_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.Node))
-    list = CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.Node.Builder).from_pointer(@_p.init_list(0, 5, 6, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -2585,7 +2585,7 @@
   :fun ref init_requested_files(new_count)
     CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, new_count))
   :fun ref init_requested_files_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile))
-    list = CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Builder).from_pointer(@_p.init_list(1, 1, 2, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
@@ -2625,7 +2625,7 @@
   :fun ref init_imports(new_count)
     CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, new_count))
   :fun ref init_imports_and_copy_data_from(existing CapnProto.List(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import))
-    list = CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, existing._p.count.usize))
+    list = CapnProto.List.Builder(CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import.Builder).from_pointer(@_p.init_list(1, 1, 1, existing.size))
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
