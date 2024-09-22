@@ -155,8 +155,8 @@
       )
     )
 
-    // Otherwise, add it as a new hole at the end.
-    @_holes << Pair(U32).new(free_head, free_tail)
+    // Otherwise, add it as a new hole at the start.
+    try @_holes.insert_at!(0, Pair(U32).new(free_head, free_tail)) // TODO: Use `unshift(` instead of `try insert_at!(0`
     @
 
   :fun ref _take_buffer Bytes'iso
