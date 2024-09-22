@@ -263,6 +263,31 @@
     assert: buffers[0]!.size == 0x60
     assert: buffers[0]!.space == 0x4000
 
+  :it "correctly handles free-and-allocate in this regression test"
+    message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
+    message.root.some_text = "foo" // first, allocate a small text chunk
+    message.root.some_text = "Now, allocate a larger text chunk"
+
+    buffers = message.take_val_buffers
+    assert: buffers.size == 1
+    assert: "\(buffers[0]!.format.xxd)" == "\
+      00000000: 0000 0000 0600 0500 0000 0000 0000 0000 ................\n\
+      00000010: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      00000020: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      00000030: 0000 0000 0000 0000 4500 0000 1201 0000 ........E.......\n\
+      00000040: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      00000050: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      00000060: 0000 0000 0000 0000 0000 0000 0600 0500 ................\n\
+      00000070: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      00000080: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      00000090: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      000000a0: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      000000b0: 0000 0000 0000 0000 0000 0000 0000 0000 ................\n\
+      000000c0: 0000 0000 0000 0000 4e6f 772c 2061 6c6c ........Now,.all\n\
+      000000d0: 6f63 6174 6520 6120 6c61 7267 6572 2074 ocate.a.larger.t\n\
+      000000e0: 6578 7420 6368 756e 6b00 0000 0000 0000 ext.chunk.......\n\
+    "
+
   :it "lets you take the resulting message as a val"
     builder = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     builder.root.some_text = "foo"
