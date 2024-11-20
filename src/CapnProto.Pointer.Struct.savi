@@ -101,6 +101,12 @@
     pointer._data_word_count.u64.bit_shl(32)          // C (A and B are zero)
       .bit_or(pointer._pointer_count.u64.bit_shl(48)) // D
 
+:trait box CapnProto.Pointer.Struct.Type
+  :new box read_from_pointer(p CapnProto.Pointer.Struct)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val)
+
+  :is TraceData
+
 :struct box CapnProto.Pointer.Struct
   :let _segment CapnProto.Segment'box
   :let _byte_offset U32
@@ -220,6 +226,14 @@
     _ParseStructListPointer._parse!(
       @_segment, byte_offset, @_segment._u64!(byte_offset)
     )
+
+:trait CapnProto.Pointer.Struct.Builder.Type
+  :new from_pointer(p CapnProto.Pointer.Struct.Builder)
+
+  :const capn_proto_data_word_count U16: 0
+  :const capn_proto_pointer_count U16: 0
+
+  :is TraceData
 
 :struct CapnProto.Pointer.Struct.Builder
   :let _segment CapnProto.Segment

@@ -156,6 +156,57 @@
   :fun referenced: _Example.Child.read_from_pointer(@_p.struct(1))
   :fun referenced_if_set!: _Example.Child.read_from_pointer(@_p.struct_if_set!(1))
 
+:struct box _Example.Tree(
+  K CapnProto.Pointer.Struct.Type
+  V CapnProto.Pointer.Struct.Type
+)
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :const capn_proto_data_word_count U16: 0
+  :const capn_proto_pointer_count U16: 4
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("left", @left_if_set!)
+      try trace.property("right", @right_if_set!)
+      try trace.property("key", @key_if_set!)
+      try trace.property("value", @value_if_set!)
+    )
+
+  :fun left: _Example.Tree(K, V).read_from_pointer(@_p.struct(0))
+  :fun left_if_set!: _Example.Tree(K, V).read_from_pointer(@_p.struct_if_set!(0))
+
+  :fun right: _Example.Tree(K, V).read_from_pointer(@_p.struct(1))
+  :fun right_if_set!: _Example.Tree(K, V).read_from_pointer(@_p.struct_if_set!(1))
+
+  :fun key: K.read_from_pointer(@_p.struct(2))
+  :fun key_if_set!: K.read_from_pointer(@_p.struct_if_set!(2))
+
+  :fun value: V.read_from_pointer(@_p.struct(3))
+  :fun value_if_set!: V.read_from_pointer(@_p.struct_if_set!(3))
+
+:struct box _Example.Key
+  :let _p CapnProto.Pointer.Struct
+  :new box read_from_pointer(@_p)
+  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val): @_p = p
+
+  :const capn_proto_data_word_count U16: 0
+  :const capn_proto_pointer_count U16: 1
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    trace.object(@_p.absolute_address) -> (
+      try trace.property("text", @text_if_set!)
+    )
+
+  :fun text: @_p.text(0)
+  :fun text_if_set!: @_p.text_if_set!(0)
+
 :struct _Example.Root.Builder
   :let _p CapnProto.Pointer.Struct.Builder
   :new from_pointer(@_p)
@@ -357,3 +408,59 @@
   :fun ref referenced: _Example.Child.Builder.from_pointer(@_p.struct(1, 2, 2))
   :fun ref referenced_if_set!: _Example.Child.Builder.from_pointer(@_p.struct_if_set!(1, 2, 2))
   :fun ref set_referenced_to_point_to_existing(existing _Example.Child.Builder): _Example.Child.Builder.from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
+
+:struct _Example.Tree.Builder(
+  K CapnProto.Pointer.Struct.Type
+  K_Builder CapnProto.Pointer.Struct.Builder.Type
+  V CapnProto.Pointer.Struct.Type
+  V_Builder CapnProto.Pointer.Struct.Builder.Type
+)
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+  :fun as_reader: _Example.Tree(K, V).read_from_pointer(@_p.as_reader)
+
+  :const capn_proto_data_word_count U16: 0
+  :const capn_proto_pointer_count U16: 4
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
+
+  :fun ref copy_data_from(other _Example.Tree(K, V)) None
+    try (other_left = other.left_if_set!, @left.copy_data_from(other_left))
+    try (other_right = other.right_if_set!, @right.copy_data_from(other_right))
+
+  :fun ref left: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct(0, 0, 4))
+  :fun ref left_if_set!: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct_if_set!(0, 0, 4))
+  :fun ref set_left_to_point_to_existing(existing _Example.Tree.Builder(K, K_Builder, V, V_Builder)): _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
+
+  :fun ref right: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct(1, 0, 4))
+  :fun ref right_if_set!: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct_if_set!(1, 0, 4))
+  :fun ref set_right_to_point_to_existing(existing _Example.Tree.Builder(K, K_Builder, V, V_Builder)): _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
+
+  :fun ref key: K_Builder.from_pointer(@_p.struct(2, K_Builder.capn_proto_data_word_count, K_Builder.capn_proto_pointer_count))
+  :fun ref key_if_set!: K_Builder.from_pointer(@_p.struct_if_set!(2, K_Builder.capn_proto_data_word_count, K_Builder.capn_proto_pointer_count))
+
+  :fun ref value: V_Builder.from_pointer(@_p.struct(3, V_Builder.capn_proto_data_word_count, V_Builder.capn_proto_pointer_count))
+  :fun ref value_if_set!: V_Builder.from_pointer(@_p.struct_if_set!(3, V_Builder.capn_proto_data_word_count, V_Builder.capn_proto_pointer_count))
+
+:struct _Example.Key.Builder
+  :let _p CapnProto.Pointer.Struct.Builder
+  :new from_pointer(@_p)
+  :fun as_reader: _Example.Key.read_from_pointer(@_p.as_reader)
+
+  :const capn_proto_data_word_count U16: 0
+  :const capn_proto_pointer_count U16: 1
+  :fun capn_proto_address U64: @_p.capn_proto_address
+
+  :is TraceData
+  :fun trace_data(trace TraceData.Observer)
+    @as_reader.trace_data(trace)
+
+  :fun ref copy_data_from(other _Example.Key) None
+    try @_p.set_text(0, "\(other.text_if_set!)", "")
+
+  :fun ref text: @_p.text(0)
+  :fun ref text_if_set!: @_p.text_if_set!(0)
+  :fun ref "text="(new_value): @_p.set_text(0, new_value, "")

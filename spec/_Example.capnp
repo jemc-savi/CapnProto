@@ -42,3 +42,14 @@ struct Child {
 
   referenced @3 :Child;
 }
+
+struct Tree(K, V) {
+  left @0 :Tree(K, V);
+  right @1 :Tree(K, V);
+  key @2 :K;
+  value @3 :V;
+}
+
+struct Key {
+  text @0 :Text;
+}
