@@ -97,9 +97,31 @@
         try @_find_node_scoped_name(t.struct!.type_id)
       )\(
         if is_builder (".Builder" | "")
+      )\(
+        try (
+          args Array(String) = []
+          // TODO: In what scenario is there more than one scope?
+          // TODO: In what scenario are there non-bind scopes?
+          t.struct!.brand.scopes[0]!.bind!.each -> (bind |
+            args.push(@_type_name(bind.type!, False))
+            if is_builder (
+              args.push(@_type_name(bind.type!, True))
+            )
+          )
+          "(\(String.join(args, ", ")))"
+        )
       )"
     | t.is_interface | "INTERFACES_NOT_IMPLEMENTED"
-    | t.is_any_pointer | "ANY_POINTER_NOT_IMPLEMENTED"
+    | t.is_any_pointer |
+      try (
+        parameter_ref = t.any_pointer!.parameter!
+        parameter_index = parameter_ref.parameter_index
+        parameters = @_find_node!(parameter_ref.scope_id).parameters
+        parameter = parameters[parameter_index.usize]!
+        "\(parameter.name)\(if is_builder "_Builder")"
+      |
+        "ANY_POINTER_NOT_IMPLEMENTED"
+      )
     | "NOT_IMPLEMENTED"
     )
 
@@ -176,6 +198,16 @@
     )\(
       if is_builder ".Builder"
     )"
+    if node.parameters.size > 0 (
+      @_out << "("
+      node.parameters.each -> (param |
+        @_out << "\n  \(param.name) CapnProto.Pointer.Struct.Type"
+        if is_builder (
+          @_out << "\n  \(param.name)_Builder CapnProto.Pointer.Struct.Builder.Type"
+        )
+      )
+      @_out << "\n)"
+    )
     @_out << "\n  :let _p CapnProto.Pointer.Struct\(
       if is_builder ".Builder"
     )"
@@ -186,6 +218,14 @@
     if is_builder (
       @_out << "\n  :fun as_reader: \(
         node_scoped_name
+      )\(
+        if node.parameters.size > 0 "\(
+          param_names Array(String) = []
+          node.parameters.each -> (param |
+            param_names.push("\(param.name)")
+          )
+          "(\(String.join(param_names, ", ")))"
+        )"
       ).read_from_pointer(@_p.as_reader)"
     |
       @_out << "\n  :new val read_val_from_pointer"
@@ -286,7 +326,17 @@
     // This would be a more efficient and ultimately simpler way to copy data,
     // but it would require additional time investment that isn't important now.
 
-    @_out << "\n\n  :fun ref copy_data_from(other \(@_node_scoped_name(node))) None"
+    @_out << "\n\n  :fun ref copy_data_from(other \(
+      @_node_scoped_name(node)
+    )\(
+      if node.parameters.size > 0 "\(
+        param_names Array(String) = []
+        node.parameters.each -> (param |
+          param_names.push("\(param.name)")
+        )
+        "(\(String.join(param_names, ", ")))"
+      )"
+    )) None"
 
     try node.struct!.fields.each -> (field |
       name String = "\(_TextCase.Snake[field.name])"
@@ -695,7 +745,24 @@
     | type.is_interface |
       @_out << "None // UNHANDLED: interface" // TODO: handle interfaces
     | type.is_any_pointer |
-      @_out << "None // UNHANDLED: anyPointer" // TODO: handle "any pointer"
+      try (
+        // Sometimes, anyPointer is a type parameter reference,
+        // and that's a case that we actually can handle.
+        parameter_ref = type.any_pointer!.parameter!
+        parameter_index = parameter_ref.parameter_index
+        parameters = @_find_node!(parameter_ref.scope_id).parameters
+        parameter = parameters[parameter_index.usize]!
+
+        @_out << "\(parameter.name)\(
+          if is_builder ("_Builder." | ".read_")
+        )from_pointer(@_p.struct\(suffix)(\(offset)\(
+          if is_builder ", \(
+            parameter.name)_Builder.capn_proto_data_word_count, \(
+            parameter.name)_Builder.capn_proto_pointer_count"
+        )))"
+      |
+        @_out << "None // UNHANDLED: non-parameter anyPointer" // TODO: handle this
+      )
     |
       @_out << "NOT_IMPLEMENTED"
     )

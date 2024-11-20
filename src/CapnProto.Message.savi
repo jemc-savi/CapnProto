@@ -1,8 +1,4 @@
-:trait box _MessageRoot
-  :new box read_from_pointer(p CapnProto.Pointer.Struct)
-  :new val read_val_from_pointer(p CapnProto.Pointer.Struct'val)
-
-:struct box CapnProto.Message(A _MessageRoot)
+:struct box CapnProto.Message(A CapnProto.Pointer.Struct.Type)
   :let _p CapnProto.Pointer.Struct
 
   :new box (@_p)
@@ -32,13 +28,7 @@
     value = segment._u64!(start_offset.u32)
     @new_val(_ParseStructPointer._parse_val!(segment, start_offset.u32, value))
 
-:trait _MessageBuilderRoot
-  :new from_pointer(p CapnProto.Pointer.Struct.Builder)
-
-  :const capn_proto_data_word_count U16: 0
-  :const capn_proto_pointer_count U16: 0
-
-:struct CapnProto.Message.Builder(A _MessageBuilderRoot)
+:struct CapnProto.Message.Builder(A CapnProto.Pointer.Struct.Builder.Type)
   :let _initial_size USize
   :let _segments CapnProto.Segments
 

@@ -956,24 +956,24 @@
   :fun data_if_set!: @_p.assert_union!(0x0, 13), @_p.data_if_set!(0)
 
   :fun is_list: @_p.check_union(0x0, 14)
-  :fun list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
-  :fun list_if_set!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
+  :fun list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: non-parameter anyPointer
+  :fun list_if_set!: @_p.assert_union!(0x0, 14), None // UNHANDLED: non-parameter anyPointer
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), @_p.u16(0x2)
   :fun enum_if_set!: @_p.assert_union!(0x0, 15), @_p.u16_if_set!(0x2)
 
   :fun is_struct: @_p.check_union(0x0, 16)
-  :fun struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
-  :fun struct_if_set!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
+  :fun struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: non-parameter anyPointer
+  :fun struct_if_set!: @_p.assert_union!(0x0, 16), None // UNHANDLED: non-parameter anyPointer
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun interface!: @_p.assert_union!(0x0, 17), None
   :fun interface_if_set!: @_p.assert_union!(0x0, 17), None
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
-  :fun any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
-  :fun any_pointer_if_set!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
+  :fun any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: non-parameter anyPointer
+  :fun any_pointer_if_set!: @_p.assert_union!(0x0, 18), None // UNHANDLED: non-parameter anyPointer
 
 :struct box CapnProto.Meta.Annotation
   :let _p CapnProto.Pointer.Struct
@@ -2484,11 +2484,11 @@
     @_p.data(0)
 
   :fun is_list: @_p.check_union(0x0, 14)
-  :fun ref list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
-  :fun ref list_if_set!: @_p.assert_union!(0x0, 14), None // UNHANDLED: anyPointer
+  :fun ref list!: @_p.assert_union!(0x0, 14), None // UNHANDLED: non-parameter anyPointer
+  :fun ref list_if_set!: @_p.assert_union!(0x0, 14), None // UNHANDLED: non-parameter anyPointer
   :fun ref init_list(new_value None)
     @_p.mark_union(0x0, 14)
-    None // UNHANDLED: anyPointer
+    None // UNHANDLED: non-parameter anyPointer
 
   :fun is_enum: @_p.check_union(0x0, 15)
   :fun enum!: @_p.assert_union!(0x0, 15), @_p.u16(0x2)
@@ -2499,11 +2499,11 @@
     @_p.u16(0x2)
 
   :fun is_struct: @_p.check_union(0x0, 16)
-  :fun ref struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
-  :fun ref struct_if_set!: @_p.assert_union!(0x0, 16), None // UNHANDLED: anyPointer
+  :fun ref struct!: @_p.assert_union!(0x0, 16), None // UNHANDLED: non-parameter anyPointer
+  :fun ref struct_if_set!: @_p.assert_union!(0x0, 16), None // UNHANDLED: non-parameter anyPointer
   :fun ref init_struct(new_value None)
     @_p.mark_union(0x0, 16)
-    None // UNHANDLED: anyPointer
+    None // UNHANDLED: non-parameter anyPointer
 
   :fun is_interface: @_p.check_union(0x0, 17)
   :fun interface!: @_p.assert_union!(0x0, 17), None
@@ -2513,11 +2513,11 @@
     None
 
   :fun is_any_pointer: @_p.check_union(0x0, 18)
-  :fun ref any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
-  :fun ref any_pointer_if_set!: @_p.assert_union!(0x0, 18), None // UNHANDLED: anyPointer
+  :fun ref any_pointer!: @_p.assert_union!(0x0, 18), None // UNHANDLED: non-parameter anyPointer
+  :fun ref any_pointer_if_set!: @_p.assert_union!(0x0, 18), None // UNHANDLED: non-parameter anyPointer
   :fun ref init_any_pointer(new_value None)
     @_p.mark_union(0x0, 18)
-    None // UNHANDLED: anyPointer
+    None // UNHANDLED: non-parameter anyPointer
 
 :struct CapnProto.Meta.Annotation.Builder
   :let _p CapnProto.Pointer.Struct.Builder

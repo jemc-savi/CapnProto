@@ -181,6 +181,33 @@
     assert: root2.bar!.some_f32 == 43.3
     assert: "\(root2.bar!.blob)" == "!!"
 
+  :it "can represent generic types with type parameters"
+    message = CapnProto.Message.Builder(
+      _Example.Tree.Builder(
+        _Example.Key, _Example.Key.Builder
+        _Example.Child, _Example.Child.Builder
+      )
+    ).new(0x4000)
+    root = message.root
+
+    deep1 = root.left.left.left
+    deep2 = root.right.right.right
+
+    deep1.key.text = "foo"
+    deep1.value.a = 11
+    deep2.key.text = "bar"
+    deep2.value.a = 22
+
+    assert: "\(deep1.key.text)" == "foo"
+    assert: deep1.value.a == 11
+    assert: "\(deep2.key.text)" == "bar"
+    assert: deep2.value.a == 22
+
+    assert: "\(deep1.as_reader.key.text)" == "foo"
+    assert: deep1.as_reader.value.a == 11
+    assert: "\(deep2.as_reader.key.text)" == "bar"
+    assert: deep2.as_reader.value.a == 22
+
   :it "lets you point two parents to the same child struct in memory"
     message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     root = message.root
