@@ -176,10 +176,10 @@
       @_segment, byte_offset, @_data_word_count, @_pointer_count
     )
 
-  :fun each
+  :fun each None
     @each_with_index -> (item, n | yield item)
 
-  :fun each_with_index
+  :fun each_with_index None
     @_list_count.times -> (n |
       try (
         byte_offset = @_byte_offset +! @_element_byte_size *! n
@@ -293,10 +293,10 @@
       @_segment, byte_offset, @_data_word_count, @_pointer_count
     )
 
-  :fun ref each
+  :fun ref each None
     @each_with_index -> (item, n | yield item)
 
-  :fun ref each_with_index
+  :fun ref each_with_index None
     @_list_count.times -> (n |
       try (
         byte_offset = @_byte_offset +! @_element_byte_size *! n
