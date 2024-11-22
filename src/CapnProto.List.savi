@@ -12,12 +12,12 @@
 
   :fun "[]!"(n USize): A.read_from_pointer(@_p[n.u32!]!)
 
-  :fun each
+  :fun each None
     :yields A
     @_p.each -> (p | yield A.read_from_pointer(p))
 
-  :fun each_with_index
-    :yields A
+  :fun each_with_index None
+    :yields (A, USize)
     @_p.each_with_index -> (p, i | yield (A.read_from_pointer(p), i.usize))
 
   :is TraceData
@@ -41,10 +41,10 @@
 
   :fun ref "[]!"(n USize): A.from_pointer(@_p[n.u32!]!)
 
-  :fun ref each
+  :fun ref each None
     :yields A
     @_p.each -> (p | yield A.from_pointer(p))
 
-  :fun ref each_with_index
-    :yields A
+  :fun ref each_with_index None
+    :yields (A, USize)
     @_p.each_with_index -> (p, i | yield (A.from_pointer(p), i.usize))
