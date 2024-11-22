@@ -4,6 +4,9 @@
   :dependency ByteStream v0
     :from "github:savi-lang/ByteStream"
 
+  :dependency Map v0
+    :from "github:savi-lang/Map"
+
 :manifest bin "spec"
   :copies CapnProto
   :sources "spec/*.savi"
@@ -13,9 +16,6 @@
     :depends on Map
     :depends on Time
     :depends on Timer
-
-  :transitive dependency Map v0
-    :from "github:savi-lang/Map"
 
   :transitive dependency Time v0
     :from "github:savi-lang/Time"

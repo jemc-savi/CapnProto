@@ -10,6 +10,7 @@
   :const capn_proto_data_word_count U16: 6
   :const capn_proto_pointer_count U16: 5
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -82,6 +83,7 @@
   :const capn_proto_data_word_count U16: 6
   :const capn_proto_pointer_count U16: 5
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -108,6 +110,7 @@
   :const capn_proto_data_word_count U16: 6
   :const capn_proto_pointer_count U16: 5
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -134,6 +137,7 @@
   :const capn_proto_data_word_count U16: 2
   :const capn_proto_pointer_count U16: 2
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -167,6 +171,7 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 4
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -197,6 +202,7 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 1
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -215,6 +221,7 @@
   :const capn_proto_data_word_count U16: 6
   :const capn_proto_pointer_count U16: 5
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -235,6 +242,22 @@
     try @init_children_and_copy_data_from(other.children_if_set!)
     try (other_foo = other.foo!, @init_foo.copy_data_from(other_foo))
     try (other_bar = other.bar!, @init_bar.copy_data_from(other_bar))
+
+  :fun ref copy_or_reference_data_from(other _Example.Root, cache CapnProto.ReferenceCache) None
+    try @_p.set_u64(0x0, other.some_u64_if_set!, 0)
+    try @_p.set_i64(0x8, other.some_i64_if_set!, 0)
+    try @_p.set_u32(0x10, other.some_u32_if_set!, 0)
+    try @_p.set_i32(0x14, other.some_i32_if_set!, 0)
+    try @_p.set_u16(0x18, other.some_u16_if_set!, 0)
+    try @_p.set_i16(0x1a, other.some_i16_if_set!, 0)
+    try @_p.set_u8(0x1c, other.some_u8_if_set!, 0)
+    try @_p.set_i8(0x1d, other.some_i8_if_set!, 0)
+    try @_p.set_text(0, "\(other.some_text_if_set!)", "")
+    try @_p.set_data(1, "\(other.some_data_if_set!)".as_bytes, b"")
+    try @copy_or_reference_child_data_from(other.child_if_set!, cache)
+    try @init_children_and_copy_or_reference_data_from(other.children_if_set!, cache)
+    try (other_foo = other.foo!, @init_foo.copy_or_reference_data_from(other_foo, cache))
+    try (other_bar = other.bar!, @init_bar.copy_or_reference_data_from(other_bar, cache))
 
   :fun some_u64: @_p.u64(0x0)
   :fun some_u64_if_set!: @_p.u64_if_set!(0x0)
@@ -279,6 +302,17 @@
   :fun ref child: _Example.Child.Builder.from_pointer(@_p.struct(2, 2, 2))
   :fun ref child_if_set!: _Example.Child.Builder.from_pointer(@_p.struct_if_set!(2, 2, 2))
   :fun ref set_child_to_point_to_existing(existing _Example.Child.Builder): _Example.Child.Builder.from_pointer(@_p.set_struct_to_point_to_existing(2, existing._p))
+  :fun ref copy_or_reference_child_data_from(other_field _Example.Child, cache CapnProto.ReferenceCache) None
+    is_new = False
+    p = cache.struct(other_field.capn_proto_absolute_address) -> (
+      is_new = True
+      @_p.struct(2, 2, 2)
+    )
+    if is_new (
+      _Example.Child.Builder.from_pointer(p).copy_or_reference_data_from(other_field, cache)
+    |
+      @set_child_to_point_to_existing(_Example.Child.Builder.from_pointer(p))
+    )
 
   :fun ref children: CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.list(3))
   :fun ref children_if_set!: CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.list_if_set!(3))
@@ -289,6 +323,13 @@
     existing.each_with_index -> (existing_item, index |
       new_item = try (list[index]! | next)
       new_item.copy_data_from(existing_item)
+    )
+    list
+  :fun ref init_children_and_copy_or_reference_data_from(existing CapnProto.List(_Example.Child), cache CapnProto.ReferenceCache)
+    list = CapnProto.List.Builder(_Example.Child.Builder).from_pointer(@_p.init_list(3, 2, 2, existing.size))
+    existing.each_with_index -> (existing_item, index |
+      new_item = try (list[index]! | next)
+      new_item.copy_or_reference_data_from(existing_item, cache)
     )
     list
   :fun ref trim_children(new_start, new_finish)
@@ -322,12 +363,18 @@
   :const capn_proto_data_word_count U16: 6
   :const capn_proto_pointer_count U16: 5
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Root.AS_foo) None
+    try @_p.set_u64(0x20, other.some_u64_if_set!, 0)
+    try @_p.set_u32(0x28, other.some_u32_if_set!, 0)
+    try @_p.set_text(4, "\(other.txt_if_set!)", "")
+
+  :fun ref copy_or_reference_data_from(other _Example.Root.AS_foo, cache CapnProto.ReferenceCache) None
     try @_p.set_u64(0x20, other.some_u64_if_set!, 0)
     try @_p.set_u32(0x28, other.some_u32_if_set!, 0)
     try @_p.set_text(4, "\(other.txt_if_set!)", "")
@@ -352,12 +399,18 @@
   :const capn_proto_data_word_count U16: 6
   :const capn_proto_pointer_count U16: 5
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Root.AS_bar) None
+    try @_p.set_f64(0x20, other.some_f64_if_set!, 0.0)
+    try @_p.set_f32(0x28, other.some_f32_if_set!, 0.0)
+    try @_p.set_data(4, "\(other.blob_if_set!)".as_bytes, b"")
+
+  :fun ref copy_or_reference_data_from(other _Example.Root.AS_bar, cache CapnProto.ReferenceCache) None
     try @_p.set_f64(0x20, other.some_f64_if_set!, 0.0)
     try @_p.set_f32(0x28, other.some_f32_if_set!, 0.0)
     try @_p.set_data(4, "\(other.blob_if_set!)".as_bytes, b"")
@@ -382,6 +435,7 @@
   :const capn_proto_data_word_count U16: 2
   :const capn_proto_pointer_count U16: 2
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -392,6 +446,12 @@
     try @_p.set_u64(0x8, other.b_if_set!, 0)
     try @_p.set_text(0, "\(other.name_if_set!)", "")
     try (other_referenced = other.referenced_if_set!, @referenced.copy_data_from(other_referenced))
+
+  :fun ref copy_or_reference_data_from(other _Example.Child, cache CapnProto.ReferenceCache) None
+    try @_p.set_u64(0x0, other.a_if_set!, 0)
+    try @_p.set_u64(0x8, other.b_if_set!, 0)
+    try @_p.set_text(0, "\(other.name_if_set!)", "")
+    try @copy_or_reference_referenced_data_from(other.referenced_if_set!, cache)
 
   :fun a: @_p.u64(0x0)
   :fun a_if_set!: @_p.u64_if_set!(0x0)
@@ -408,6 +468,17 @@
   :fun ref referenced: _Example.Child.Builder.from_pointer(@_p.struct(1, 2, 2))
   :fun ref referenced_if_set!: _Example.Child.Builder.from_pointer(@_p.struct_if_set!(1, 2, 2))
   :fun ref set_referenced_to_point_to_existing(existing _Example.Child.Builder): _Example.Child.Builder.from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
+  :fun ref copy_or_reference_referenced_data_from(other_field _Example.Child, cache CapnProto.ReferenceCache) None
+    is_new = False
+    p = cache.struct(other_field.capn_proto_absolute_address) -> (
+      is_new = True
+      @_p.struct(1, 2, 2)
+    )
+    if is_new (
+      _Example.Child.Builder.from_pointer(p).copy_or_reference_data_from(other_field, cache)
+    |
+      @set_referenced_to_point_to_existing(_Example.Child.Builder.from_pointer(p))
+    )
 
 :struct _Example.Tree.Builder(
   K CapnProto.Pointer.Struct.Type
@@ -422,6 +493,7 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 4
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
@@ -431,13 +503,39 @@
     try (other_left = other.left_if_set!, @left.copy_data_from(other_left))
     try (other_right = other.right_if_set!, @right.copy_data_from(other_right))
 
+  :fun ref copy_or_reference_data_from(other _Example.Tree(K, V), cache CapnProto.ReferenceCache) None
+    try @copy_or_reference_left_data_from(other.left_if_set!, cache)
+    try @copy_or_reference_right_data_from(other.right_if_set!, cache)
+
   :fun ref left: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct(0, 0, 4))
   :fun ref left_if_set!: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct_if_set!(0, 0, 4))
   :fun ref set_left_to_point_to_existing(existing _Example.Tree.Builder(K, K_Builder, V, V_Builder)): _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.set_struct_to_point_to_existing(0, existing._p))
+  :fun ref copy_or_reference_left_data_from(other_field _Example.Tree(K, V), cache CapnProto.ReferenceCache) None
+    is_new = False
+    p = cache.struct(other_field.capn_proto_absolute_address) -> (
+      is_new = True
+      @_p.struct(0, 0, 4)
+    )
+    if is_new (
+      _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(p).copy_or_reference_data_from(other_field, cache)
+    |
+      @set_left_to_point_to_existing(_Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(p))
+    )
 
   :fun ref right: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct(1, 0, 4))
   :fun ref right_if_set!: _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.struct_if_set!(1, 0, 4))
   :fun ref set_right_to_point_to_existing(existing _Example.Tree.Builder(K, K_Builder, V, V_Builder)): _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(@_p.set_struct_to_point_to_existing(1, existing._p))
+  :fun ref copy_or_reference_right_data_from(other_field _Example.Tree(K, V), cache CapnProto.ReferenceCache) None
+    is_new = False
+    p = cache.struct(other_field.capn_proto_absolute_address) -> (
+      is_new = True
+      @_p.struct(1, 0, 4)
+    )
+    if is_new (
+      _Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(p).copy_or_reference_data_from(other_field, cache)
+    |
+      @set_right_to_point_to_existing(_Example.Tree.Builder(K, K_Builder, V, V_Builder).from_pointer(p))
+    )
 
   :fun ref key: K_Builder.from_pointer(@_p.struct(2, K_Builder.capn_proto_data_word_count, K_Builder.capn_proto_pointer_count))
   :fun ref key_if_set!: K_Builder.from_pointer(@_p.struct_if_set!(2, K_Builder.capn_proto_data_word_count, K_Builder.capn_proto_pointer_count))
@@ -453,12 +551,16 @@
   :const capn_proto_data_word_count U16: 0
   :const capn_proto_pointer_count U16: 1
   :fun capn_proto_address U64: @_p.capn_proto_address
+  :fun capn_proto_absolute_address USize: @_p.absolute_address
 
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Key) None
+    try @_p.set_text(0, "\(other.text_if_set!)", "")
+
+  :fun ref copy_or_reference_data_from(other _Example.Key, cache CapnProto.ReferenceCache) None
     try @_p.set_text(0, "\(other.text_if_set!)", "")
 
   :fun ref text: @_p.text(0)

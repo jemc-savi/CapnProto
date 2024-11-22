@@ -270,6 +270,30 @@
     assert: root.children[1]!.referenced.b == 44
     assert: "\(root.children[1]!.referenced.name)" == "bar"
 
+    message2 = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
+    root2 = message2.root
+    cache = CapnProto.ReferenceCache.new
+
+    root2.copy_or_reference_data_from(root.as_reader, cache)
+
+    assert: root2.children.size == 4
+    assert: root2.children[0]!.referenced.a == 55
+    assert: root2.children[0]!.referenced.b == 66
+    assert: "\(root2.children[0]!.referenced.name)" == "baz"
+    assert: root2.children[1]!.referenced.a == 33
+    assert: root2.children[1]!.referenced.b == 44
+    assert: "\(root2.children[1]!.referenced.name)" == "bar"
+    assert: root2.children[2]!.referenced.a == 55
+    assert: root2.children[2]!.referenced.b == 66
+    assert: "\(root2.children[2]!.referenced.name)" == "baz"
+    assert: root2.children[3]!.referenced.a == 77
+    assert: root2.children[3]!.referenced.b == 88
+    assert: "\(root2.children[3]!.referenced.name)" == "qux"
+    assert: root2.children[0]!.referenced.capn_proto_absolute_address ==
+      root2.children[2]!.referenced.capn_proto_absolute_address
+    assert: root.children[0]!.referenced.capn_proto_absolute_address !=
+      root2.children[0]!.referenced.capn_proto_absolute_address
+
   :it "lets you take the resulting byte buffers"
     message = CapnProto.Message.Builder(_Example.Root.Builder).new(0x4000)
     buffers = message.take_val_buffers
