@@ -1,0 +1,8 @@
+:class CapnProto.ReferenceCache
+  :let _structs: Map(USize, CapnProto.Pointer.Struct.Builder).new
+
+  :fun ref struct(absolute_address USize)
+    :yields None for CapnProto.Pointer.Struct.Builder
+    @_structs.get_or_insert(absolute_address) -> (
+      yield None
+    )

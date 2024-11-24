@@ -243,6 +243,7 @@
         struct.pointer_count
       )"
       @_out << "\n  :fun capn_proto_address U64: @_p.capn_proto_address"
+      @_out << "\n  :fun capn_proto_absolute_address USize: @_p.absolute_address"
     )
 
     // Emit constant values.
@@ -261,7 +262,10 @@
 
     // Emit data tracing methods.
     @_emit_trace_data(node, is_builder)
-    if is_builder @_emit_copy_data_from(node)
+    if is_builder (
+      @_emit_copy_data_from(node, False)
+      @_emit_copy_data_from(node, True)
+    )
 
     // Emit field accessor methods.
     fields = try (node.struct!.fields | return)
@@ -274,6 +278,7 @@
         try @_emit_field_setter!(node, field)
         try @_emit_field_list_initter!(node, field)
         try @_emit_field_list_initter!(node, field, True)
+        try @_emit_field_list_initter!(node, field, True, True)
         try @_emit_field_list_trimmer!(node, field)
         try @_emit_field_union_initter!(node, field)
       )
@@ -320,13 +325,14 @@
       @_out << "\n    )"
     )
 
-  :fun ref _emit_copy_data_from(node CapnProto.Meta.Node)
+  :fun ref _emit_copy_data_from(node CapnProto.Meta.Node, try_reference Bool)
     // TODO: It should be possible to copy data (without knowing the schema
     // of every type we're copying) at the underlying pointer level.
     // This would be a more efficient and ultimately simpler way to copy data,
     // but it would require additional time investment that isn't important now.
+    copy_data_fn_name val = "copy\(if try_reference "_or_reference")_data_from"
 
-    @_out << "\n\n  :fun ref copy_data_from(other \(
+    @_out << "\n\n  :fun ref \(copy_data_fn_name)(other \(
       @_node_scoped_name(node)
     )\(
       if node.parameters.size > 0 "\(
@@ -336,6 +342,8 @@
         )
         "(\(String.join(param_names, ", ")))"
       )"
+    )\(
+      if try_reference ", cache CapnProto.ReferenceCache"
     )) None"
 
     try node.struct!.fields.each -> (field |
@@ -346,7 +354,7 @@
 
       slot = try (field.slot! |
         // If the field is not a slot, it must be a group.
-        @_out << "\n    try (other_\(name) = other.\(name)\(get_suffix)!, @\(init_prefix)\(name).copy_data_from(other_\(name)))"
+        @_out << "\n    try (other_\(name) = other.\(name)\(get_suffix)!, @\(init_prefix)\(name).\(copy_data_fn_name)(other_\(name)\(if try_reference ", cache")))"
         next
       )
 
@@ -356,7 +364,11 @@
           @_out << "\n    if other.is_\(name) @init_\(name)"
         )
       | slot.type.is_struct |
-        @_out << "\n    try (other_\(name) = other.\(name)\(get_suffix)!, @\(init_prefix)\(name).copy_data_from(other_\(name)))"
+        if try_reference (
+          @_out << "\n    try @copy_or_reference_\(name)_data_from(other.\(name)\(get_suffix)!, cache)"
+        |
+          @_out << "\n    try (other_\(name) = other.\(name)\(get_suffix)!, @\(init_prefix)\(name).\(copy_data_fn_name)(other_\(name)\(if try_reference ", cache")))"
+        )
       | slot.type.is_text |
         @_out << "\n    try "
         @_emit_field_set_expr(field, "\"\\(other.\(name)\(get_suffix)!)\"") // TODO: avoid intermediate string copy
@@ -364,7 +376,7 @@
         @_out << "\n    try "
         @_emit_field_set_expr(field, "\"\\(other.\(name)\(get_suffix)!)\".as_bytes") // TODO: avoid intermediate string copy
       | slot.type.is_list |
-        @_out << "\n    try @init_\(name)_and_copy_data_from(other.\(name)\(get_suffix)!)"
+        @_out << "\n    try @init_\(name)_and_\(copy_data_fn_name)(other.\(name)\(get_suffix)!\(if try_reference ", cache"))"
       | @_is_pointer_type(slot.type) | // TODO: handle other pointer types
       |
         @_out << "\n    try "
@@ -410,9 +422,6 @@
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
   )
-    is_union = field.discriminant_value != field.no_discriminant
-    error! if is_union
-
     slot = field.slot!
     // TODO: Implement other pointer-sharing setter options
     error! if (
@@ -424,21 +433,47 @@
     )
 
     if slot.type.is_struct (
+      snake_case_name = _TextCase.Snake[field.name]
       @_out << "\n  :fun ref set_\(
-        _TextCase.Snake[field.name]
+        snake_case_name
       )_to_point_to_existing(existing \(
         @_type_name(slot.type, True)
       )): "
       @_emit_field_set_to_point_to_existing_expr(field, "existing._p")
+
+      @_out << "\n  :fun ref copy_or_reference_\(
+        snake_case_name
+      )_data_from(other_field \(
+        @_type_name(slot.type, False)
+      ), cache CapnProto.ReferenceCache) None"
+
+      try (
+        struct = @_find_node!(slot.type.struct!.type_id).struct!
+
+        @_out << "\n    is_new = False"
+        @_out << "\n    p = cache.struct(other_field.capn_proto_absolute_address) -> ("
+        @_out << "\n      is_new = True"
+        @_out << "\n      @_p.struct(\(slot.offset), \(struct.data_word_count), \(struct.pointer_count))"
+        @_out << "\n    )"
+        @_out << "\n    if is_new ("
+        @_out << "\n      \(@_type_name(slot.type, True)).from_pointer(p).copy_or_reference_data_from(other_field, cache)"
+        @_out << "\n    |"
+        @_out << "\n      @set_\(snake_case_name)_to_point_to_existing(\(@_type_name(slot.type, True)).from_pointer(p))"
+        @_out << "\n    )"
+      )
     |
-      @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
-      @_emit_field_set_expr(field, "new_value")
+      is_not_union = field.discriminant_value == field.no_discriminant
+      if is_not_union (
+        @_out << "\n  :fun ref \"\(_TextCase.Snake[field.name])=\"(new_value): "
+        @_emit_field_set_expr(field, "new_value")
+      )
     )
 
   :fun ref _emit_field_list_initter!(
     node CapnProto.Meta.Node
     field CapnProto.Meta.Field
     is_copy Bool = False
+    try_reference Bool = False
   )
     slot = field.slot!
     type = slot.type
@@ -449,11 +484,20 @@
     suffix = ""
     params = "new_count"
     init_list_args = "new_count"
+    copy_from_args = ""
 
     if is_copy (
-      suffix = "_and_copy_data_from"
-      params = "existing \(@_type_name(type, False))"
-      init_list_args = "existing.size"
+      if try_reference (
+        suffix = "_and_copy_or_reference_data_from"
+        params = "existing \(@_type_name(type, False)), cache CapnProto.ReferenceCache"
+        init_list_args = "existing.size"
+        copy_from_args = "existing_item, cache"
+      |
+        suffix = "_and_copy_data_from"
+        params = "existing \(@_type_name(type, False))"
+        init_list_args = "existing.size"
+        copy_from_args = "existing_item"
+      )
     )
 
     @_out << "\n  :fun ref init_\(
@@ -487,7 +531,7 @@
     if is_copy (
       @_out << "\n    existing.each_with_index -> (existing_item, index |"
       @_out << "\n      new_item = try (list[index]! | next)"
-      @_out << "\n      new_item.copy_data_from(existing_item)"
+      @_out << "\n      new_item.copy\(if try_reference "_or_reference")_data_from(\(copy_from_args))"
       @_out << "\n    )"
       @_out << "\n    list"
     )
@@ -596,7 +640,7 @@
     field CapnProto.Meta.Field
     is_builder Bool
     is_get_if_set Bool
-  )
+  ) None
     suffix = if is_get_if_set ("_if_set!" | "")
 
     // First, handle the case where the field is a group instead of a slot.
