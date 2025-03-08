@@ -364,6 +364,15 @@
   :fun ref clear_32(n): try @_set_u32!(n, 0), @
   :fun ref clear_64(n): try @_set_u64!(n, 0), @
 
+  :fun ref copy_data_section_from(other CapnProto.Pointer.Struct)
+    byte_count = other._data_word_count.at_most(@_data_word_count).usize * 8
+    @_segment._bytes.copy_from(
+      other._segment._bytes
+      other._byte_offset.usize
+      other._byte_offset.usize + byte_count
+      @_byte_offset.usize
+    )
+
   :fun ref clear_pointer(n)
     try @_segment._set_u64!(@_ptr_byte_offset!(n), 0)
     @

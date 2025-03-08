@@ -378,9 +378,12 @@
       | slot.type.is_list |
         @_out << "\n    try @init_\(name)_and_\(copy_data_fn_name)(other.\(name)\(get_suffix)!\(if try_reference ", cache"))"
       | @_is_pointer_type(slot.type) | // TODO: handle other pointer types
-      |
-        @_out << "\n    try "
-        @_emit_field_set_expr(field, "other.\(name)\(get_suffix)!")
+      )
+    )
+
+    try (
+      if node.struct!.data_word_count > 0 (
+        @_out << "\n    @_p.copy_data_section_from(other._p)"
       )
     )
 
