@@ -1137,10 +1137,7 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Node) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @_p.set_text(0, "\(other.display_name_if_set!)", "")
-    try @_p.set_u32(0x8, other.display_name_prefix_length_if_set!, 0)
-    try @_p.set_u64(0x10, other.scope_id_if_set!, 0)
     try @init_nested_nodes_and_copy_data_from(other.nested_nodes_if_set!)
     try @init_annotations_and_copy_data_from(other.annotations_if_set!)
     if other.is_file @init_file
@@ -1150,13 +1147,10 @@
     try (other_const = other.const!, @init_const.copy_data_from(other_const))
     try (other_annotation = other.annotation!, @init_annotation.copy_data_from(other_annotation))
     try @init_parameters_and_copy_data_from(other.parameters_if_set!)
-    try @_p.set_bool(0x24, 0b00000001, Bool[other.is_generic_if_set!])
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @_p.set_text(0, "\(other.display_name_if_set!)", "")
-    try @_p.set_u32(0x8, other.display_name_prefix_length_if_set!, 0)
-    try @_p.set_u64(0x10, other.scope_id_if_set!, 0)
     try @init_nested_nodes_and_copy_or_reference_data_from(other.nested_nodes_if_set!, cache)
     try @init_annotations_and_copy_or_reference_data_from(other.annotations_if_set!, cache)
     if other.is_file @init_file
@@ -1166,7 +1160,7 @@
     try (other_const = other.const!, @init_const.copy_or_reference_data_from(other_const, cache))
     try (other_annotation = other.annotation!, @init_annotation.copy_or_reference_data_from(other_annotation, cache))
     try @init_parameters_and_copy_or_reference_data_from(other.parameters_if_set!, cache)
-    try @_p.set_bool(0x24, 0b00000001, Bool[other.is_generic_if_set!])
+    @_p.copy_data_section_from(other._p)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -1333,22 +1327,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Node.AS_struct) None
-    try @_p.set_u16(0xe, other.data_word_count_if_set!, 0)
-    try @_p.set_u16(0x18, other.pointer_count_if_set!, 0)
-    try @_p.set_u16(0x1a, CapnProto.Meta.ElementSize[other.preferred_list_encoding_if_set!].u16, 0)
-    try @_p.set_bool(0x1c, 0b00000001, Bool[other.is_group_if_set!])
-    try @_p.set_u16(0x1e, other.discriminant_count_if_set!, 0)
-    try @_p.set_u32(0x20, other.discriminant_offset_if_set!, 0)
     try @init_fields_and_copy_data_from(other.fields_if_set!)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node.AS_struct, cache CapnProto.ReferenceCache) None
-    try @_p.set_u16(0xe, other.data_word_count_if_set!, 0)
-    try @_p.set_u16(0x18, other.pointer_count_if_set!, 0)
-    try @_p.set_u16(0x1a, CapnProto.Meta.ElementSize[other.preferred_list_encoding_if_set!].u16, 0)
-    try @_p.set_bool(0x1c, 0b00000001, Bool[other.is_group_if_set!])
-    try @_p.set_u16(0x1e, other.discriminant_count_if_set!, 0)
-    try @_p.set_u32(0x20, other.discriminant_offset_if_set!, 0)
     try @init_fields_and_copy_or_reference_data_from(other.fields_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun data_word_count: @_p.u16(0xe)
   :fun data_word_count_if_set!: @_p.u16_if_set!(0xe)
@@ -1411,9 +1395,11 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Node.AS_enum) None
     try @init_enumerants_and_copy_data_from(other.enumerants_if_set!)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node.AS_enum, cache CapnProto.ReferenceCache) None
     try @init_enumerants_and_copy_or_reference_data_from(other.enumerants_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref enumerants: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list(3))
   :fun ref enumerants_if_set!: CapnProto.List.Builder(CapnProto.Meta.Enumerant.Builder).from_pointer(@_p.list_if_set!(3))
@@ -1453,10 +1439,12 @@
   :fun ref copy_data_from(other CapnProto.Meta.Node.AS_interface) None
     try @init_methods_and_copy_data_from(other.methods_if_set!)
     try @init_superclasses_and_copy_data_from(other.superclasses_if_set!)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node.AS_interface, cache CapnProto.ReferenceCache) None
     try @init_methods_and_copy_or_reference_data_from(other.methods_if_set!, cache)
     try @init_superclasses_and_copy_or_reference_data_from(other.superclasses_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref methods: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list(3))
   :fun ref methods_if_set!: CapnProto.List.Builder(CapnProto.Meta.Method.Builder).from_pointer(@_p.list_if_set!(3))
@@ -1517,10 +1505,12 @@
   :fun ref copy_data_from(other CapnProto.Meta.Node.AS_const) None
     try (other_type = other.type_if_set!, @type.copy_data_from(other_type))
     try (other_value = other.value_if_set!, @value.copy_data_from(other_value))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node.AS_const, cache CapnProto.ReferenceCache) None
     try @copy_or_reference_type_data_from(other.type_if_set!, cache)
     try @copy_or_reference_value_data_from(other.value_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
@@ -1568,33 +1558,11 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Node.AS_annotation) None
     try (other_type = other.type_if_set!, @type.copy_data_from(other_type))
-    try @_p.set_bool(0xe, 0b00000001, Bool[other.targets_file_if_set!])
-    try @_p.set_bool(0xe, 0b00000010, Bool[other.targets_const_if_set!])
-    try @_p.set_bool(0xe, 0b00000100, Bool[other.targets_enum_if_set!])
-    try @_p.set_bool(0xe, 0b00001000, Bool[other.targets_enumerant_if_set!])
-    try @_p.set_bool(0xe, 0b00010000, Bool[other.targets_struct_if_set!])
-    try @_p.set_bool(0xe, 0b00100000, Bool[other.targets_field_if_set!])
-    try @_p.set_bool(0xe, 0b01000000, Bool[other.targets_union_if_set!])
-    try @_p.set_bool(0xe, 0b10000000, Bool[other.targets_group_if_set!])
-    try @_p.set_bool(0xf, 0b00000001, Bool[other.targets_interface_if_set!])
-    try @_p.set_bool(0xf, 0b00000010, Bool[other.targets_method_if_set!])
-    try @_p.set_bool(0xf, 0b00000100, Bool[other.targets_param_if_set!])
-    try @_p.set_bool(0xf, 0b00001000, Bool[other.targets_annotation_if_set!])
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node.AS_annotation, cache CapnProto.ReferenceCache) None
     try @copy_or_reference_type_data_from(other.type_if_set!, cache)
-    try @_p.set_bool(0xe, 0b00000001, Bool[other.targets_file_if_set!])
-    try @_p.set_bool(0xe, 0b00000010, Bool[other.targets_const_if_set!])
-    try @_p.set_bool(0xe, 0b00000100, Bool[other.targets_enum_if_set!])
-    try @_p.set_bool(0xe, 0b00001000, Bool[other.targets_enumerant_if_set!])
-    try @_p.set_bool(0xe, 0b00010000, Bool[other.targets_struct_if_set!])
-    try @_p.set_bool(0xe, 0b00100000, Bool[other.targets_field_if_set!])
-    try @_p.set_bool(0xe, 0b01000000, Bool[other.targets_union_if_set!])
-    try @_p.set_bool(0xe, 0b10000000, Bool[other.targets_group_if_set!])
-    try @_p.set_bool(0xf, 0b00000001, Bool[other.targets_interface_if_set!])
-    try @_p.set_bool(0xf, 0b00000010, Bool[other.targets_method_if_set!])
-    try @_p.set_bool(0xf, 0b00000100, Bool[other.targets_param_if_set!])
-    try @_p.set_bool(0xf, 0b00001000, Bool[other.targets_annotation_if_set!])
+    @_p.copy_data_section_from(other._p)
 
   :fun ref type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(3, 3, 1))
   :fun ref type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(3, 3, 1))
@@ -1699,11 +1667,11 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Node.NestedNode) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Node.NestedNode, cache CapnProto.ReferenceCache) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1731,21 +1699,19 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Field) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u16(0x0, other.code_order_if_set!, 0)
     try @init_annotations_and_copy_data_from(other.annotations_if_set!)
-    try @_p.set_u16(0x2, other.discriminant_value_if_set!, 65535)
     try (other_slot = other.slot!, @init_slot.copy_data_from(other_slot))
     try (other_group = other.group!, @init_group.copy_data_from(other_group))
     try (other_ordinal = other.ordinal_if_set!, @ordinal.copy_data_from(other_ordinal))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Field, cache CapnProto.ReferenceCache) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u16(0x0, other.code_order_if_set!, 0)
     try @init_annotations_and_copy_or_reference_data_from(other.annotations_if_set!, cache)
-    try @_p.set_u16(0x2, other.discriminant_value_if_set!, 65535)
     try (other_slot = other.slot!, @init_slot.copy_or_reference_data_from(other_slot, cache))
     try (other_group = other.group!, @init_group.copy_or_reference_data_from(other_group, cache))
     try (other_ordinal = other.ordinal_if_set!, @ordinal.copy_or_reference_data_from(other_ordinal, cache))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1817,16 +1783,14 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Field.AS_slot) None
-    try @_p.set_u32(0x4, other.offset_if_set!, 0)
     try (other_type = other.type_if_set!, @type.copy_data_from(other_type))
     try (other_default_value = other.default_value_if_set!, @default_value.copy_data_from(other_default_value))
-    try @_p.set_bool(0x10, 0b00000001, Bool[other.had_explicit_default_if_set!])
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Field.AS_slot, cache CapnProto.ReferenceCache) None
-    try @_p.set_u32(0x4, other.offset_if_set!, 0)
     try @copy_or_reference_type_data_from(other.type_if_set!, cache)
     try @copy_or_reference_default_value_data_from(other.default_value_if_set!, cache)
-    try @_p.set_bool(0x10, 0b00000001, Bool[other.had_explicit_default_if_set!])
+    @_p.copy_data_section_from(other._p)
 
   :fun offset: @_p.u32(0x4)
   :fun offset_if_set!: @_p.u32_if_set!(0x4)
@@ -1881,10 +1845,10 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Field.AS_group) None
-    try @_p.set_u64(0x10, other.type_id_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Field.AS_group, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x10, other.type_id_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun type_id: @_p.u64(0x10)
   :fun type_id_if_set!: @_p.u64_if_set!(0x10)
@@ -1906,11 +1870,11 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Field.AS_ordinal) None
     if other.is_implicit @init_implicit
-    try @_p.set_u16(0xc, other.explicit!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Field.AS_ordinal, cache CapnProto.ReferenceCache) None
     if other.is_implicit @init_implicit
-    try @_p.set_u16(0xc, other.explicit!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun is_implicit: @_p.check_union(0xa, 0)
   :fun implicit!: @_p.assert_union!(0xa, 0), None
@@ -1943,13 +1907,13 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Enumerant) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u16(0x0, other.code_order_if_set!, 0)
     try @init_annotations_and_copy_data_from(other.annotations_if_set!)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Enumerant, cache CapnProto.ReferenceCache) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u16(0x0, other.code_order_if_set!, 0)
     try @init_annotations_and_copy_or_reference_data_from(other.annotations_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -1995,12 +1959,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Superclass) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try (other_brand = other.brand_if_set!, @brand.copy_data_from(other_brand))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Superclass, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @copy_or_reference_brand_data_from(other.brand_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -2037,23 +2001,19 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Method) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u16(0x0, other.code_order_if_set!, 0)
-    try @_p.set_u64(0x8, other.param_struct_type_if_set!, 0)
-    try @_p.set_u64(0x10, other.result_struct_type_if_set!, 0)
     try @init_annotations_and_copy_data_from(other.annotations_if_set!)
     try (other_param_brand = other.param_brand_if_set!, @param_brand.copy_data_from(other_param_brand))
     try (other_result_brand = other.result_brand_if_set!, @result_brand.copy_data_from(other_result_brand))
     try @init_implicit_parameters_and_copy_data_from(other.implicit_parameters_if_set!)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Method, cache CapnProto.ReferenceCache) None
     try @_p.set_text(0, "\(other.name_if_set!)", "")
-    try @_p.set_u16(0x0, other.code_order_if_set!, 0)
-    try @_p.set_u64(0x8, other.param_struct_type_if_set!, 0)
-    try @_p.set_u64(0x10, other.result_struct_type_if_set!, 0)
     try @init_annotations_and_copy_or_reference_data_from(other.annotations_if_set!, cache)
     try @copy_or_reference_param_brand_data_from(other.param_brand_if_set!, cache)
     try @copy_or_reference_result_brand_data_from(other.result_brand_if_set!, cache)
     try @init_implicit_parameters_and_copy_or_reference_data_from(other.implicit_parameters_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref name: @_p.text(0)
   :fun ref name_if_set!: @_p.text_if_set!(0)
@@ -2177,6 +2137,7 @@
     try (other_struct = other.struct!, @init_struct.copy_data_from(other_struct))
     try (other_interface = other.interface!, @init_interface.copy_data_from(other_interface))
     try (other_any_pointer = other.any_pointer!, @init_any_pointer.copy_data_from(other_any_pointer))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type, cache CapnProto.ReferenceCache) None
     if other.is_void @init_void
@@ -2198,6 +2159,7 @@
     try (other_struct = other.struct!, @init_struct.copy_or_reference_data_from(other_struct, cache))
     try (other_interface = other.interface!, @init_interface.copy_or_reference_data_from(other_interface, cache))
     try (other_any_pointer = other.any_pointer!, @init_any_pointer.copy_or_reference_data_from(other_any_pointer, cache))
+    @_p.copy_data_section_from(other._p)
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
@@ -2355,9 +2317,11 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Type.AS_list) None
     try (other_element_type = other.element_type_if_set!, @element_type.copy_data_from(other_element_type))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_list, cache CapnProto.ReferenceCache) None
     try @copy_or_reference_element_type_data_from(other.element_type_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref element_type: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct(0, 3, 1))
   :fun ref element_type_if_set!: CapnProto.Meta.Type.Builder.from_pointer(@_p.struct_if_set!(0, 3, 1))
@@ -2389,12 +2353,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Type.AS_enum) None
-    try @_p.set_u64(0x8, other.type_id_if_set!, 0)
     try (other_brand = other.brand_if_set!, @brand.copy_data_from(other_brand))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_enum, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x8, other.type_id_if_set!, 0)
     try @copy_or_reference_brand_data_from(other.brand_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -2430,12 +2394,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Type.AS_struct) None
-    try @_p.set_u64(0x8, other.type_id_if_set!, 0)
     try (other_brand = other.brand_if_set!, @brand.copy_data_from(other_brand))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_struct, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x8, other.type_id_if_set!, 0)
     try @copy_or_reference_brand_data_from(other.brand_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -2471,12 +2435,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Type.AS_interface) None
-    try @_p.set_u64(0x8, other.type_id_if_set!, 0)
     try (other_brand = other.brand_if_set!, @brand.copy_data_from(other_brand))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_interface, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x8, other.type_id_if_set!, 0)
     try @copy_or_reference_brand_data_from(other.brand_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun type_id: @_p.u64(0x8)
   :fun type_id_if_set!: @_p.u64_if_set!(0x8)
@@ -2515,11 +2479,13 @@
     try (other_unconstrained = other.unconstrained!, @init_unconstrained.copy_data_from(other_unconstrained))
     try (other_parameter = other.parameter!, @init_parameter.copy_data_from(other_parameter))
     try (other_implicit_method_parameter = other.implicit_method_parameter!, @init_implicit_method_parameter.copy_data_from(other_implicit_method_parameter))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_anyPointer, cache CapnProto.ReferenceCache) None
     try (other_unconstrained = other.unconstrained!, @init_unconstrained.copy_or_reference_data_from(other_unconstrained, cache))
     try (other_parameter = other.parameter!, @init_parameter.copy_or_reference_data_from(other_parameter, cache))
     try (other_implicit_method_parameter = other.implicit_method_parameter!, @init_implicit_method_parameter.copy_or_reference_data_from(other_implicit_method_parameter, cache))
+    @_p.copy_data_section_from(other._p)
 
   :fun is_unconstrained: @_p.check_union(0x8, 0)
   :fun ref unconstrained!: @_p.assert_union!(0x8, 0), CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained.Builder.from_pointer(@_p)
@@ -2564,12 +2530,14 @@
     if other.is_struct @init_struct
     if other.is_list @init_list
     if other.is_capability @init_capability
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_anyPointer.AS_unconstrained, cache CapnProto.ReferenceCache) None
     if other.is_any_kind @init_any_kind
     if other.is_struct @init_struct
     if other.is_list @init_list
     if other.is_capability @init_capability
+    @_p.copy_data_section_from(other._p)
 
   :fun is_any_kind: @_p.check_union(0xa, 0)
   :fun any_kind!: @_p.assert_union!(0xa, 0), None
@@ -2614,12 +2582,10 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Type.AS_anyPointer.AS_parameter) None
-    try @_p.set_u64(0x10, other.scope_id_if_set!, 0)
-    try @_p.set_u16(0xa, other.parameter_index_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_anyPointer.AS_parameter, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x10, other.scope_id_if_set!, 0)
-    try @_p.set_u16(0xa, other.parameter_index_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun scope_id: @_p.u64(0x10)
   :fun scope_id_if_set!: @_p.u64_if_set!(0x10)
@@ -2644,10 +2610,10 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter) None
-    try @_p.set_u16(0xa, other.parameter_index_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Type.AS_anyPointer.AS_implicitMethodParameter, cache CapnProto.ReferenceCache) None
-    try @_p.set_u16(0xa, other.parameter_index_if_set!, 0)
+    @_p.copy_data_section_from(other._p)
 
   :fun parameter_index: @_p.u16(0xa)
   :fun parameter_index_if_set!: @_p.u16_if_set!(0xa)
@@ -2709,14 +2675,14 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Brand.Scope) None
-    try @_p.set_u64(0x0, other.scope_id_if_set!, 0)
     try @init_bind_and_copy_data_from(other.bind!)
     if other.is_inherit @init_inherit
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Brand.Scope, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.scope_id_if_set!, 0)
     try @init_bind_and_copy_or_reference_data_from(other.bind!, cache)
     if other.is_inherit @init_inherit
+    @_p.copy_data_section_from(other._p)
 
   :fun scope_id: @_p.u64(0x0)
   :fun scope_id_if_set!: @_p.u64_if_set!(0x0)
@@ -2769,10 +2735,12 @@
   :fun ref copy_data_from(other CapnProto.Meta.Brand.Binding) None
     if other.is_unbound @init_unbound
     try (other_type = other.type!, @init_type.copy_data_from(other_type))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Brand.Binding, cache CapnProto.ReferenceCache) None
     if other.is_unbound @init_unbound
     try @copy_or_reference_type_data_from(other.type!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun is_unbound: @_p.check_union(0x0, 0)
   :fun unbound!: @_p.assert_union!(0x0, 0), None
@@ -2817,39 +2785,17 @@
 
   :fun ref copy_data_from(other CapnProto.Meta.Value) None
     if other.is_void @init_void
-    try @_p.set_bool(0x2, 0b00000001, Bool[other.bool!])
-    try @_p.set_i8(0x2, other.int8!, 0)
-    try @_p.set_i16(0x2, other.int16!, 0)
-    try @_p.set_i32(0x4, other.int32!, 0)
-    try @_p.set_i64(0x8, other.int64!, 0)
-    try @_p.set_u8(0x2, other.uint8!, 0)
-    try @_p.set_u16(0x2, other.uint16!, 0)
-    try @_p.set_u32(0x4, other.uint32!, 0)
-    try @_p.set_u64(0x8, other.uint64!, 0)
-    try @_p.set_f32(0x4, other.float32!, 0.0)
-    try @_p.set_f64(0x8, other.float64!, 0.0)
     try @_p.set_text(0, "\(other.text!)", "")
     try @_p.set_data(0, "\(other.data!)".as_bytes, b"")
-    try @_p.set_u16(0x2, other.enum!, 0)
     if other.is_interface @init_interface
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Value, cache CapnProto.ReferenceCache) None
     if other.is_void @init_void
-    try @_p.set_bool(0x2, 0b00000001, Bool[other.bool!])
-    try @_p.set_i8(0x2, other.int8!, 0)
-    try @_p.set_i16(0x2, other.int16!, 0)
-    try @_p.set_i32(0x4, other.int32!, 0)
-    try @_p.set_i64(0x8, other.int64!, 0)
-    try @_p.set_u8(0x2, other.uint8!, 0)
-    try @_p.set_u16(0x2, other.uint16!, 0)
-    try @_p.set_u32(0x4, other.uint32!, 0)
-    try @_p.set_u64(0x8, other.uint64!, 0)
-    try @_p.set_f32(0x4, other.float32!, 0.0)
-    try @_p.set_f64(0x8, other.float64!, 0.0)
     try @_p.set_text(0, "\(other.text!)", "")
     try @_p.set_data(0, "\(other.data!)".as_bytes, b"")
-    try @_p.set_u16(0x2, other.enum!, 0)
     if other.is_interface @init_interface
+    @_p.copy_data_section_from(other._p)
 
   :fun is_void: @_p.check_union(0x0, 0)
   :fun void!: @_p.assert_union!(0x0, 0), None
@@ -3013,14 +2959,14 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.Annotation) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try (other_value = other.value_if_set!, @value.copy_data_from(other_value))
     try (other_brand = other.brand_if_set!, @brand.copy_data_from(other_brand))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.Annotation, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @copy_or_reference_value_data_from(other.value_if_set!, cache)
     try @copy_or_reference_brand_data_from(other.brand_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -3135,14 +3081,14 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.CodeGeneratorRequest.RequestedFile) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @_p.set_text(0, "\(other.filename_if_set!)", "")
     try @init_imports_and_copy_data_from(other.imports_if_set!)
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.CodeGeneratorRequest.RequestedFile, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @_p.set_text(0, "\(other.filename_if_set!)", "")
     try @init_imports_and_copy_or_reference_data_from(other.imports_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)
@@ -3188,12 +3134,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @_p.set_text(0, "\(other.name_if_set!)", "")
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other CapnProto.Meta.CodeGeneratorRequest.RequestedFile.Import, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.id_if_set!, 0)
     try @_p.set_text(0, "\(other.name_if_set!)", "")
+    @_p.copy_data_section_from(other._p)
 
   :fun id: @_p.u64(0x0)
   :fun id_if_set!: @_p.u64_if_set!(0x0)

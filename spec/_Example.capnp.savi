@@ -228,36 +228,22 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Root) None
-    try @_p.set_u64(0x0, other.some_u64_if_set!, 0)
-    try @_p.set_i64(0x8, other.some_i64_if_set!, 0)
-    try @_p.set_u32(0x10, other.some_u32_if_set!, 0)
-    try @_p.set_i32(0x14, other.some_i32_if_set!, 0)
-    try @_p.set_u16(0x18, other.some_u16_if_set!, 0)
-    try @_p.set_i16(0x1a, other.some_i16_if_set!, 0)
-    try @_p.set_u8(0x1c, other.some_u8_if_set!, 0)
-    try @_p.set_i8(0x1d, other.some_i8_if_set!, 0)
     try @_p.set_text(0, "\(other.some_text_if_set!)", "")
     try @_p.set_data(1, "\(other.some_data_if_set!)".as_bytes, b"")
     try (other_child = other.child_if_set!, @child.copy_data_from(other_child))
     try @init_children_and_copy_data_from(other.children_if_set!)
     try (other_foo = other.foo!, @init_foo.copy_data_from(other_foo))
     try (other_bar = other.bar!, @init_bar.copy_data_from(other_bar))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other _Example.Root, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.some_u64_if_set!, 0)
-    try @_p.set_i64(0x8, other.some_i64_if_set!, 0)
-    try @_p.set_u32(0x10, other.some_u32_if_set!, 0)
-    try @_p.set_i32(0x14, other.some_i32_if_set!, 0)
-    try @_p.set_u16(0x18, other.some_u16_if_set!, 0)
-    try @_p.set_i16(0x1a, other.some_i16_if_set!, 0)
-    try @_p.set_u8(0x1c, other.some_u8_if_set!, 0)
-    try @_p.set_i8(0x1d, other.some_i8_if_set!, 0)
     try @_p.set_text(0, "\(other.some_text_if_set!)", "")
     try @_p.set_data(1, "\(other.some_data_if_set!)".as_bytes, b"")
     try @copy_or_reference_child_data_from(other.child_if_set!, cache)
     try @init_children_and_copy_or_reference_data_from(other.children_if_set!, cache)
     try (other_foo = other.foo!, @init_foo.copy_or_reference_data_from(other_foo, cache))
     try (other_bar = other.bar!, @init_bar.copy_or_reference_data_from(other_bar, cache))
+    @_p.copy_data_section_from(other._p)
 
   :fun some_u64: @_p.u64(0x0)
   :fun some_u64_if_set!: @_p.u64_if_set!(0x0)
@@ -370,14 +356,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Root.AS_foo) None
-    try @_p.set_u64(0x20, other.some_u64_if_set!, 0)
-    try @_p.set_u32(0x28, other.some_u32_if_set!, 0)
     try @_p.set_text(4, "\(other.txt_if_set!)", "")
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other _Example.Root.AS_foo, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x20, other.some_u64_if_set!, 0)
-    try @_p.set_u32(0x28, other.some_u32_if_set!, 0)
     try @_p.set_text(4, "\(other.txt_if_set!)", "")
+    @_p.copy_data_section_from(other._p)
 
   :fun some_u64: @_p.u64(0x20)
   :fun some_u64_if_set!: @_p.u64_if_set!(0x20)
@@ -406,14 +390,12 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Root.AS_bar) None
-    try @_p.set_f64(0x20, other.some_f64_if_set!, 0.0)
-    try @_p.set_f32(0x28, other.some_f32_if_set!, 0.0)
     try @_p.set_data(4, "\(other.blob_if_set!)".as_bytes, b"")
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other _Example.Root.AS_bar, cache CapnProto.ReferenceCache) None
-    try @_p.set_f64(0x20, other.some_f64_if_set!, 0.0)
-    try @_p.set_f32(0x28, other.some_f32_if_set!, 0.0)
     try @_p.set_data(4, "\(other.blob_if_set!)".as_bytes, b"")
+    @_p.copy_data_section_from(other._p)
 
   :fun some_f64: @_p.f64(0x20)
   :fun some_f64_if_set!: @_p.f64_if_set!(0x20)
@@ -442,16 +424,14 @@
     @as_reader.trace_data(trace)
 
   :fun ref copy_data_from(other _Example.Child) None
-    try @_p.set_u64(0x0, other.a_if_set!, 0)
-    try @_p.set_u64(0x8, other.b_if_set!, 0)
     try @_p.set_text(0, "\(other.name_if_set!)", "")
     try (other_referenced = other.referenced_if_set!, @referenced.copy_data_from(other_referenced))
+    @_p.copy_data_section_from(other._p)
 
   :fun ref copy_or_reference_data_from(other _Example.Child, cache CapnProto.ReferenceCache) None
-    try @_p.set_u64(0x0, other.a_if_set!, 0)
-    try @_p.set_u64(0x8, other.b_if_set!, 0)
     try @_p.set_text(0, "\(other.name_if_set!)", "")
     try @copy_or_reference_referenced_data_from(other.referenced_if_set!, cache)
+    @_p.copy_data_section_from(other._p)
 
   :fun a: @_p.u64(0x0)
   :fun a_if_set!: @_p.u64_if_set!(0x0)
