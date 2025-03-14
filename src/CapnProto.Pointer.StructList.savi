@@ -191,6 +191,23 @@
       )
     )
 
+  :fun reverse_each None
+    @reverse_each_with_index -> (item, n | yield item)
+
+  :fun reverse_each_with_index None
+    count = @_list_count
+    count.times -> (n_reverse |
+      n = count - 1 - n_reverse
+      try (
+        byte_offset = @_byte_offset +! @_element_byte_size *! n
+        item = CapnProto.Pointer.Struct._new(
+          @_segment, byte_offset, @_data_word_count, @_pointer_count
+        )
+
+        yield (item, n)
+      )
+    )
+
 :struct CapnProto.Pointer.StructList.Builder
   :let _segment CapnProto.Segment
   :let _byte_offset U32
@@ -298,6 +315,23 @@
 
   :fun ref each_with_index None
     @_list_count.times -> (n |
+      try (
+        byte_offset = @_byte_offset +! @_element_byte_size *! n
+        item = CapnProto.Pointer.Struct.Builder._new(
+          @_segment, byte_offset, @_data_word_count, @_pointer_count
+        )
+
+        yield (item, n)
+      )
+    )
+
+  :fun ref reverse_each None
+    @reverse_each_with_index -> (item, n | yield item)
+
+  :fun ref reverse_each_with_index None
+    count = @_list_count
+    count.times -> (n_reverse |
+      n = count - 1 - n_reverse
       try (
         byte_offset = @_byte_offset +! @_element_byte_size *! n
         item = CapnProto.Pointer.Struct.Builder._new(

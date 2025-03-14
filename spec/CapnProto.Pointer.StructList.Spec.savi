@@ -75,6 +75,38 @@
       0x5555555555555555
     ]
 
+    first_words = []
+    indices Array(U32) = []
+    p.each_with_index -> (struct, n |
+      first_words << struct.u64(0x0), indices << n
+    )
+    assert: indices == [0, 1, 2]
+    assert: first_words == [
+      0x1111111111111111
+      0x3333333333333333
+      0x5555555555555555
+    ]
+
+    first_words = []
+    p.reverse_each -> (struct | first_words << struct.u64(0x0))
+    assert: first_words == [
+      0x5555555555555555
+      0x3333333333333333
+      0x1111111111111111
+    ]
+
+    first_words = []
+    indices = []
+    p.reverse_each_with_index -> (struct, i |
+      first_words << struct.u64(0x0), indices << i
+    )
+    assert: indices == [2, 1, 0]
+    assert: first_words == [
+      0x5555555555555555
+      0x3333333333333333
+      0x1111111111111111
+    ]
+
   :it "can point to a struct list region via a far pointer"
     p = @from_segments([b"\
       \x12\x00\x00\x00\x02\x00\x00\x00\
