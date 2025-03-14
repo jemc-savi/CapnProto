@@ -20,6 +20,14 @@
     :yields (A, USize)
     @_p.each_with_index -> (p, i | yield (A.read_from_pointer(p), i.usize))
 
+  :fun reverse_each None
+    :yields A
+    @_p.reverse_each -> (p | yield A.read_from_pointer(p))
+
+  :fun reverse_each_with_index None
+    :yields (A, USize)
+    @_p.reverse_each_with_index -> (p, i | yield (A.read_from_pointer(p), i.usize))
+
   :is TraceData
   :fun trace_data(trace TraceData.Observer)
     trace.array(@_p.absolute_address - 8) -> (
@@ -48,3 +56,11 @@
   :fun ref each_with_index None
     :yields (A, USize)
     @_p.each_with_index -> (p, i | yield (A.from_pointer(p), i.usize))
+
+  :fun ref reverse_each None
+    :yields A
+    @_p.reverse_each -> (p | yield A.from_pointer(p))
+
+  :fun ref reverse_each_with_index None
+    :yields (A, USize)
+    @_p.reverse_each_with_index -> (p, i | yield (A.from_pointer(p), i.usize))
